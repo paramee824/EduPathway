@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>แบบทดสอบความถนัดด้านขนส่งและโลจิสติกส์</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=PK+Maehongson+Round+Demo&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'PK Maehongson Round Demo', cursive;
+            background: linear-gradient(135deg, #f3f4f6, #e9ecef);
+            transition: background-color 0.3s ease;
+            background-image: url("P9.png");
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-attachment: fixed;
+            padding: 20px;
+            margin: 0 auto;
+            border-radius: 10px;
+            font-size: 16px;
+            font-family: 'PK Maehongson Round Demo', sans-serif;
+            line-height: 1.6;
+            color: #000000;
+            max-width: 100vw;
+            box-sizing: border-box;
+        }
+        .text-body {
+            font-family: 'PK Maehongson Round Demo', cursive;
+        }
+        .bg-card {
+            background: rgba(255, 255, 255, 0.9); /* ทำให้พื้นหลังโปร่งแสงเล็กน้อย */
+            border-radius: 2rem;
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.15), 0 10px 20px -5px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: fadeIn 1s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .text-gradient {
+            background-image: linear-gradient(to right, #ec4899, #db2777);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-fill-color: transparent;
+        }
+        .btn-primary {
+            background: linear-gradient(45deg, #ec4899, #db2777);
+            box-shadow: 0 8px 25px -5px rgba(236, 72, 153, 0.5), 0 4px 6px -2px rgba(236, 72, 153, 0.25);
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 12px 30px -8px rgba(236, 72, 153, 0.7), 0 6px 12px -3px rgba(236, 72, 153, 0.4);
+        }
+        .btn-exit {
+            background: linear-gradient(45deg, #dc2626, #ef4444);
+            box-shadow: 0 8px 25px -5px rgba(220, 38, 38, 0.5), 0 4px 6px -2px rgba(220, 38, 38, 0.25);
+            transition: all 0.3s ease;
+        }
+        .btn-exit:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 12px 30px -8px rgba(220, 38, 38, 0.7), 0 6px 12px -3px rgba(220, 38, 38, 0.4);
+        }
+        .btn-prev {
+            background: linear-gradient(45deg, #dc2626, #ef4444);
+            box-shadow: 0 8px 25px -5px rgba(220, 38, 38, 0.5), 0 4px 6px -2px rgba(220, 38, 38, 0.25);
+            transition: all 0.3s ease;
+        }
+        .btn-prev:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 12px 30px -8px rgba(220, 38, 38, 0.7), 0 6px 12px -3px rgba(220, 38, 38, 0.4);
+        }
+        .btn-submit {
+            background: linear-gradient(45deg, #22c55e, #10b981);
+            box-shadow: 0 8px 25px -5px rgba(34, 197, 94, 0.5), 0 4px 6px -2px rgba(34, 197, 94, 0.25);
+            transition: all 0.3s ease;
+        }
+        .btn-submit:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 12px 30px -8px rgba(34, 197, 94, 0.7), 0 6px 12px -3px rgba(34, 197, 94, 0.4);
+        }
+        .btn-secondary {
+            background-color: #e2e8f0;
+            color: #4a5568;
+            transition: all 0.3s ease;
+        }
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            background-color: #cfd8e3;
+        }
+        input[type="radio"]:checked + label {
+            background: linear-gradient(to right, #f472b6, #ec4899);
+            color: white;
+            border-color: #ec4899;
+            transform: translateY(-4px);
+            box-shadow: 0 8px 15px -3px rgba(236, 72, 153, 0.5), 0 4px 6px -2px rgba(236, 72, 153, 0.25);
+        }
+        label {
+            transition: all 0.2s ease;
+        }
+        label:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .confetti-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+        }
+        .timer-glow {
+            box-shadow: 0 0 10px 5px #ce0000, 0 0 20px 10px #ce0000;
+            animation: pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse-glow {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8 min-h-screen flex items-center justify-center">
+
+    <!-- Splash Screen -->
+    <div id="splash-screen" class="min-h-screen flex items-center justify-center text-center w-full">
+        <div class="bg-card p-8 md:p-12 w-full max-w-xl animate-fadeIn">
+            <div class="mb-6">
+                <!-- SVG Icon for Logistics theme -->
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-24 w-24 mx-auto text-[#ec4899] animate-bounce-slow">
+                    <path d="M5.625 2.25a.75.75 0 01.75.75v3.687a.75.75 0 01-.482.686L3.5 10.373V12h17v-1.627l-2.393-3.084a.75.75 0 01-.482-.686V3a.75.75 0 01.75-.75h2.25a.75.75 0 010 1.5H21v5.75a.75.75 0 01-.75.75H20v-.485c0-1.077-.92-1.95-2.062-1.95h-1.5c-1.14 0-2.063.873-2.063 1.95v.485h-2.5V8.015c0-1.077-.92-1.95-2.063-1.95h-1.5c-1.14 0-2.062.873-2.062 1.95v.485H6.75a.75.75 0 01-.75-.75V3a.75.75 0 01.75-.75H8.25zm0 13.5a.75.75 0 01.75.75V21a.75.75 0 01-1.5 0v-4.5a.75.75 0 01.75-.75zm4.5 0a.75.75 0 01.75.75V21a.75.75 0 01-1.5 0v-4.5a.75.75 0 01.75-.75zm4.5 0a.75.75 0 01.75.75V21a.75.75 0 01-1.5 0v-4.5a.75.75 0 01.75-.75zm4.5 0a.75.75 0 01.75.75V21a.75.75 0 01-1.5 0v-4.5a.75.75 0 01.75-.75z" />
+                </svg>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-bold mb-4 text-gradient">แบบทดสอบความถนัดด้านขนส่งและโลจิสติกส์</h1>
+            <p class="text-xl md:text-2xl text-gray-700 leading-relaxed">
+                สำหรับสาขา: ช่างเทคนิคและระบบขนส่งทางราง, โลจิสติกส์
+            </p>
+            <p class="text-xl md:text-2xl text-gray-700 leading-relaxed mb-6">
+                วัดการจัดการระบบ, การคำนวณเส้นทาง, การวิเคราะห์ประสิทธิภาพ, การวางแผนโครงสร้างขนส่ง
+            </p>
+            <p class="text-lg md:text-xl text-gray-500 mb-8">ทั้งหมด 30 ข้อ</p>
+            <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 w-full">
+                <button id="startButton" class="flex-1 px-8 py-4 text-xl font-semibold text-white rounded-full transition duration-300 transform hover:scale-105 btn-primary">
+                    เริ่มต้นทำแบบทดสอบ
+                </button>
+                <button id="leaveButton" class="flex-1 px-8 py-4 text-xl font-semibold text-white rounded-full transition duration-300 transform hover:scale-105 btn-exit">
+                    ออกจากแบบทดสอบ
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Test Container -->
+    <div id="test-container" class="hidden min-h-screen flex items-center justify-center w-full">
+        <div class="bg-card p-8 md:p-12 w-full max-w-4xl">
+            <div id="progress-container" class="w-full h-3 bg-gray-200 rounded-full mb-6">
+                <div id="progress-bar" class="h-full bg-gradient-to-r from-[#f472b6] to-[#ec4899] rounded-full transition-all duration-300" style="width: 0%;"></div>
+            </div>
+            
+            <div class="flex justify-between items-center mb-4 text-lg md:text-xl">
+                <p id="question-number" class="text-gray-500"></p>
+                <div id="timer" class="text-white bg-gradient-to-r from-[#ce0000] to-[#e64d4d] font-bold text-lg md:text-xl p-2 rounded-full border-2 border-transparent transition-all">
+                    60
+                </div>
+            </div>
+            
+            <h2 id="question-text" class="text-2xl md:text-3xl font-semibold mb-6 leading-relaxed"></h2>
+            
+            <div id="options-container" class="space-y-4">
+                <!-- Options will be dynamically inserted here -->
+            </div>
+            
+            <div class="mt-8 flex flex-col md:flex-row justify-between space-y-4 md:space-y-0 md:space-x-4">
+                <button id="prevButton" class="w-full md:w-auto px-6 py-3 text-lg font-medium text-white rounded-full transform hover:scale-105 btn-prev" disabled>
+                    &larr; ข้อก่อนหน้า
+                </button>
+                <button id="nextButton" class="w-full md:w-auto px-6 py-3 text-lg font-medium text-white rounded-full transform hover:scale-105 btn-primary">
+                    ข้อต่อไป &rarr;
+                </button>
+                <button id="submitButton" class="hidden w-full md:w-auto px-6 py-3 text-lg font-medium text-white btn-submit rounded-full hover:from-[#22c55e] hover:to-[#4ade80] transition duration-300 transform hover:scale-105">
+                    ส่งคำตอบ
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Container -->
+    <div id="results-container" class="hidden min-h-screen flex items-center justify-center w-full">
+        <div class="bg-card p-8 md:p-12 w-full max-w-4xl">
+            <h2 class="text-3xl md:text-4xl font-bold text-center text-gradient mb-4">ผลการทดสอบ</h2>
+            <p class="text-center text-xl md:text-2xl text-gray-700 mb-6">
+                คะแนนของคุณคือ: <span id="score" class="font-bold text-2xl md:text-3xl text-[#ec4899]"></span>
+            </p>
+            
+            <div id="guidance-section" class="mb-8">
+                <h3 class="text-2xl md:text-3xl font-bold mb-4 border-b-2 border-[#ec4899] pb-2">แนวทางการศึกษาและอาชีพ</h3>
+                <p id="guidance-text" class="text-xl md:text-xl text-gray-700 leading-relaxed"></p>
+            </div>
+
+            <div id="recommended-majors" class="mt-8 text-center bg-pink-50 p-6 rounded-3xl shadow-lg">
+                <h3 class="text-2xl md:text-3xl font-bold text-gray-800 mb-4">สาขาที่แนะนำ</h3>
+                <p id="recommended-majors-text" class="mt-4 text-base md:text-lg text-gray-700">
+                </p>
+            </div>
+            
+            <div id="review-section">
+                <h3 class="text-2xl md:text-3xl font-bold mb-4 border-b-2 border-[#ec4899] pb-2">สรุปคำตอบ</h3>
+                <div id="review-list" class="space-y-4">
+                    <!-- Review items will be dynamically inserted here -->
+                </div>
+            </div>
+
+            <div class="mt-8 flex justify-center space-x-4">
+                <button id="retakeButton" class="px-6 py-3 text-lg font-medium rounded-full transform hover:scale-105 btn-primary text-white">
+                    ทำแบบทดสอบอีกครั้ง
+                </button>
+                <button id="exitButton" class="px-6 py-3 text-lg font-medium rounded-full transform hover:scale-105 btn-exit text-white">
+                    ออกจากแบบทดสอบ
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for displaying messages -->
+    <div id="modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white p-8 rounded-lg shadow-2xl text-center w-full max-w-md transform scale-95 transition-transform duration-300">
+            <p id="modal-message" class="text-xl mb-4"></p>
+            <button id="modal-close-button" class="px-4 py-2 bg-gray-800 text-white rounded-md">ปิด</button>
+        </div>
+    </div>
+    
+    <script>
+        const questions = [
+            {
+                question: "ข้อใดคือความหมายของ 'โลจิสติกส์' (Logistics) โดยรวม?",
+                options: ["การขายสินค้าออนไลน์", "การจัดการการไหลของสินค้า ข้อมูล และทรัพยากร", "การผลิตสินค้าในโรงงาน", "การโฆษณาและการตลาด"],
+                answer: "การจัดการการไหลของสินค้า ข้อมูล และทรัพยากร",
+                explanation: "โลจิสติกส์ครอบคลุมการวางแผน, การปฏิบัติการ, และการควบคุมการเคลื่อนย้ายและการจัดเก็บสินค้า"
+            },
+            {
+                question: "เครื่องมือใดที่ช่วยในการวางแผนเส้นทางการขนส่งสินค้าให้สั้นและมีประสิทธิภาพมากที่สุด?",
+                options: ["แผนที่ทั่วไป", "ระบบ GPS และซอฟต์แวร์วางแผนเส้นทาง", "ตารางเวลาเดินรถโดยสาร", "เครื่องวัดระยะทางแบบธรรมดา"],
+                answer: "ระบบ GPS และซอฟต์แวร์วางแผนเส้นทาง",
+                explanation: "ระบบ GPS และซอฟต์แวร์สมัยใหม่สามารถวิเคราะห์ข้อมูลการจราจรแบบเรียลไทม์เพื่อหาเส้นทางที่เหมาะสมที่สุด"
+            },
+            {
+                question: " 'คลังสินค้า' (Warehouse) มีหน้าที่หลักอย่างไรในระบบโลจิสติกส์?",
+                options: ["เป็นสถานที่สำหรับผลิตสินค้า", "เป็นสถานที่สำหรับเก็บรักษาสินค้า", "เป็นศูนย์กลางในการขายสินค้า", "เป็นสถานที่สำหรับซ่อมแซมสินค้า"],
+                answer: "เป็นสถานที่สำหรับเก็บรักษาสินค้า",
+                explanation: "คลังสินค้ามีหน้าที่จัดเก็บและบริหารจัดการสินค้าให้พร้อมสำหรับการขนส่งและกระจายสินค้า"
+            },
+            {
+                question: " 'ระบบขนส่งทางราง' (Rail Transport) มีข้อได้เปรียบที่สำคัญในเรื่องใด?",
+                options: ["ความยืดหยุ่นสูงในทุกสภาพถนน", "ความเร็วในการขนส่งระยะสั้น", "การขนส่งสินค้าขนาดใหญ่และหนักได้ในปริมาณมาก", "มีค่าใช้จ่ายในการก่อสร้างต่ำ"],
+                answer: "การขนส่งสินค้าขนาดใหญ่และหนักได้ในปริมาณมาก",
+                explanation: "รถไฟสามารถขนส่งสินค้าได้ในปริมาณมากและมีน้ำหนักมากในระยะทางไกล"
+            },
+            {
+                question: "หากสินค้ามีวันหมดอายุเร็ว ควรใช้การขนส่งประเภทใดเพื่อให้สินค้าถึงปลายทางรวดเร็วที่สุด?",
+                options: ["การขนส่งทางเรือ", "การขนส่งทางอากาศ", "การขนส่งทางราง", "การขนส่งทางถนน"],
+                answer: "การขนส่งทางอากาศ",
+                explanation: "การขนส่งทางอากาศมีความเร็วสูงที่สุด เหมาะสำหรับสินค้าที่เน่าเสียง่ายหรือมีกำหนดเวลาที่จำกัด"
+            },
+            {
+                question: "สิ่งใดที่ต้องพิจารณาเป็นอันดับแรกในการเลือกบรรจุภัณฑ์สำหรับสินค้า?",
+                options: ["สีของบรรจุภัณฑ์", "การปกป้องสินค้าจากความเสียหาย", "ความสวยงามของบรรจุภัณฑ์", "ขนาดของบรรจุภัณฑ์"],
+                answer: "การปกป้องสินค้าจากความเสียหาย",
+                explanation: "บรรจุภัณฑ์ต้องแข็งแรงทนทาน เพื่อปกป้องสินค้าในระหว่างการขนส่งและการจัดเก็บ"
+            },
+            {
+                question: "การวิเคราะห์ 'เส้นทาง' และ 'ระยะทาง' ในระบบขนส่งมีวัตถุประสงค์เพื่ออะไร?",
+                options: ["เพิ่มความซับซ้อนในการทำงาน", "ลดค่าใช้จ่ายและเวลาในการขนส่ง", "สร้างความหลากหลายของเส้นทาง", "ทำให้พนักงานทำงานได้ยากขึ้น"],
+                answer: "ลดค่าใช้จ่ายและเวลาในการขนส่ง",
+                explanation: "การวางแผนเส้นทางที่มีประสิทธิภาพจะช่วยประหยัดน้ำมัน, ลดเวลาเดินทาง, และลดค่าใช้จ่ายโดยรวม"
+            },
+            {
+                question: "ในระบบขนส่งทางราง 'รางรถไฟ' ทำหน้าที่อะไร?",
+                options: ["เป็นแหล่งพลังงาน", "เป็นเส้นทางสำหรับรถไฟ", "เป็นสถานที่พักของพนักงาน", "เป็นที่จอดรถ"],
+                answer: "เป็นเส้นทางสำหรับรถไฟ",
+                explanation: "รางรถไฟเป็นโครงสร้างพื้นฐานที่รถไฟวิ่งไปบนนั้น"
+            },
+            {
+                question: " 'ระบบการจัดการคลังสินค้า' (Warehouse Management System) ช่วยในเรื่องใด?",
+                options: ["การโฆษณาสินค้า", "การจัดระเบียบสินค้า, การรับเข้าและส่งออก", "การผลิตสินค้า", "การบริการลูกค้า"],
+                answer: "การจัดระเบียบสินค้า, การรับเข้าและส่งออก",
+                explanation: "WMS เป็นซอฟต์แวร์ที่ช่วยจัดการการทำงานในคลังสินค้าให้เป็นระบบและมีประสิทธิภาพ"
+            },
+            {
+                question: "ข้อใดคือตัวอย่างของ 'การขนส่งแบบหลายรูปแบบ' (Multimodal Transport)?",
+                options: ["ใช้รถบรรทุกขนส่งจากต้นทางถึงปลายทาง", "ใช้รถไฟขนส่งสินค้าอย่างเดียว", "ใช้เรือขนส่งสินค้าอย่างเดียว", "ใช้เรือขนส่งจากท่าเรือถึงท่าเรือ จากนั้นใช้รถไฟต่อ"],
+                answer: "ใช้เรือขนส่งจากท่าเรือถึงท่าเรือ จากนั้นใช้รถไฟต่อ",
+                explanation: "การขนส่งแบบหลายรูปแบบคือการใช้ยานพาหนะหลายประเภท เช่น เรือ, รถไฟ, รถบรรทุก เพื่อขนส่งสินค้า"
+            },
+            {
+                question: "หากต้องการทราบสถานะของสินค้าแบบเรียลไทม์ ควรใช้เทคโนโลยีใด?",
+                options: ["โทรศัพท์พื้นฐาน", "จดหมายอิเล็กทรอนิกส์", "ระบบติดตามสินค้า (Tracking System) และ RFID", "โทรสาร"],
+                answer: "ระบบติดตามสินค้า (Tracking System) และ RFID",
+                explanation: "ระบบ Tracking และ RFID ทำให้สามารถทราบตำแหน่งและสถานะของสินค้าได้ตลอดเวลา"
+            },
+            {
+                question: " 'การขนส่งแบบต่อเนื่อง' (Just-in-Time) มีจุดประสงค์หลักเพื่ออะไร?",
+                options: ["การจัดส่งสินค้าล่วงหน้าเป็นจำนวนมาก", "การจัดส่งสินค้าให้ทันต่อความต้องการโดยไม่เก็บสต็อก", "การจัดส่งสินค้าเมื่อสิ้นสุดเดือน", "การจัดส่งสินค้าที่มีคุณภาพต่ำ"],
+                answer: "การจัดส่งสินค้าให้ทันต่อความต้องการโดยไม่เก็บสต็อก",
+                explanation: "ระบบ JIT เน้นการจัดส่งสินค้าให้ถึงลูกค้าหรือสายการผลิตในเวลาที่ต้องการพอดี เพื่อลดต้นทุนการเก็บสต็อก"
+            },
+            {
+                question: "ระบบรางที่ใช้ในรถไฟฟ้าใต้ดินส่วนใหญ่เป็นระบบใด?",
+                options: ["รางเดียว (Monorail)", "สองราง (Dual-rail)", "รางลอยฟ้า", "รางพื้นดิน"],
+                answer: "สองราง (Dual-rail)",
+                explanation: "รถไฟฟ้ารางเบาและรถไฟใต้ดินส่วนใหญ่ใช้ระบบรางคู่"
+            },
+            {
+                question: "หน้าที่ของ 'ช่างเทคนิคระบบขนส่งทางราง' คือข้อใด?",
+                options: ["ออกแบบอาคาร", "ดูแลและซ่อมบำรุงระบบรางและตัวรถไฟ", "วางแผนการตลาด", "ขับรถไฟ"],
+                answer: "ดูแลและซ่อมบำรุงระบบรางและตัวรถไฟ",
+                explanation: "ช่างเทคนิคมีหน้าที่ตรวจสอบ, บำรุงรักษา, และซ่อมแซมระบบขนส่งทางราง"
+            },
+            {
+                question: "คำว่า 'Last-Mile Delivery' ในโลจิสติกส์หมายถึงอะไร?",
+                options: ["การขนส่งสินค้าในระยะทางไกลที่สุด", "การขนส่งจากคลังสินค้าไปยังลูกค้าคนสุดท้าย", "การขนส่งจากโรงงาน", "การขนส่งสินค้าไปยังคลังสินค้า"],
+                answer: "การขนส่งจากคลังสินค้าไปยังลูกค้าคนสุดท้าย",
+                explanation: "Last-Mile Delivery คือขั้นตอนสุดท้ายของการส่งสินค้าจากศูนย์กระจายสินค้าไปยังผู้รับ"
+            },
+            {
+                question: "ข้อใดคือประโยชน์ของ 'การขนส่งสินค้าทางเรือ'?",
+                options: ["ความรวดเร็วในการจัดส่ง", "ต้นทุนต่ำสำหรับการขนส่งในปริมาณมาก", "สามารถเข้าถึงพื้นที่ที่ห่างไกลได้ง่าย", "มีความยืดหยุ่นสูง"],
+                answer: "ต้นทุนต่ำสำหรับการขนส่งในปริมาณมาก",
+                explanation: "การขนส่งทางเรือมีต้นทุนต่อหน่วยต่ำที่สุดเมื่อขนส่งสินค้าในปริมาณมาก"
+            },
+            {
+                question: "หลักการ 'FIFO' (First-In, First-Out) ในคลังสินค้าหมายถึงอะไร?",
+                options: ["สินค้าที่เข้ามาก่อนถูกนำออกไปใช้ก่อน", "สินค้าที่เข้ามาก่อนถูกนำออกไปใช้ทีหลัง", "สินค้าที่มาใหม่ต้องเก็บไว้ด้านหน้า", "สินค้าทั้งหมดต้องถูกเก็บไว้พร้อมกัน"],
+                answer: "สินค้าที่เข้ามาก่อนถูกนำออกไปใช้ก่อน",
+                explanation: "FIFO เป็นหลักการจัดการสินค้าคงคลังที่เน้นการนำสินค้าที่เข้ามาในคลังก่อนออกไปจำหน่ายก่อน เพื่อป้องกันสินค้าหมดอายุหรือล้าสมัย"
+            },
+            {
+                question: "ข้อใดคือความเสี่ยงหลักของการใช้ 'การขนส่งทางถนน'?",
+                options: ["ต้นทุนต่ำ", "ความล่าช้าจากปัญหารถติดและอุบัติเหตุ", "ไม่สามารถขนส่งสินค้าขนาดใหญ่ได้", "ไม่สามารถเข้าถึงพื้นที่ในเมืองได้"],
+                answer: "ความล่าช้าจากปัญหารถติดและอุบัติเหตุ",
+                explanation: "การขนส่งทางถนนมีความเสี่ยงที่จะเกิดความล่าช้าจากสภาพการจราจรและอุบัติเหตุ"
+            },
+            {
+                question: "คำว่า 'Supply Chain' หมายถึงอะไร?",
+                options: ["ห่วงโซ่อุปทาน (ตั้งแต่แหล่งผลิตถึงลูกค้า)", "การขนส่งสินค้าเท่านั้น", "การตลาดและการขายสินค้า", "การผลิตสินค้า"],
+                answer: "ห่วงโซ่อุปทาน (ตั้งแต่แหล่งผลิตถึงลูกค้า)",
+                explanation: "ห่วงโซ่อุปทานครอบคลุมทุกกระบวนการตั้งแต่การจัดหาวัตถุดิบจนถึงการส่งมอบสินค้าถึงมือลูกค้า"
+            },
+            {
+                question: "ในระบบขนส่งทางราง 'ระบบอาณัติสัญญาณ' (Signaling System) มีหน้าที่อะไร?",
+                options: ["ควบคุมการขายตั๋วโดยสาร", "ควบคุมการเข้า-ออกของสถานีรถไฟ", "ควบคุมการเดินรถให้ปลอดภัย", "ควบคุมความเร็วของรถไฟ"],
+                answer: "ควบคุมการเดินรถให้ปลอดภัย",
+                explanation: "ระบบอาณัติสัญญาณมีหน้าที่ควบคุมการเดินรถเพื่อป้องกันการชนกันและรักษาความปลอดภัย"
+            },
+            {
+                question: "หากสินค้ามีขนาดใหญ่และน้ำหนักมาก เช่น เครื่องจักรกลขนาดใหญ่ ควรใช้การขนส่งประเภทใด?",
+                options: ["ทางไปรษณีย์", "ทางอากาศ", "ทางถนน (รถบรรทุกขนาดใหญ่) หรือทางเรือ", "ทางรถจักรยานยนต์"],
+                answer: "ทางถนน (รถบรรทุกขนาดใหญ่) หรือทางเรือ",
+                explanation: "การขนส่งสินค้าขนาดใหญ่และน้ำหนักมากนิยมใช้รถบรรทุกขนาดใหญ่หรือการขนส่งทางเรือ"
+            },
+            {
+                question: " 'ระบบการจัดการยานพาหนะ' (Fleet Management System) ช่วยในเรื่องใด?",
+                options: ["จัดการการผลิตสินค้า", "จัดการและติดตามการใช้งานของรถขนส่งทั้งหมด", "จัดการการเงินของบริษัท", "จัดการพนักงานฝ่ายขาย"],
+                answer: "จัดการและติดตามการใช้งานของรถขนส่งทั้งหมด",
+                explanation: "ระบบนี้ช่วยติดตามตำแหน่ง, การบำรุงรักษา, และการใช้งานของยานพาหนะทั้งหมดในองค์กร"
+            },
+            {
+                question: "ประโยชน์ของการใช้ 'ตู้คอนเทนเนอร์' (Container) ในการขนส่งคืออะไร?",
+                options: ["ทำให้การขนส่งมีความยุ่งยากมากขึ้น", "ลดความซับซ้อนในการขนถ่ายสินค้าข้ามประเภทการขนส่ง", "ใช้ได้เฉพาะกับการขนส่งทางเรือเท่านั้น", "ใช้สำหรับสินค้าที่มีขนาดเล็กมาก"],
+                answer: "ลดความซับซ้อนในการขนถ่ายสินค้าข้ามประเภทการขนส่ง",
+                explanation: "ตู้คอนเทนเนอร์ทำให้การขนถ่ายสินค้าระหว่างเรือ, รถไฟ, และรถบรรทุกเป็นไปได้อย่างง่ายดายและรวดเร็ว"
+            },
+            {
+                question: "หากเกิดเหตุฉุกเฉินในระบบขนส่งทางราง สิ่งใดที่สำคัญที่สุดในการจัดการ?",
+                options: ["การเก็บข้อมูลการเดินทางย้อนหลัง", "การสื่อสารที่มีประสิทธิภาพและการประสานงานอย่างรวดเร็ว", "การแก้ไขปัญหาด้วยตนเอง", "การแจ้งผู้เกี่ยวข้องให้ช้าที่สุด"],
+                answer: "การสื่อสารที่มีประสิทธิภาพและการประสานงานอย่างรวดเร็ว",
+                explanation: "การสื่อสารที่ชัดเจนและรวดเร็วจะช่วยให้สามารถแก้ไขสถานการณ์ฉุกเฉินได้อย่างทันท่วงที"
+            },
+            {
+                question: " 'รถยก' (Forklift) มีหน้าที่หลักในคลังสินค้าอย่างไร?",
+                options: ["ขับรถไปส่งสินค้า", "เคลื่อนย้ายสินค้าที่มีน้ำหนักมาก", "ทำความสะอาดพื้น", "นับจำนวนสินค้า"],
+                answer: "เคลื่อนย้ายสินค้าที่มีน้ำหนักมาก",
+                explanation: "รถยกใช้สำหรับเคลื่อนย้ายและจัดเรียงสินค้าที่มีน้ำหนักมากในคลังสินค้า"
+            },
+            {
+                question: "ข้อใดคือความหมายของ 'Cold Chain'?",
+                options: ["ห่วงโซ่การผลิตสินค้าแช่แข็ง", "ห่วงโซ่อุปทานที่ควบคุมอุณหภูมิ", "การขนส่งสินค้าขนาดใหญ่", "การขนส่งสินค้าด้วยเครื่องบิน"],
+                answer: "ห่วงโซ่อุปทานที่ควบคุมอุณหภูมิ",
+                explanation: "Cold Chain หมายถึงห่วงโซ่อุปทานที่มีการควบคุมอุณหภูมิสำหรับสินค้าที่เน่าเสียง่าย เช่น อาหารและยา"
+            },
+            {
+                question: "ระบบขนส่งใดที่ใช้พลังงานน้อยที่สุดในการขนส่งสินค้าในปริมาณมากต่อระยะทาง?",
+                options: ["รถไฟ", "รถบรรทุก", "เครื่องบิน", "รถจักรยานยนต์"],
+                answer: "รถไฟ",
+                explanation: "รถไฟมีประสิทธิภาพในการใช้พลังงานสูงที่สุดเมื่อเทียบกับการขนส่งในปริมาณมาก"
+            },
+            {
+                question: "การเลือกใช้ 'รถบรรทุกประเภทใด' ในการขนส่งสินค้าขึ้นอยู่กับปัจจัยใด?",
+                options: ["ความจุและน้ำหนักของสินค้า", "สีของรถ", "ความเร็วสูงสุดของรถ", "ยี่ห้อของรถ"],
+                answer: "ความจุและน้ำหนักของสินค้า",
+                explanation: "การเลือกรถบรรทุกที่เหมาะสมขึ้นอยู่กับปริมาณและประเภทของสินค้าที่ต้องการขนส่ง"
+            },
+            {
+                question: " 'ผังคลังสินค้า' (Warehouse Layout) ที่ดีควรมีลักษณะอย่างไร?",
+                options: ["มีการจัดเก็บสินค้าแบบสุ่ม", "มีการแบ่งโซนอย่างชัดเจนและมีเส้นทางการเคลื่อนย้ายที่สะดวก", "ไม่มีการจัดระเบียบ", "จัดเก็บสินค้าไว้ที่เดียวทั้งหมด"],
+                answer: "มีการแบ่งโซนอย่างชัดเจนและมีเส้นทางการเคลื่อนย้ายที่สะดวก",
+                explanation: "การจัดผังคลังสินค้าที่ดีจะช่วยให้การทำงานมีประสิทธิภาพและปลอดภัยมากขึ้น"
+            },
+            {
+                question: "ปัจจัยใดที่ไม่ส่งผลกระทบต่อต้นทุนการขนส่ง?",
+                options: ["ระยะทาง", "ค่าน้ำมันเชื้อเพลิง", "น้ำหนักของสินค้า", "ชื่อเสียงของบริษัทขนส่ง"],
+                answer: "ชื่อเสียงของบริษัทขนส่ง",
+                explanation: "ชื่อเสียงของบริษัทอาจมีผลต่อราคาแต่ไม่ใช่ปัจจัยหลักที่กำหนดต้นทุนการดำเนินงาน เช่น ระยะทางและน้ำหนัก"
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let userAnswers = [];
+        let timerInterval;
+        let timeRemaining = 60;
+        const totalTime = questions.length * 60;
+        let isModalOpen = false;
+
+        const startButton = document.getElementById('startButton');
+        const leaveButtonSplash = document.getElementById('leaveButton');
+        const splashScreen = document.getElementById('splash-screen');
+        const testContainer = document.getElementById('test-container');
+        const resultsContainer = document.getElementById('results-container');
+        const questionTextElement = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const nextButton = document.getElementById('nextButton');
+        const prevButton = document.getElementById('prevButton');
+        const submitButton = document.getElementById('submitButton');
+        const questionNumberElement = document.getElementById('question-number');
+        const progressBar = document.getElementById('progress-bar');
+        const scoreElement = document.getElementById('score');
+        const guidanceTextElement = document.getElementById('guidance-text');
+        const recommendedMajorsTextElement = document.getElementById('recommended-majors-text');
+        const reviewList = document.getElementById('review-list');
+        const retakeButton = document.getElementById('retakeButton');
+        const exitButton = document.getElementById('exitButton');
+        const timerElement = document.getElementById('timer');
+        const modal = document.getElementById('modal');
+        const modalMessage = document.getElementById('modal-message');
+        const modalCloseButton = document.getElementById('modal-close-button');
+
+        function showModal(message) {
+            if (isModalOpen) return;
+            modalMessage.textContent = message;
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            isModalOpen = true;
+        }
+
+        function hideModal() {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            isModalOpen = false;
+        }
+
+        modalCloseButton.addEventListener('click', hideModal);
+
+        function startTimer() {
+            timerElement.textContent = timeRemaining;
+            timerElement.classList.remove('timer-glow');
+            
+            clearInterval(timerInterval);
+
+            timerInterval = setInterval(() => {
+                timeRemaining--;
+                timerElement.textContent = timeRemaining;
+
+                if (timeRemaining <= 10) {
+                    timerElement.classList.add('timer-glow');
+                } else {
+                    timerElement.classList.remove('timer-glow');
+                }
+
+                if (timeRemaining <= 0) {
+                    clearInterval(timerInterval);
+                    handleTimeUp();
+                }
+            }, 1000);
+        }
+
+        function handleTimeUp() {
+            if (currentQuestionIndex < questions.length - 1) {
+                const selectedOption = optionsContainer.querySelector('input[name="answer"]:checked');
+                if (!selectedOption) {
+                    userAnswers[currentQuestionIndex] = "ไม่ได้ตอบ";
+                    currentQuestionIndex++;
+                    showQuestion(currentQuestionIndex);
+                    resetTimer();
+                    showModal("หมดเวลาแล้ว! คำตอบของคุณสำหรับข้อนี้ถูกข้ามไป");
+                }
+            } else {
+                calculateScore();
+            }
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            timeRemaining = 60;
+            startTimer();
+        }
+
+        function showQuestion(index) {
+            const question = questions[index];
+            questionTextElement.textContent = question.question;
+            optionsContainer.innerHTML = '';
+            
+            questionNumberElement.textContent = `ข้อที่ ${index + 1} จาก ${questions.length}`;
+
+            question.options.forEach(option => {
+                const optionWrapper = document.createElement('div');
+                const radioInput = document.createElement('input');
+                radioInput.type = 'radio';
+                radioInput.name = 'answer';
+                radioInput.value = option;
+                radioInput.id = `option-${option.replace(/\s/g, '-')}`;
+                radioInput.className = 'hidden';
+
+                const label = document.createElement('label');
+                label.htmlFor = `option-${option.replace(/\s/g, '-')}`;
+                label.textContent = option;
+                label.className = `block cursor-pointer px-6 py-4 text-lg md:text-xl rounded-full border-2 border-gray-300 transition-colors duration-300 text-gray-800 hover:bg-gray-100 hover:border-gray-400`;
+
+                if (userAnswers[index] === option) {
+                    radioInput.checked = true;
+                }
+
+                radioInput.addEventListener('change', (e) => {
+                    userAnswers[index] = e.target.value;
+                });
+
+                optionWrapper.appendChild(radioInput);
+                optionWrapper.appendChild(label);
+                optionsContainer.appendChild(optionWrapper);
+            });
+
+            prevButton.disabled = index === 0;
+            if (index === questions.length - 1) {
+                nextButton.classList.add('hidden');
+                submitButton.classList.remove('hidden');
+            } else {
+                nextButton.classList.remove('hidden');
+                submitButton.classList.add('hidden');
+            }
+            
+            const progress = ((index + 1) / questions.length) * 100;
+            progressBar.style.width = `${progress}%`;
+        }
+        
+        nextButton.addEventListener('click', () => {
+            if (currentQuestionIndex < questions.length - 1) {
+                const selectedOption = optionsContainer.querySelector('input[name="answer"]:checked');
+                userAnswers[currentQuestionIndex] = selectedOption ? selectedOption.value : null;
+                currentQuestionIndex++;
+                showQuestion(currentQuestionIndex);
+                resetTimer();
+            }
+        });
+
+        prevButton.addEventListener('click', () => {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                showQuestion(currentQuestionIndex);
+                resetTimer();
+            }
+        });
+
+        function calculateScore() {
+            let correctAnswers = 0;
+            questions.forEach((question, index) => {
+                const userAnswer = userAnswers[index];
+                if (userAnswer === question.answer) {
+                    correctAnswers++;
+                }
+            });
+            score = correctAnswers;
+            showResults();
+        }
+
+        submitButton.addEventListener('click', () => {
+            const selectedOption = optionsContainer.querySelector('input[name="answer"]:checked');
+            userAnswers[currentQuestionIndex] = selectedOption ? selectedOption.value : null;
+            clearInterval(timerInterval);
+            calculateScore();
+        });
+
+        function showResults() {
+            testContainer.classList.add('hidden');
+            resultsContainer.classList.remove('hidden');
+            scoreElement.textContent = `${score} / ${questions.length}`;
+
+            const percentage = (score / questions.length) * 100;
+            let guidanceMessage = "";
+            let recommendedMajorsMessage = "";
+
+            if (percentage >= 80) {
+                guidanceMessage = "เยี่ยมมาก! คุณมีความเข้าใจในหลักการของระบบขนส่งและโลจิสติกส์อย่างยอดเยี่ยม คุณมีแนวโน้มที่จะประสบความสำเร็จในสาขาที่ต้องใช้ความรู้เชิงบูรณาการเช่นนี้";
+                recommendedMajorsMessage = `จากคะแนนของคุณ (${score}/${questions.length}) คุณเหมาะสมอย่างยิ่งสำหรับสาขา <span class="font-bold text-pink-600">ช่างเทคนิคและระบบขนส่งทางราง</span> และ <span class="font-bold text-pink-600">โลจิสติกส์</span>`;
+                confetti({
+                    particleCount: 150,
+                    spread: 180,
+                    origin: { y: 0.6 }
+                });
+            } else if (percentage >= 50) {
+                guidanceMessage = "ดีมาก! คุณมีความเข้าใจพื้นฐานที่ดีในสาขาขนส่งและโลจิสติกส์ แต่ยังสามารถพัฒนาความรู้เชิงลึกและทักษะการแก้ปัญหาให้ดียิ่งขึ้นได้";
+                recommendedMajorsMessage = `คะแนนของคุณ (${score}/${questions.length}) แสดงว่าคุณมีความสนใจในสายงานนี้ ลองพิจารณาสาขา <span class="font-bold text-pink-600">ช่างเทคนิคและระบบขนส่งทางราง</span> และ <span class="font-bold text-pink-600">โลจิสติกส์</span> และฝึกฝนทักษะให้มากขึ้นนะครับ`;
+            } else {
+                guidanceMessage = "ไม่ต้องกังวลไปครับ! แบบทดสอบนี้เป็นเพียงส่วนหนึ่งในการสำรวจตัวเอง หากคุณมีความสนใจในสาขานี้จริง คุณสามารถพัฒนาความถนัดด้านนี้ได้ด้วยการศึกษาและฝึกฝนอย่างต่อเนื่อง";
+                recommendedMajorsMessage = `คะแนนของคุณ (${score}/${questions.length}) แสดงว่านี่อาจไม่ใช่ความถนัดหลักของคุณในตอนนี้ แต่ถ้าคุณยังสนใจในสายงานนี้ ควรเน้นการศึกษาและฝึกฝนทักษะด้าน <span class="font-bold text-pink-600">การวางแผนเส้นทาง, การจัดการสินค้าคงคลัง, และการวิเคราะห์ต้นทุน</span> เพื่อเพิ่มศักยภาพของตัวเองครับ`;
+            }
+
+            guidanceTextElement.innerHTML = guidanceMessage;
+            recommendedMajorsTextElement.innerHTML = recommendedMajorsMessage;
+
+            reviewList.innerHTML = '';
+            questions.forEach((question, index) => {
+                const userAnswer = userAnswers[index];
+                const isCorrect = userAnswer === question.answer;
+                const reviewItem = document.createElement('div');
+                reviewItem.className = `p-4 rounded-xl border ${isCorrect ? 'border-green-400 bg-green-50' : 'border-red-400 bg-red-50'}`;
+                reviewItem.innerHTML = `
+                    <div class="flex items-center space-x-2 mb-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 ${isCorrect ? 'text-green-600' : 'text-red-600'}">
+                            ${isCorrect
+                                ? `<path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd" />`
+                                : `<path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm-1.72 6.97a.75.75 0 10-1.06 1.06L10.94 12l-1.72 1.72a.75.75 0 101.06 1.06L12 13.06l1.72 1.72a.75.75 0 101.06-1.06L13.06 12l1.72-1.72a.75.75 0 10-1.06-1.06L12 10.94l-1.72-1.72z" clip-rule="evenodd" />`}
+                        </svg>
+                        <p class="font-semibold text-lg md:text-xl">ข้อที่ ${index + 1}: ${question.question}</p>
+                    </div>
+                    <p class="mb-1 text-base md:text-lg">
+                        <span class="font-medium">คำตอบของคุณ:</span> <span class="${isCorrect ? 'text-green-600' : 'text-red-600'} font-bold">${userAnswer || 'ไม่ได้ตอบ'}</span>
+                    </p>
+                    <p class="text-base md:text-lg">
+                        <span class="font-medium">คำตอบที่ถูกต้อง:</span> <span class="text-gray-800 font-bold">${question.answer}</span>
+                    </p>
+                    ${question.explanation ? `<p class="mt-2 text-sm md:text-base text-gray-600"><strong>เหตุผล:</strong> ${question.explanation}</p>` : ''}
+                `;
+                reviewList.appendChild(reviewItem);
+            });
+        }
+
+        startButton.addEventListener('click', () => {
+            splashScreen.classList.add('hidden');
+            testContainer.classList.remove('hidden');
+            userAnswers = Array(questions.length).fill(null);
+            currentQuestionIndex = 0;
+            showQuestion(currentQuestionIndex);
+            resetTimer();
+        });
+
+        retakeButton.addEventListener('click', () => {
+            resultsContainer.classList.add('hidden');
+            splashScreen.classList.remove('hidden');
+        });
+
+        // แก้ไขให้ไปที่ index.html
+        leaveButtonSplash.addEventListener('click', () => {
+            window.location.href = 'index.html';
+        });
+
+        // แก้ไขให้ไปที่ index.html
+        exitButton.addEventListener('click', () => {
+            window.location.href = 'index.html';
+        });
+    </script>
+</body>
+</html>

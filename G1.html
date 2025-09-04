@@ -1,0 +1,1748 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎮 Garage Master Challenge</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+        
+        body {
+            font-family: 'Orbitron', monospace;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            overflow-x: hidden;
+        }
+        
+        .neon-text {
+            text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff, 0 0 30px #00ffff;
+        }
+        
+        .neon-border {
+            box-shadow: 0 0 15px #ff6b35, 0 0 30px #ff6b35;
+            border: 2px solid #ff6b35;
+        }
+        
+        .car-shake {
+            animation: shake 0.5s ease-in-out;
+        }
+        
+        .smoke-effect {
+            animation: smoke 2s ease-out;
+        }
+        
+        .success-glow {
+            animation: successGlow 1s ease-in-out;
+        }
+        
+        .countdown-pulse {
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        
+        @keyframes smoke {
+            0% { opacity: 0; transform: scale(0.5); }
+            50% { opacity: 1; transform: scale(1.2); }
+            100% { opacity: 0; transform: scale(2); }
+        }
+        
+        @keyframes successGlow {
+            0% { box-shadow: 0 0 5px #00ff00; }
+            50% { box-shadow: 0 0 25px #00ff00, 0 0 50px #00ff00; }
+            100% { box-shadow: 0 0 5px #00ff00; }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        .racing-stripes {
+            background: repeating-linear-gradient(
+                45deg,
+                #ff6b35,
+                #ff6b35 10px,
+                #ffa500 10px,
+                #ffa500 20px
+            );
+        }
+        
+        .engine-part {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .engine-part:hover {
+            transform: scale(1.1);
+            filter: brightness(1.2);
+        }
+        
+        .customer-queue {
+            background: linear-gradient(90deg, #2d3748 0%, #4a5568 100%);
+        }
+    </style>
+</head>
+<body class="min-h-screen text-white">
+    <!-- Main Game Container -->
+    <div id="gameContainer" class="container mx-auto px-4 py-6">
+        
+        <!-- Start Screen -->
+        <div id="startScreen" class="text-center min-h-screen flex flex-col justify-center">
+            <div class="mb-8">
+                <h1 class="text-7xl font-black neon-text mb-6 animate-pulse">🎮 GARAGE MASTER CHALLENGE</h1>
+                <div class="racing-stripes h-4 w-full rounded-full mb-6 animate-pulse"></div>
+                <p class="text-2xl text-cyan-300 mb-4">พิสูจน์ฝีมือช่างยนต์ระดับโปร! 🔧⚡</p>
+                <p class="text-lg text-yellow-400 mb-8">⚠️ เกมนี้ยากมาก! เตรียมตัวให้พร้อม!</p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-6 mb-8 max-w-4xl mx-auto">
+                <div class="bg-gradient-to-br from-red-900/70 to-orange-900/70 rounded-xl p-6 neon-border">
+                    <div class="text-5xl mb-4">🏁</div>
+                    <h3 class="text-xl font-bold text-orange-300">PIT STOP HELL</h3>
+                    <p class="text-sm text-gray-300">15 วินาที | 6 งาน | ความผิดพลาดไม่ได้!</p>
+                </div>
+                <div class="bg-gradient-to-br from-blue-900/70 to-purple-900/70 rounded-xl p-6 neon-border">
+                    <div class="text-5xl mb-4">🔧</div>
+                    <h3 class="text-xl font-bold text-blue-300">ENGINE NIGHTMARE</h3>
+                    <p class="text-sm text-gray-300">3 ชีวิต | ปัญหาซับซ้อน | เลือกผิดระเบิด!</p>
+                </div>
+                <div class="bg-gradient-to-br from-green-900/70 to-teal-900/70 rounded-xl p-6 neon-border">
+                    <div class="text-5xl mb-4">👔</div>
+                    <h3 class="text-xl font-bold text-green-300">CHAOS MANAGER</h3>
+                    <p class="text-sm text-gray-300">10 ลูกค้า | ความพึงพอใจ 90%+ | เวลาจำกัด!</p>
+                </div>
+            </div>
+            
+            <button onclick="showMissionSelect()" class="bg-gradient-to-r from-red-600 via-orange-600 to-yellow-600 hover:from-red-700 hover:via-orange-700 hover:to-yellow-700 px-12 py-6 rounded-2xl text-3xl font-black transition-all hover:scale-110 neon-border animate-bounce">
+                🚀 เริ่มเกม HARDCORE!
+            </button>
+            
+            <div class="mt-8 text-center">
+                <div class="text-sm text-gray-400 mb-2">สถิติผู้เล่นทั่วโลก:</div>
+                <div class="flex justify-center space-x-8 text-xs">
+                    <span class="text-red-400">🔥 ผ่านได้: 12%</span>
+                    <span class="text-yellow-400">⚡ คะแนนเฉลี่ย: 45/300</span>
+                    <span class="text-green-400">👑 ระดับโปร: 3%</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mission Selection Screen -->
+        <div id="missionSelect" class="hidden grid md:grid-cols-3 gap-6 mb-8">
+            <div class="neon-border rounded-xl p-6 bg-gradient-to-br from-red-900/50 to-orange-900/50 cursor-pointer hover:scale-105 transition-all" onclick="startMission(1)">
+                <div class="text-center">
+                    <div class="text-4xl mb-4">🏁</div>
+                    <h3 class="text-2xl font-bold text-orange-300 mb-2">PIT STOP SPEED</h3>
+                    <p class="text-sm text-gray-300">เปลี่ยนยาง เติมน้ำมัน ตรวจเบรก</p>
+                    <p class="text-xs text-yellow-400 mt-2">⚡ ความเร็ว + ความแม่นยำ</p>
+                </div>
+            </div>
+            
+            <div class="neon-border rounded-xl p-6 bg-gradient-to-br from-blue-900/50 to-purple-900/50 cursor-pointer hover:scale-105 transition-all" onclick="startMission(2)">
+                <div class="text-center">
+                    <div class="text-4xl mb-4">🔧</div>
+                    <h3 class="text-2xl font-bold text-blue-300 mb-2">ENGINE SURGERY</h3>
+                    <p class="text-sm text-gray-300">วินิจฉัยและซ่อมเครื่องยนต์</p>
+                    <p class="text-xs text-yellow-400 mt-2">🧠 การวิเคราะห์ + ทักษะซ่อม</p>
+                </div>
+            </div>
+            
+            <div class="neon-border rounded-xl p-6 bg-gradient-to-br from-green-900/50 to-teal-900/50 cursor-pointer hover:scale-105 transition-all" onclick="startMission(3)">
+                <div class="text-center">
+                    <div class="text-4xl mb-4">👔</div>
+                    <h3 class="text-2xl font-bold text-green-300 mb-2">GARAGE MANAGER</h3>
+                    <p class="text-sm text-gray-300">บริหารศูนย์บริการ</p>
+                    <p class="text-xs text-yellow-400 mt-2">📊 การจัดการ + บริการ</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mission 1: Pit Stop Hell -->
+        <div id="mission1" class="hidden">
+            <div class="text-center mb-6">
+                <h2 class="text-3xl font-bold text-orange-300 mb-2">🏁 PIT STOP HELL MODE</h2>
+                <div class="flex justify-center space-x-8 mb-4">
+                    <div class="text-center">
+                        <div id="countdown1" class="text-4xl font-black text-red-400 countdown-pulse">15</div>
+                        <div class="text-sm">เวลา (วิ)</div>
+                    </div>
+                    <div class="text-center">
+                        <div id="lives1" class="text-4xl font-black text-green-400">❤️❤️❤️</div>
+                        <div class="text-sm">ชีวิต</div>
+                    </div>
+                    <div class="text-center">
+                        <div id="combo1" class="text-4xl font-black text-yellow-400">0</div>
+                        <div class="text-sm">คอมโบ</div>
+                    </div>
+                </div>
+                <div class="text-lg text-red-400 animate-pulse">⚠️ ทำผิดลำดับ = เสียชีวิต!</div>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- Race Car -->
+                <div class="text-center">
+                    <div id="raceCar" class="text-8xl mb-4">🏎️</div>
+                    <div class="bg-gray-800 rounded-lg p-4">
+                        <h3 class="text-xl font-bold text-yellow-300 mb-4">ลำดับงาน (ต้องทำตามลำดับ!):</h3>
+                        <div class="space-y-2" id="taskList1">
+                            <div id="task1" class="flex items-center justify-between p-2 bg-red-900/50 rounded">
+                                <span>1️⃣ ยกรถ</span>
+                                <span class="text-red-400">❌</span>
+                            </div>
+                            <div id="task2" class="flex items-center justify-between p-2 bg-red-900/50 rounded">
+                                <span>2️⃣ ถอดยางเก่า</span>
+                                <span class="text-red-400">❌</span>
+                            </div>
+                            <div id="task3" class="flex items-center justify-between p-2 bg-red-900/50 rounded">
+                                <span>3️⃣ ใส่ยางใหม่</span>
+                                <span class="text-red-400">❌</span>
+                            </div>
+                            <div id="task4" class="flex items-center justify-between p-2 bg-red-900/50 rounded">
+                                <span>4️⃣ เติมน้ำมัน</span>
+                                <span class="text-red-400">❌</span>
+                            </div>
+                            <div id="task5" class="flex items-center justify-between p-2 bg-red-900/50 rounded">
+                                <span>5️⃣ ตรวจเบรก</span>
+                                <span class="text-red-400">❌</span>
+                            </div>
+                            <div id="task6" class="flex items-center justify-between p-2 bg-red-900/50 rounded">
+                                <span>6️⃣ ลดรถ</span>
+                                <span class="text-red-400">❌</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Tools -->
+                <div>
+                    <h3 class="text-xl font-bold text-cyan-300 mb-4 text-center">เครื่องมือช่าง (คลิกให้ถูกลำดับ!)</h3>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button onclick="performTask(1)" class="bg-purple-600 hover:bg-purple-700 p-4 rounded-xl text-lg font-bold transition-all hover:scale-105">
+                            🏗️ ยกรถ
+                        </button>
+                        <button onclick="performTask(2)" class="bg-red-600 hover:bg-red-700 p-4 rounded-xl text-lg font-bold transition-all hover:scale-105">
+                            🔧 ถอดยาง
+                        </button>
+                        <button onclick="performTask(3)" class="bg-orange-600 hover:bg-orange-700 p-4 rounded-xl text-lg font-bold transition-all hover:scale-105">
+                            🛞 ใส่ยางใหม่
+                        </button>
+                        <button onclick="performTask(4)" class="bg-blue-600 hover:bg-blue-700 p-4 rounded-xl text-lg font-bold transition-all hover:scale-105">
+                            ⛽ เติมน้ำมัน
+                        </button>
+                        <button onclick="performTask(5)" class="bg-yellow-600 hover:bg-yellow-700 p-4 rounded-xl text-lg font-bold transition-all hover:scale-105">
+                            🛑 ตรวจเบรก
+                        </button>
+                        <button onclick="performTask(6)" class="bg-green-600 hover:bg-green-700 p-4 rounded-xl text-lg font-bold transition-all hover:scale-105">
+                            ⬇️ ลดรถ
+                        </button>
+                    </div>
+                    <button onclick="finishPitStop()" class="w-full mt-4 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 p-4 rounded-xl text-xl font-bold transition-all hover:scale-105">
+                        🏁 ส่งรถออกแข่ง!
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mission 2: Engine Nightmare -->
+        <div id="mission2" class="hidden">
+            <div class="text-center mb-6">
+                <h2 class="text-3xl font-bold text-blue-300 mb-2">🔧 ENGINE NIGHTMARE MODE</h2>
+                <div class="flex justify-center space-x-8 mb-4">
+                    <div class="text-center">
+                        <div id="lives2" class="text-4xl font-black text-red-400">💀💀💀</div>
+                        <div class="text-sm">ชีวิต</div>
+                    </div>
+                    <div class="text-center">
+                        <div id="round2" class="text-4xl font-black text-yellow-400">1/5</div>
+                        <div class="text-sm">รอบ</div>
+                    </div>
+                    <div class="text-center">
+                        <div id="timer2" class="text-4xl font-black text-green-400">10</div>
+                        <div class="text-sm">วินาที</div>
+                    </div>
+                </div>
+                <div id="engineProblem" class="text-xl text-red-400 mb-4 animate-pulse">🚗💨 เครื่องมีควันดำ!</div>
+                <div class="text-sm text-yellow-400">⚠️ เลือกผิด = ระเบิด! เลือกช้า = เสียชีวิต!</div>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- Engine Display -->
+                <div class="text-center">
+                    <div id="engineDisplay" class="text-8xl mb-4">🚗</div>
+                    <div id="engineStatus" class="text-2xl text-red-400">เครื่องยนต์เสีย!</div>
+                    <div id="smokeEffect" class="text-4xl opacity-0">💨💨💨</div>
+                    <div id="explosionEffect" class="text-6xl opacity-0">💥🔥💥</div>
+                    
+                    <!-- Diagnostic Info -->
+                    <div class="bg-gray-800 rounded-lg p-4 mt-4">
+                        <h4 class="text-lg font-bold text-cyan-300 mb-2">อาการที่พบ:</h4>
+                        <div id="symptoms" class="text-sm text-gray-300 space-y-1">
+                            <div>🔊 เสียงเครื่องผิดปกติ</div>
+                            <div>💨 ควันสีดำออกท่อไอเสีย</div>
+                            <div>⛽ สิ้นเปลืองน้ำมัน</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Parts Selection -->
+                <div>
+                    <h3 class="text-xl font-bold text-cyan-300 mb-4 text-center">เลือกอะไหล่ที่ถูกต้อง (เร็ว!)</h3>
+                    <div class="grid grid-cols-3 gap-3" id="engineParts">
+                        <div class="engine-part bg-gray-700 p-3 rounded-xl text-center cursor-pointer hover:bg-gray-600" onclick="selectPart('airFilter')">
+                            <div class="text-2xl mb-1">🌪️</div>
+                            <div class="text-xs">กรองอากาศ</div>
+                        </div>
+                        <div class="engine-part bg-gray-700 p-3 rounded-xl text-center cursor-pointer hover:bg-gray-600" onclick="selectPart('sparkPlug')">
+                            <div class="text-2xl mb-1">⚡</div>
+                            <div class="text-xs">หัวเทียน</div>
+                        </div>
+                        <div class="engine-part bg-gray-700 p-3 rounded-xl text-center cursor-pointer hover:bg-gray-600" onclick="selectPart('gasket')">
+                            <div class="text-2xl mb-1">⭕</div>
+                            <div class="text-xs">ปะเก็น</div>
+                        </div>
+                        <div class="engine-part bg-gray-700 p-3 rounded-xl text-center cursor-pointer hover:bg-gray-600" onclick="selectPart('oilFilter')">
+                            <div class="text-2xl mb-1">🛢️</div>
+                            <div class="text-xs">กรองน้ำมัน</div>
+                        </div>
+                        <div class="engine-part bg-gray-700 p-3 rounded-xl text-center cursor-pointer hover:bg-gray-600" onclick="selectPart('fuelPump')">
+                            <div class="text-2xl mb-1">⛽</div>
+                            <div class="text-xs">ปั๊มน้ำมัน</div>
+                        </div>
+                        <div class="engine-part bg-gray-700 p-3 rounded-xl text-center cursor-pointer hover:bg-gray-600" onclick="selectPart('radiator')">
+                            <div class="text-2xl mb-1">🌡️</div>
+                            <div class="text-xs">หม้อน้ำ</div>
+                        </div>
+                        <div class="engine-part bg-gray-700 p-3 rounded-xl text-center cursor-pointer hover:bg-gray-600" onclick="selectPart('battery')">
+                            <div class="text-2xl mb-1">🔋</div>
+                            <div class="text-xs">แบตเตอรี่</div>
+                        </div>
+                        <div class="engine-part bg-gray-700 p-3 rounded-xl text-center cursor-pointer hover:bg-gray-600" onclick="selectPart('alternator')">
+                            <div class="text-2xl mb-1">⚙️</div>
+                            <div class="text-xs">ไดนาโม</div>
+                        </div>
+                        <div class="engine-part bg-gray-700 p-3 rounded-xl text-center cursor-pointer hover:bg-gray-600" onclick="selectPart('timing')">
+                            <div class="text-2xl mb-1">⏰</div>
+                            <div class="text-xs">สายพาน</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mission 3: Chaos Manager -->
+        <div id="mission3" class="hidden">
+            <div class="text-center mb-6">
+                <h2 class="text-3xl font-bold text-green-300 mb-2">👔 CHAOS MANAGER MODE</h2>
+                <div class="flex justify-center space-x-6 mb-4">
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-yellow-400" id="satisfaction">😊 100%</div>
+                        <div class="text-sm">ความพึงพอใจ</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-green-400" id="revenue">💰 0</div>
+                        <div class="text-sm">รายได้</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-red-400" id="timeLeft3">120</div>
+                        <div class="text-sm">เวลาเหลือ (วิ)</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-purple-400" id="served">0/10</div>
+                        <div class="text-sm">ลูกค้าที่บริการ</div>
+                    </div>
+                </div>
+                <div class="text-lg text-red-400 animate-pulse">⚠️ เป้าหมาย: บริการ 10 คน | ความพึงพอใจ 90%+ | 2 นาที!</div>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- Customer Queue -->
+                <div>
+                    <h3 class="text-xl font-bold text-cyan-300 mb-4">คิวลูกค้า (คลิกเพื่อจัดคิว)</h3>
+                    <div id="customerQueue" class="space-y-2 max-h-96 overflow-y-auto">
+                        <!-- Customers will be added here -->
+                    </div>
+                    
+                    <!-- Emergency Alerts -->
+                    <div id="emergencyAlerts" class="mt-4 space-y-2">
+                        <!-- Emergency situations will appear here -->
+                    </div>
+                </div>
+                
+                <!-- Service Bays -->
+                <div>
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-bold text-cyan-300">ศูนย์บริการ</h3>
+                        <div class="text-sm text-gray-400">คลิกลูกค้าแล้วคลิกช่องว่าง</div>
+                    </div>
+                    
+                    <!-- Service Bays Grid -->
+                    <div id="serviceBays" class="grid grid-cols-2 gap-2 mb-4">
+                        <!-- Bays will be generated dynamically -->
+                    </div>
+                    
+                    <!-- Fuel Station -->
+                    <div class="mb-4">
+                        <h4 class="text-lg font-bold text-yellow-400 mb-2">⛽ สถานีเติมน้ำมัน</h4>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div id="fuel1" class="bg-yellow-900/50 p-3 rounded-xl text-center min-h-16 flex items-center justify-center cursor-pointer hover:bg-yellow-800/50" onclick="selectFuelStation(0)">
+                                <span class="text-gray-400">ปั๊ม 1 (ว่าง)</span>
+                            </div>
+                            <div id="fuel2" class="bg-yellow-900/50 p-3 rounded-xl text-center min-h-16 flex items-center justify-center cursor-pointer hover:bg-yellow-800/50" onclick="selectFuelStation(1)">
+                                <span class="text-gray-400">ปั๊ม 2 (ว่าง)</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Expansion Options -->
+                    <div class="mb-4 space-y-2">
+                        <button onclick="buyServiceBay()" id="buyBayBtn" class="w-full bg-green-600 hover:bg-green-700 p-2 rounded-xl text-sm font-bold transition-all">
+                            🏗️ ซื้อช่องซ่อมเพิ่ม (1,500฿)
+                        </button>
+                        <button onclick="buyFuelStation()" id="buyFuelBtn" class="w-full bg-yellow-600 hover:bg-yellow-700 p-2 rounded-xl text-sm font-bold transition-all">
+                            ⛽ ซื้อปั๊มน้ำมันเพิ่ม (2,000฿)
+                        </button>
+                    </div>
+                    
+                    <!-- Special Actions -->
+                    <div class="space-y-2">
+                        <button onclick="hireExtraStaff()" id="hireBtn" class="w-full bg-purple-600 hover:bg-purple-700 p-2 rounded-xl text-sm font-bold transition-all">
+                            👷 จ้างช่างเพิ่ม (800฿)
+                        </button>
+                        <button onclick="rushService()" id="rushBtn" class="w-full bg-red-600 hover:bg-red-700 p-2 rounded-xl text-sm font-bold transition-all">
+                            🚨 โหมดด่วนพิเศษ (500฿)
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Screen -->
+        <div id="results" class="hidden text-center min-h-screen flex flex-col justify-center">
+            <div class="mb-8">
+                <h2 class="text-5xl font-black neon-text mb-6 animate-pulse">🏆 GARAGE MASTER RESULTS</h2>
+                <div class="racing-stripes h-3 w-full rounded-full mb-6"></div>
+            </div>
+            
+            <!-- Score Breakdown -->
+            <div class="grid md:grid-cols-3 gap-6 mb-8 max-w-4xl mx-auto">
+                <div class="bg-gradient-to-br from-red-900/70 to-orange-900/70 rounded-xl p-6 neon-border">
+                    <div class="text-4xl mb-2">🏁</div>
+                    <h3 class="text-xl font-bold text-orange-300 mb-2">PIT STOP</h3>
+                    <div id="score1" class="text-3xl font-black text-white">0</div>
+                    <div class="text-sm text-gray-300">/ 100 แต้ม</div>
+                </div>
+                <div class="bg-gradient-to-br from-blue-900/70 to-purple-900/70 rounded-xl p-6 neon-border">
+                    <div class="text-4xl mb-2">🔧</div>
+                    <h3 class="text-xl font-bold text-blue-300 mb-2">ENGINE</h3>
+                    <div id="score2" class="text-3xl font-black text-white">0</div>
+                    <div class="text-sm text-gray-300">/ 100 แต้ม</div>
+                </div>
+                <div class="bg-gradient-to-br from-green-900/70 to-teal-900/70 rounded-xl p-6 neon-border">
+                    <div class="text-4xl mb-2">👔</div>
+                    <h3 class="text-xl font-bold text-green-300 mb-2">MANAGER</h3>
+                    <div id="score3" class="text-3xl font-black text-white">0</div>
+                    <div class="text-sm text-gray-300">/ 100 แต้ม</div>
+                </div>
+            </div>
+            
+            <!-- Total Score -->
+            <div class="mb-8">
+                <div class="text-2xl text-gray-400 mb-2">คะแนนรวม</div>
+                <div id="finalScore" class="text-8xl font-black neon-text mb-4">0</div>
+                <div class="text-xl text-gray-300">/ 300 แต้ม</div>
+                <div id="rank" class="text-3xl font-bold mt-4">🥉 มือใหม่</div>
+            </div>
+            
+            <!-- Career Recommendation -->
+            <div id="recommendation" class="bg-gradient-to-r from-purple-900/70 to-pink-900/70 rounded-2xl p-8 mb-8 max-w-2xl mx-auto neon-border">
+                <h3 class="text-3xl font-bold mb-6 neon-text">🎯 เส้นทางอาชีพที่เหมาะกับคุณ</h3>
+                <div id="careerPath" class="text-xl mb-4"></div>
+                <div id="careerDescription" class="text-sm text-gray-300 mb-4"></div>
+                <div id="salaryRange" class="text-lg font-bold text-green-400"></div>
+            </div>
+            
+            <!-- Achievement Badges -->
+            <div id="achievements" class="mb-8">
+                <h3 class="text-2xl font-bold text-yellow-400 mb-4">🏅 ความสำเร็จที่ปลดล็อค</h3>
+                <div id="badgeList" class="flex justify-center space-x-4 flex-wrap">
+                    <!-- Badges will be added here -->
+                </div>
+            </div>
+            
+            <!-- Global Stats -->
+            <div class="bg-gray-800/50 rounded-xl p-6 mb-8 max-w-2xl mx-auto">
+                <h3 class="text-xl font-bold text-cyan-300 mb-4">📊 เปรียบเทียบกับผู้เล่นทั่วโลก</h3>
+                <div class="grid grid-cols-3 gap-4 text-sm">
+                    <div class="text-center">
+                        <div id="percentile" class="text-2xl font-bold text-yellow-400">50%</div>
+                        <div class="text-gray-400">เปอร์เซ็นไทล์</div>
+                    </div>
+                    <div class="text-center">
+                        <div id="betterThan" class="text-2xl font-bold text-green-400">50%</div>
+                        <div class="text-gray-400">ดีกว่า</div>
+                    </div>
+                    <div class="text-center">
+                        <div id="worldRank" class="text-2xl font-bold text-purple-400">#5000</div>
+                        <div class="text-gray-400">อันดับโลก</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="space-y-4">
+                <button onclick="restartGame()" class="bg-gradient-to-r from-red-600 via-orange-600 to-yellow-600 hover:from-red-700 hover:via-orange-700 hover:to-yellow-700 px-12 py-4 rounded-2xl text-2xl font-black transition-all hover:scale-110 neon-border">
+                    🔄 เล่นใหม่ (HARDCORE!)
+                </button>
+                <div class="text-sm text-gray-400">
+                    💡 เคล็ดลับ: เล่นซ้ำเพื่อปรับปรุงคะแนนและปลดล็อคความสำเร็จใหม่!
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let gameState = {
+            currentMission: 0,
+            scores: { pitStop: 0, engine: 0, manager: 0 },
+            mission1: { 
+                tasks: [false, false, false, false, false, false], 
+                timeLeft: 15, 
+                timer: null, 
+                lives: 3, 
+                combo: 0, 
+                currentTask: 0 
+            },
+            mission2: { 
+                currentProblem: 'smoke', 
+                solved: false, 
+                lives: 3, 
+                round: 1, 
+                timeLeft: 10, 
+                timer: null,
+                problems: []
+            },
+            mission3: { 
+                customers: [], 
+                satisfaction: 100, 
+                revenue: 0, 
+                bays: [null, null], 
+                fuelStations: [null, null],
+                timeLeft: 120, 
+                served: 0, 
+                selectedCustomer: null,
+                extraStaff: false,
+                rushMode: false,
+                timer: null,
+                customerTimer: null,
+                emergencyTimer: null,
+                totalBays: 6,
+                activeBays: 2,
+                mechanicAnimations: {}
+            }
+        };
+
+        const engineProblems = {
+            smoke: { 
+                description: '🚗💨 เครื่องมีควันดำ!', 
+                solution: 'airFilter', 
+                symptoms: ['🔊 เสียงเครื่องผิดปกติ', '💨 ควันสีดำออกท่อไอเสีย', '⛽ สิ้นเปลืองน้ำมัน', '🌪️ อากาศเข้าไม่พอ']
+            },
+            noStart: { 
+                description: '🚗❌ เครื่องสตาร์ทไม่ติด!', 
+                solution: 'sparkPlug', 
+                symptoms: ['🔋 แบตเตอรี่ปกติ', '⚡ ไฟหน้าสว่างปกติ', '🔧 เสียงคลิกเมื่อสตาร์ท', '⚡ ไม่มีประกายไฟ']
+            },
+            oilLeak: { 
+                description: '🚗🛢️ น้ำมันรั่วมาก!', 
+                solution: 'gasket', 
+                symptoms: ['🛢️ คราบน้ำมันใต้รถ', '🌡️ เครื่องร้อนเกิน', '💧 ระดับน้ำมันลดเร็ว', '⭕ ซีลเสื่อมสภาพ']
+            },
+            overHeat: { 
+                description: '🚗🌡️ เครื่องร้อนเกินมาก!', 
+                solution: 'radiator', 
+                symptoms: ['🌡️ เข็มวัดอุณหภูมิแดง', '💨 ไอน้ำออกจากฝากระโปรง', '💧 น้ำหล่อเย็นลด', '🌡️ หม้อน้ำร้อนจัด']
+            },
+            electrical: { 
+                description: '🚗⚡ ระบบไฟฟ้าเสียหมด!', 
+                solution: 'alternator', 
+                symptoms: ['💡 ไฟแดชบอร์ดติดแดง', '🔋 แบตหมดเร็วมาก', '💡 ไฟหน้าสลัวมาก', '⚙️ ไดนาโมไม่ชาร์จ']
+            },
+            timing: { 
+                description: '🚗⏰ จังหวะเครื่องผิดมาก!', 
+                solution: 'timing', 
+                symptoms: ['🔊 เสียงเครื่องดังผิดปกติ', '⚡ เครื่องสั่นรุนแรง', '💨 ควันขาวออกท่อไอเสีย', '⏰ ลิ้นไม่ตรงจังหวะ']
+            },
+            fuelSystem: {
+                description: '🚗⛽ ระบบน้ำมันเสีย!',
+                solution: 'fuelPump',
+                symptoms: ['⛽ เครื่องดับเมื่อเร่ง', '🔊 เสียงปั๊มน้ำมันดัง', '⚡ เครื่องสะดุด', '⛽ ปั๊มไม่ส่งน้ำมัน']
+            },
+            oilSystem: {
+                description: '🚗🛢️ ระบบน้ำมันเครื่องเสีย!',
+                solution: 'oilFilter',
+                symptoms: ['🛢️ น้ำมันสกปรก', '🔊 เสียงเครื่องดังผิดปกติ', '⚡ เครื่องร้อนเกิน', '🛢️ กรองน้ำมันอุดตัน']
+            },
+            batteryDead: {
+                description: '🚗🔋 แบตเตอรี่หมดเปล่า!',
+                solution: 'battery',
+                symptoms: ['🔋 ไฟไม่ติดเลย', '💡 ไฟหน้าไม่สว่าง', '🔧 ไม่มีเสียงสตาร์ท', '🔋 แบตอายุมาก']
+            }
+        };
+
+        const customerTypes = [
+            { name: 'คุณสมชาย', problem: '🚗❌ รถไม่ติดตอนเช้า', time: 15, payment: 500, type: 'repair' },
+            { name: 'คุณมาลี', problem: '🛑🔊 เบรกมีเสียงดัง', time: 20, payment: 800, type: 'repair' },
+            { name: 'คุณสมศักดิ์', problem: '💡❌ ไฟหน้าดับ', time: 10, payment: 300, type: 'repair' },
+            { name: 'คุณนิดา', problem: '🌡️🔥 เครื่องร้อนเกิน', time: 25, payment: 1200, type: 'repair' },
+            { name: 'คุณประยุทธ์', problem: '🔧⚙️ เปลี่ยนน้ำมันเครื่อง', time: 12, payment: 400, type: 'repair' },
+            { name: 'คุณสุดา', problem: '🛞🔄 เปลี่ยนยางรถ', time: 18, payment: 600, type: 'repair' },
+            { name: 'คุณวิชัย', problem: '⛽🚗 เติมน้ำมัน 95', time: 5, payment: 200, type: 'fuel' },
+            { name: 'คุณอรุณ', problem: '⛽🚛 เติมดีเซล', time: 7, payment: 300, type: 'fuel' },
+            { name: 'คุณสมหญิง', problem: '⛽⚡ เติมน้ำมัน + ตรวจลม', time: 8, payment: 250, type: 'fuel' },
+            { name: 'คุณบุญมี', problem: '⛽🧽 เติมน้ำมัน + ล้างรถ', time: 12, payment: 400, type: 'fuel' }
+        ];
+
+        function showMissionSelect() {
+            document.getElementById('startScreen').classList.add('hidden');
+            document.getElementById('missionSelect').classList.remove('hidden');
+        }
+
+        function startMission(missionNum) {
+            document.getElementById('missionSelect').classList.add('hidden');
+            document.getElementById(`mission${missionNum}`).classList.remove('hidden');
+            gameState.currentMission = missionNum;
+
+            if (missionNum === 1) {
+                startPitStopTimer();
+            } else if (missionNum === 2) {
+                setupEngineChallenge();
+            } else if (missionNum === 3) {
+                startGarageManager();
+            }
+        }
+
+        function startPitStopTimer() {
+            gameState.mission1.timer = setInterval(() => {
+                gameState.mission1.timeLeft--;
+                document.getElementById('countdown1').textContent = gameState.mission1.timeLeft;
+                
+                if (gameState.mission1.timeLeft <= 0) {
+                    clearInterval(gameState.mission1.timer);
+                    endMission1(false);
+                }
+            }, 1000);
+        }
+
+        function performTask(taskNum) {
+            // Check if it's the correct task in sequence
+            if (taskNum - 1 === gameState.mission1.currentTask) {
+                gameState.mission1.tasks[taskNum - 1] = true;
+                gameState.mission1.currentTask++;
+                gameState.mission1.combo++;
+                
+                const taskElement = document.getElementById(`task${taskNum}`);
+                taskElement.classList.remove('bg-red-900/50');
+                taskElement.classList.add('bg-green-900/50', 'success-glow');
+                taskElement.querySelector('span:last-child').innerHTML = '<span class="text-green-400">✅</span>';
+                
+                document.getElementById('combo1').textContent = gameState.mission1.combo;
+                playSound('wrench');
+            } else {
+                // Wrong sequence - lose life
+                gameState.mission1.lives--;
+                gameState.mission1.combo = 0;
+                
+                const livesElement = document.getElementById('lives1');
+                const hearts = '❤️'.repeat(gameState.mission1.lives) + '💔'.repeat(3 - gameState.mission1.lives);
+                livesElement.textContent = hearts;
+                
+                document.getElementById('combo1').textContent = '0';
+                document.getElementById('raceCar').classList.add('car-shake');
+                
+                setTimeout(() => {
+                    document.getElementById('raceCar').classList.remove('car-shake');
+                }, 500);
+                
+                playSound('fail');
+                
+                if (gameState.mission1.lives <= 0) {
+                    clearInterval(gameState.mission1.timer);
+                    endMission1(false);
+                }
+            }
+        }
+
+        function finishPitStop() {
+            const allTasksComplete = gameState.mission1.tasks.every(task => task);
+            if (allTasksComplete) {
+                clearInterval(gameState.mission1.timer);
+                endMission1(true);
+            } else {
+                alert('ยังทำงานไม่เสร็จ! ตรวจสอบงานที่ยังค้างอยู่');
+            }
+        }
+
+        function endMission1(success) {
+            const car = document.getElementById('raceCar');
+            if (success) {
+                gameState.scores.pitStop = Math.max(0, gameState.mission1.timeLeft * 10);
+                car.textContent = '🏎️💨';
+                playSound('cheer');
+                setTimeout(() => {
+                    alert(`🎉 สำเร็จ! คะแนน: ${gameState.scores.pitStop} แต้ม`);
+                    nextMission();
+                }, 1000);
+            } else {
+                car.classList.add('car-shake');
+                car.textContent = '🏎️💥';
+                playSound('fail');
+                setTimeout(() => {
+                    alert('⏰ หมดเวลา! รถแข่งเสียเปรียบ');
+                    nextMission();
+                }, 1000);
+            }
+        }
+
+        function setupEngineChallenge() {
+            // Clear any existing timer first
+            if (gameState.mission2.timer) {
+                clearInterval(gameState.mission2.timer);
+            }
+            
+            // Reset engine display
+            document.getElementById('engineDisplay').textContent = '🚗';
+            document.getElementById('engineStatus').textContent = 'เครื่องยนต์เสีย!';
+            document.getElementById('engineStatus').className = 'text-2xl text-red-400';
+            document.getElementById('smokeEffect').classList.add('opacity-0');
+            document.getElementById('explosionEffect').classList.add('opacity-0');
+            
+            // Enable all parts for clicking
+            document.querySelectorAll('.engine-part').forEach(part => {
+                part.style.pointerEvents = 'auto';
+                part.style.opacity = '1';
+            });
+            
+            const problems = Object.keys(engineProblems);
+            const randomProblem = problems[Math.floor(Math.random() * problems.length)];
+            gameState.mission2.currentProblem = randomProblem;
+            
+            const problem = engineProblems[randomProblem];
+            document.getElementById('engineProblem').textContent = problem.description;
+            
+            // Update symptoms with more detailed info for ปวช.3 level
+            const symptomsDiv = document.getElementById('symptoms');
+            symptomsDiv.innerHTML = '';
+            problem.symptoms.forEach(symptom => {
+                const div = document.createElement('div');
+                div.textContent = symptom;
+                symptomsDiv.appendChild(div);
+            });
+            
+            // Add technical hints for educational value
+            const hintDiv = document.createElement('div');
+            hintDiv.className = 'text-xs text-cyan-400 mt-2 p-2 bg-gray-900/50 rounded';
+            hintDiv.innerHTML = `💡 <strong>เคล็ดลับ:</strong> ${getEducationalHint(randomProblem)}`;
+            symptomsDiv.appendChild(hintDiv);
+            
+            // Start timer - reduced time for more challenge
+            gameState.mission2.timeLeft = Math.max(6, 10 - gameState.mission2.round); // Gets harder each round
+            gameState.mission2.timer = setInterval(() => {
+                gameState.mission2.timeLeft--;
+                document.getElementById('timer2').textContent = gameState.mission2.timeLeft;
+                
+                // Visual urgency effects
+                if (gameState.mission2.timeLeft <= 3) {
+                    document.getElementById('timer2').classList.add('countdown-pulse', 'text-red-500');
+                }
+                
+                if (gameState.mission2.timeLeft <= 0) {
+                    clearInterval(gameState.mission2.timer);
+                    // Time's up - lose life
+                    gameState.mission2.lives--;
+                    updateEngineLives();
+                    showTimeUpEffect();
+                    if (gameState.mission2.lives > 0) {
+                        setTimeout(() => nextEngineRound(), 2000);
+                    } else {
+                        setTimeout(() => endMission2(false), 2000);
+                    }
+                }
+            }, 1000);
+        }
+        
+        function updateEngineLives() {
+            const livesElement = document.getElementById('lives2');
+            const skulls = '💀'.repeat(gameState.mission2.lives) + '☠️'.repeat(3 - gameState.mission2.lives);
+            livesElement.textContent = skulls;
+        }
+        
+        function nextEngineRound() {
+            gameState.mission2.round++;
+            document.getElementById('round2').textContent = `${gameState.mission2.round}/5`;
+            
+            // Add progressive difficulty message
+            let difficultyMsg = '';
+            if (gameState.mission2.round === 2) {
+                difficultyMsg = '⚠️ รอบ 2: เวลาลดลง!';
+            } else if (gameState.mission2.round === 3) {
+                difficultyMsg = '🔥 รอบ 3: ปัญหาซับซ้อนขึ้น!';
+            } else if (gameState.mission2.round === 4) {
+                difficultyMsg = '💀 รอบ 4: โหมดนรก!';
+            } else if (gameState.mission2.round === 5) {
+                difficultyMsg = '👹 รอบสุดท้าย: เซียนเท่านั้นที่รอด!';
+            }
+            
+            if (difficultyMsg) {
+                const alertDiv = document.createElement('div');
+                alertDiv.className = 'fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-red-900/90 p-6 rounded-xl text-center z-50 animate-pulse';
+                alertDiv.innerHTML = `
+                    <div class="text-2xl font-bold text-red-300 mb-2">${difficultyMsg}</div>
+                    <div class="text-sm text-gray-300">เตรียมตัวให้พร้อม!</div>
+                `;
+                document.body.appendChild(alertDiv);
+                
+                setTimeout(() => {
+                    document.body.removeChild(alertDiv);
+                    if (gameState.mission2.round <= 5) {
+                        setupEngineChallenge();
+                    } else {
+                        endMission2(true);
+                    }
+                }, 2000);
+            } else if (gameState.mission2.round <= 5) {
+                setupEngineChallenge();
+            } else {
+                endMission2(true);
+            }
+        }
+
+        function getEducationalHint(problemType) {
+            const hints = {
+                smoke: 'ควันดำ = การเผาไหม้ไม่สมบูรณ์ → ตรวจสอบระบบอากาศเข้า',
+                noStart: 'ไม่ติด + มีไฟ = ปัญหาการจุดระเบิด → ตรวจหัวเทียน',
+                oilLeak: 'น้ำมันรั่ว + ร้อน = ซีลเสีย → เปลี่ยนปะเก็น/ซีล',
+                overHeat: 'ร้อนเกิน + ไอน้ำ = ระบบหล่อเย็นผิดปกติ → ตรวจหม้อน้ำ',
+                electrical: 'ไฟฟ้าเสีย + แบตหมด = ระบบชาร์จผิดปกติ → ตรวจไดนาโม',
+                timing: 'เสียงผิดปกติ + สั่น = จังหวะเครื่องผิด → ตรวจสายพาน',
+                fuelSystem: 'เครื่องดับเมื่อเร่ง = ปั๊มน้ำมันเสีย → ตรวจระบบเชื้อเพลิง',
+                oilSystem: 'น้ำมันสกปรก + เครื่องดัง = กรองน้ำมันอุดตัน → เปลี่ยนกรอง',
+                batteryDead: 'ไฟไม่ติดเลย + ไม่มีเสียง = แบตหมด → เปลี่ยนแบตเตอรี่'
+            };
+            return hints[problemType] || 'วิเคราะห์อาการให้ดี แล้วเลือกชิ้นส่วนที่เกี่ยวข้อง';
+        }
+        
+        function showTimeUpEffect() {
+            const engineDisplay = document.getElementById('engineDisplay');
+            const smokeEffect = document.getElementById('smokeEffect');
+            
+            engineDisplay.textContent = '🚗💨';
+            engineDisplay.classList.add('car-shake');
+            smokeEffect.classList.remove('opacity-0');
+            smokeEffect.classList.add('smoke-effect');
+            document.getElementById('engineStatus').textContent = '⏰ หมดเวลา! ลูกค้าโกรธ!';
+            document.getElementById('engineStatus').className = 'text-2xl text-red-400';
+            
+            // Disable all parts temporarily
+            document.querySelectorAll('.engine-part').forEach(part => {
+                part.style.pointerEvents = 'none';
+                part.style.opacity = '0.5';
+            });
+            
+            setTimeout(() => {
+                engineDisplay.classList.remove('car-shake');
+                smokeEffect.classList.add('opacity-0');
+                smokeEffect.classList.remove('smoke-effect');
+            }, 2000);
+        }
+
+        function selectPart(partType) {
+            const correctPart = engineProblems[gameState.mission2.currentProblem].solution;
+            const engineDisplay = document.getElementById('engineDisplay');
+            const smokeEffect = document.getElementById('smokeEffect');
+            const explosionEffect = document.getElementById('explosionEffect');
+            
+            // Disable all parts to prevent multiple clicks
+            document.querySelectorAll('.engine-part').forEach(part => {
+                part.style.pointerEvents = 'none';
+                part.style.opacity = '0.5';
+            });
+            
+            clearInterval(gameState.mission2.timer);
+            document.getElementById('timer2').classList.remove('countdown-pulse', 'text-red-500');
+            
+            if (partType === correctPart) {
+                // Correct answer
+                engineDisplay.textContent = '🚗✨';
+                document.getElementById('engineStatus').textContent = '🎉 ซ่อมสำเร็จ! +10 คะแนน';
+                document.getElementById('engineStatus').className = 'text-2xl text-green-400';
+                
+                // Show educational explanation
+                const symptomsDiv = document.getElementById('symptoms');
+                const explanationDiv = document.createElement('div');
+                explanationDiv.className = 'text-xs text-green-400 mt-2 p-2 bg-green-900/30 rounded';
+                explanationDiv.innerHTML = `✅ <strong>ถูกต้อง!</strong> ${getCorrectExplanation(gameState.mission2.currentProblem)}`;
+                symptomsDiv.appendChild(explanationDiv);
+                
+                playSound('vroom');
+                
+                setTimeout(() => {
+                    if (gameState.mission2.round < 5) {
+                        nextEngineRound();
+                    } else {
+                        // Calculate score with bonus for remaining lives and speed
+                        const baseScore = 60;
+                        const livesBonus = gameState.mission2.lives * 10;
+                        const speedBonus = Math.max(0, gameState.mission2.timeLeft * 2);
+                        gameState.scores.engine = Math.min(100, baseScore + livesBonus + speedBonus);
+                        endMission2(true);
+                    }
+                }, 2000);
+            } else {
+                // Wrong answer - explosion!
+                gameState.mission2.lives--;
+                updateEngineLives();
+                
+                engineDisplay.classList.add('car-shake');
+                explosionEffect.classList.remove('opacity-0');
+                explosionEffect.classList.add('smoke-effect');
+                document.getElementById('engineStatus').textContent = '💥 ระเบิด! เลือกผิด! -10 คะแนน';
+                document.getElementById('engineStatus').className = 'text-2xl text-red-400';
+                
+                // Show educational correction
+                const symptomsDiv = document.getElementById('symptoms');
+                const correctionDiv = document.createElement('div');
+                correctionDiv.className = 'text-xs text-red-400 mt-2 p-2 bg-red-900/30 rounded';
+                correctionDiv.innerHTML = `❌ <strong>ผิด!</strong> คำตอบที่ถูกคือ: ${getPartName(correctPart)} - ${getCorrectExplanation(gameState.mission2.currentProblem)}`;
+                symptomsDiv.appendChild(correctionDiv);
+                
+                playSound('explosion');
+                
+                setTimeout(() => {
+                    engineDisplay.classList.remove('car-shake');
+                    explosionEffect.classList.add('opacity-0');
+                    explosionEffect.classList.remove('smoke-effect');
+                    
+                    if (gameState.mission2.lives > 0) {
+                        nextEngineRound();
+                    } else {
+                        endMission2(false);
+                    }
+                }, 2500);
+            }
+        }
+        
+        function getCorrectExplanation(problemType) {
+            const explanations = {
+                smoke: 'กรองอากาศอุดตัน ทำให้อากาศเข้าไม่พอ เกิดการเผาไหม้ไม่สมบูรณ์',
+                noStart: 'หัวเทียนเสื่อมสภาพ ไฟฟ้าไม่พอจุดระเบิดเชื้อเพลิง',
+                oilLeak: 'ปะเก็นแตก ทำให้น้ำมันรั่วไหล และเครื่องร้อนเกิน',
+                overHeat: 'หม้อน้ำอุดตัน ระบบหล่อเย็นทำงานไม่ดี',
+                electrical: 'ไดนาโมเสีย ไม่สามารถชาร์จแบตเตอรี่ได้',
+                timing: 'สายพานไทมิ่งหลวม จังหวะลิ้นและลูกสูบไม่ตรงกัน',
+                fuelSystem: 'ปั๊มน้ำมันเสีย ไม่สามารถส่งน้ำมันไปยังเครื่องยนต์ได้',
+                oilSystem: 'กรองน้ำมันอุดตัน ทำให้น้ำมันไหลเวียนไม่ดี เครื่องร้อนเกิน',
+                batteryDead: 'แบตเตอรี่หมดอายุ ไม่สามารถเก็บประจุไฟฟ้าได้'
+            };
+            return explanations[problemType] || 'ต้องวิเคราะห์อาการให้ถูกต้อง';
+        }
+        
+        function getPartName(partType) {
+            const names = {
+                airFilter: 'กรองอากาศ',
+                sparkPlug: 'หัวเทียน',
+                gasket: 'ปะเก็น',
+                oilFilter: 'กรองน้ำมัน',
+                fuelPump: 'ปั๊มน้ำมัน',
+                radiator: 'หม้อน้ำ',
+                battery: 'แบตเตอรี่',
+                alternator: 'ไดนาโม',
+                timing: 'สายพานไทมิ่ง'
+            };
+            return names[partType] || partType;
+        }
+        
+        function endMission2(success) {
+            clearInterval(gameState.mission2.timer);
+            if (success) {
+                alert(`🎉 ผ่านด่าน Engine Nightmare! คะแนน: ${gameState.scores.engine}`);
+            } else {
+                alert('💀 Game Over! เครื่องยนต์ระเบิดหมด!');
+            }
+            nextMission();
+        }
+
+        function startGarageManager() {
+            // Initialize service bays (only 2 active initially)
+            gameState.mission3.totalBays = 6;
+            gameState.mission3.activeBays = 2;
+            gameState.mission3.mechanicAnimations = {};
+            
+            // Start countdown timer
+            gameState.mission3.timer = setInterval(() => {
+                gameState.mission3.timeLeft--;
+                document.getElementById('timeLeft3').textContent = gameState.mission3.timeLeft;
+                
+                if (gameState.mission3.timeLeft <= 0) {
+                    endMission3();
+                }
+            }, 1000);
+            
+            // Add initial customers rapidly
+            addCustomer();
+            addCustomer();
+            gameState.mission3.customerTimer = setInterval(addCustomer, 8000); // New customer every 8 seconds
+            
+            // Random emergencies
+            gameState.mission3.emergencyTimer = setInterval(addEmergency, 20000);
+            
+            // Initialize bay display
+            updateServiceBays();
+        }
+        
+        function addEmergency() {
+            const emergencies = [
+                { text: '🚨 ลูกค้า VIP มาถึง! ต้องบริการก่อน!', effect: 'vip' },
+                { text: '⚡ ไฟดับ! ช่องซ่อมช้าลง 50%!', effect: 'blackout' },
+                { text: '🔧 เครื่องมือหาย! ต้องซื้อใหม่ 200฿!', effect: 'tools' }
+            ];
+            
+            const emergency = emergencies[Math.floor(Math.random() * emergencies.length)];
+            const alertDiv = document.createElement('div');
+            alertDiv.className = 'bg-red-900/70 p-3 rounded-lg text-center animate-pulse';
+            alertDiv.innerHTML = `
+                <div class="text-sm font-bold text-red-300">${emergency.text}</div>
+                <button onclick="handleEmergency('${emergency.effect}', this)" class="mt-2 bg-red-600 hover:bg-red-700 px-4 py-1 rounded text-xs">
+                    จัดการ
+                </button>
+            `;
+            
+            document.getElementById('emergencyAlerts').appendChild(alertDiv);
+        }
+        
+        function handleEmergency(type, button) {
+            if (type === 'vip') {
+                // Add VIP customer to front of queue
+                const vipCustomer = {
+                    name: '👑 VIP ลูกค้า',
+                    problem: '💎 บริการพิเศษ',
+                    time: 30,
+                    payment: 2000,
+                    id: Date.now(),
+                    waitTime: 0,
+                    isVip: true
+                };
+                gameState.mission3.customers.unshift(vipCustomer);
+            } else if (type === 'blackout') {
+                // Slow down all services
+                gameState.mission3.bays.forEach((bay, index) => {
+                    if (bay) bay.time += 10;
+                });
+            } else if (type === 'tools') {
+                gameState.mission3.revenue = Math.max(0, gameState.mission3.revenue - 200);
+            }
+            
+            button.parentElement.remove();
+            updateCustomerQueue();
+            updateManagerStats();
+        }
+        
+        function selectCustomer(customerId) {
+            gameState.mission3.selectedCustomer = customerId;
+            // Highlight selected customer
+            document.querySelectorAll('#customerQueue > div').forEach(div => {
+                div.classList.remove('bg-blue-900/50');
+            });
+            event.target.closest('div').classList.add('bg-blue-900/50');
+        }
+        
+        function updateServiceBays() {
+            const serviceBaysDiv = document.getElementById('serviceBays');
+            serviceBaysDiv.innerHTML = '';
+            
+            for (let i = 0; i < gameState.mission3.totalBays; i++) {
+                const bayDiv = document.createElement('div');
+                bayDiv.id = `bay${i + 1}`;
+                
+                if (i < gameState.mission3.activeBays) {
+                    // Active bay
+                    bayDiv.className = 'customer-queue p-3 rounded-xl text-center min-h-20 flex flex-col items-center justify-center cursor-pointer hover:bg-gray-600 transition-all';
+                    bayDiv.onclick = () => selectBay(i);
+                    bayDiv.innerHTML = `<span class="text-gray-400">ช่อง ${i + 1} (ว่าง)</span>`;
+                } else {
+                    // Locked bay
+                    bayDiv.className = 'bg-gray-800/50 p-3 rounded-xl text-center min-h-20 flex flex-col items-center justify-center border-2 border-dashed border-gray-600';
+                    bayDiv.innerHTML = `
+                        <span class="text-gray-600">🔒 ช่อง ${i + 1}</span>
+                        <span class="text-xs text-gray-600">ยังไม่เปิด</span>
+                    `;
+                }
+                
+                serviceBaysDiv.appendChild(bayDiv);
+            }
+        }
+        
+        function selectBay(bayIndex) {
+            if (gameState.mission3.selectedCustomer && gameState.mission3.bays[bayIndex] === null) {
+                const customer = gameState.mission3.customers.find(c => c.id === gameState.mission3.selectedCustomer);
+                if (customer && customer.type === 'repair') {
+                    assignToBay(gameState.mission3.selectedCustomer, bayIndex);
+                    gameState.mission3.selectedCustomer = null;
+                    document.querySelectorAll('#customerQueue > div').forEach(div => {
+                        div.classList.remove('bg-blue-900/50');
+                    });
+                } else {
+                    alert('ลูกค้าคนนี้ต้องไปสถานีเติมน้ำมัน!');
+                }
+            }
+        }
+        
+        function selectFuelStation(stationIndex) {
+            if (gameState.mission3.selectedCustomer && gameState.mission3.fuelStations[stationIndex] === null) {
+                const customer = gameState.mission3.customers.find(c => c.id === gameState.mission3.selectedCustomer);
+                if (customer && customer.type === 'fuel') {
+                    assignToFuelStation(gameState.mission3.selectedCustomer, stationIndex);
+                    gameState.mission3.selectedCustomer = null;
+                    document.querySelectorAll('#customerQueue > div').forEach(div => {
+                        div.classList.remove('bg-blue-900/50');
+                    });
+                } else {
+                    alert('ลูกค้าคนนี้ต้องไปช่องซ่อม!');
+                }
+            }
+        }
+        
+        function buyServiceBay() {
+            if (gameState.mission3.revenue >= 1500 && gameState.mission3.activeBays < gameState.mission3.totalBays) {
+                gameState.mission3.revenue -= 1500;
+                gameState.mission3.activeBays++;
+                
+                // Expand bays array
+                gameState.mission3.bays.push(null);
+                
+                updateServiceBays();
+                updateManagerStats();
+                
+                document.getElementById('buyBayBtn').textContent = `🏗️ ซื้อช่องซ่อมเพิ่ม (1,500฿) [${gameState.mission3.activeBays}/${gameState.mission3.totalBays}]`;
+                
+                if (gameState.mission3.activeBays >= gameState.mission3.totalBays) {
+                    document.getElementById('buyBayBtn').textContent = '✅ ช่องซ่อมเต็มแล้ว';
+                    document.getElementById('buyBayBtn').disabled = true;
+                }
+                
+                playSound('cheer');
+            } else if (gameState.mission3.revenue < 1500) {
+                alert('เงินไม่พอ! ต้องการ 1,500฿');
+            } else {
+                alert('ช่องซ่อมเต็มแล้ว!');
+            }
+        }
+        
+        function buyFuelStation() {
+            if (gameState.mission3.revenue >= 2000 && gameState.mission3.fuelStations.length < 4) {
+                gameState.mission3.revenue -= 2000;
+                gameState.mission3.fuelStations.push(null);
+                
+                const fuelDiv = document.querySelector('#fuel1').parentElement;
+                const newFuelStation = document.createElement('div');
+                newFuelStation.id = `fuel${gameState.mission3.fuelStations.length}`;
+                newFuelStation.className = 'bg-yellow-900/50 p-3 rounded-xl text-center min-h-16 flex items-center justify-center cursor-pointer hover:bg-yellow-800/50';
+                newFuelStation.onclick = () => selectFuelStation(gameState.mission3.fuelStations.length - 1);
+                newFuelStation.innerHTML = `<span class="text-gray-400">ปั๊ม ${gameState.mission3.fuelStations.length} (ว่าง)</span>`;
+                
+                fuelDiv.appendChild(newFuelStation);
+                updateManagerStats();
+                
+                document.getElementById('buyFuelBtn').textContent = `⛽ ซื้อปั๊มน้ำมันเพิ่ม (2,000฿) [${gameState.mission3.fuelStations.length}/4]`;
+                
+                if (gameState.mission3.fuelStations.length >= 4) {
+                    document.getElementById('buyFuelBtn').textContent = '✅ ปั๊มน้ำมันเต็มแล้ว';
+                    document.getElementById('buyFuelBtn').disabled = true;
+                }
+                
+                playSound('cheer');
+            } else if (gameState.mission3.revenue < 2000) {
+                alert('เงินไม่พอ! ต้องการ 2,000฿');
+            } else {
+                alert('ปั๊มน้ำมันเต็มแล้ว!');
+            }
+        }
+        
+        function hireExtraStaff() {
+            if (gameState.mission3.revenue >= 800 && !gameState.mission3.extraStaff) {
+                gameState.mission3.revenue -= 800;
+                gameState.mission3.extraStaff = true;
+                document.getElementById('hireBtn').textContent = '✅ ช่างเพิ่มแล้ว';
+                document.getElementById('hireBtn').disabled = true;
+                
+                // Reduce service time by 25% for future services
+                alert('🎉 จ้างช่างเพิ่มสำเร็จ! บริการเร็วขึ้น 25%');
+                updateManagerStats();
+                playSound('cheer');
+            } else if (gameState.mission3.revenue < 800) {
+                alert('เงินไม่พอ! ต้องการ 800฿');
+            }
+        }
+        
+        function rushService() {
+            if (gameState.mission3.revenue >= 500 && !gameState.mission3.rushMode) {
+                gameState.mission3.revenue -= 500;
+                gameState.mission3.rushMode = true;
+                document.getElementById('rushBtn').textContent = '🚨 โหมดด่วนเปิด';
+                document.getElementById('rushBtn').disabled = true;
+                
+                // Speed up all current services by reducing remaining time
+                gameState.mission3.bays.forEach((bay, index) => {
+                    if (bay && gameState.mission3.mechanicAnimations[index]) {
+                        // Speed up current animations
+                        const bayElement = document.getElementById(`bay${index + 1}`);
+                        const timeDiv = bayElement.querySelector('.text-yellow-400');
+                        if (timeDiv) {
+                            const currentTime = parseInt(timeDiv.textContent.match(/\d+/)[0]);
+                            const newTime = Math.max(2, Math.floor(currentTime / 2));
+                            timeDiv.textContent = `⏱️ ${newTime}s`;
+                        }
+                    }
+                });
+                
+                alert('🚨 เปิดโหมดด่วนพิเศษ! งานทั้งหมดเร็วขึ้น!');
+                updateManagerStats();
+                playSound('cheer');
+            } else if (gameState.mission3.revenue < 500) {
+                alert('เงินไม่พอ! ต้องการ 500฿');
+            }
+        }
+        
+        function endMission3() {
+            // Clear all timers
+            clearInterval(gameState.mission3.timer);
+            clearInterval(gameState.mission3.customerTimer);
+            clearInterval(gameState.mission3.emergencyTimer);
+            
+            // Clear all mechanic animations
+            Object.values(gameState.mission3.mechanicAnimations).forEach(timer => {
+                clearInterval(timer);
+            });
+            
+            // Calculate score based on services completed
+            if (gameState.mission3.served >= 10) {
+                let baseScore = 70; // Base score for completing 10 services
+                let bonusScore = Math.min(30, gameState.mission3.satisfaction - 70); // Bonus for high satisfaction
+                let efficiencyBonus = Math.max(0, gameState.mission3.timeLeft) / 2; // Time bonus
+                
+                gameState.scores.manager = Math.min(100, baseScore + bonusScore + efficiencyBonus);
+                
+                alert(`🎉 ผ่านด่าน Chaos Manager! 
+                บริการสำเร็จ: ${gameState.mission3.served}/10
+                ความพึงพอใจ: ${gameState.mission3.satisfaction}%
+                รายได้รวม: ${gameState.mission3.revenue}฿
+                คะแนน: ${Math.round(gameState.scores.manager)}`);
+            } else {
+                // Partial score for incomplete mission
+                gameState.scores.manager = Math.max(0, (gameState.mission3.served / 10) * 50);
+                alert(`⏰ หมดเวลา! 
+                บริการได้: ${gameState.mission3.served}/10
+                ความพึงพอใจ: ${gameState.mission3.satisfaction}%
+                รายได้รวม: ${gameState.mission3.revenue}฿
+                คะแนน: ${Math.round(gameState.scores.manager)}`);
+            }
+            
+            showResults();
+        }
+
+        function addCustomer() {
+            if (gameState.mission3.customers.length < 6) {
+                const customer = customerTypes[Math.floor(Math.random() * customerTypes.length)];
+                customer.id = Date.now();
+                customer.waitTime = 0;
+                gameState.mission3.customers.push(customer);
+                updateCustomerQueue();
+            }
+        }
+
+        function updateCustomerQueue() {
+            const queue = document.getElementById('customerQueue');
+            queue.innerHTML = '';
+            
+            gameState.mission3.customers.forEach((customer, index) => {
+                const customerDiv = document.createElement('div');
+                customerDiv.className = 'customer-queue p-2 rounded-lg cursor-pointer hover:bg-gray-600 transition-all';
+                customerDiv.onclick = () => selectCustomer(customer.id);
+                
+                const urgency = customer.waitTime > 40 ? '🔥' : customer.waitTime > 20 ? '⚠️' : customer.isVip ? '👑' : '😊';
+                const bgColor = customer.isVip ? 'bg-yellow-900/50' : customer.waitTime > 40 ? 'bg-red-900/50' : '';
+                const serviceIcon = customer.type === 'fuel' ? '⛽' : '🔧';
+                
+                customerDiv.className += ` ${bgColor}`;
+                
+                customerDiv.innerHTML = `
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <div class="font-bold text-sm">${urgency} ${customer.name}</div>
+                            <div class="text-xs text-gray-300">${serviceIcon} ${customer.problem}</div>
+                            <div class="text-xs text-yellow-400">รอ: ${customer.waitTime}s | จ่าย: ${customer.payment}฿</div>
+                        </div>
+                        <div class="text-lg">${customer.type === 'fuel' ? '🚗⛽' : '🚗🔧'}</div>
+                    </div>
+                `;
+                
+                queue.appendChild(customerDiv);
+            });
+        }
+
+        function assignToBay(customerId, bayIndex) {
+            const customer = gameState.mission3.customers.find(c => c.id === customerId);
+            
+            if (customer && gameState.mission3.bays[bayIndex] === null) {
+                gameState.mission3.bays[bayIndex] = customer;
+                gameState.mission3.customers = gameState.mission3.customers.filter(c => c.id !== customerId);
+                
+                const bayElement = document.getElementById(`bay${bayIndex + 1}`);
+                bayElement.innerHTML = `
+                    <div class="text-center">
+                        <div class="text-sm font-bold">${customer.name}</div>
+                        <div class="text-xs">${customer.problem}</div>
+                        <div class="text-xs text-yellow-400">⏱️ ${customer.time}s</div>
+                        <div class="text-lg animate-bounce">👷‍♂️🔧</div>
+                    </div>
+                `;
+                bayElement.classList.add('bg-blue-900/50');
+                
+                // Animate mechanic working
+                animateMechanic(bayIndex, customer.time);
+                
+                // Start service timer
+                setTimeout(() => {
+                    completeService(bayIndex, customer, 'repair');
+                }, customer.time * 1000);
+                
+                updateCustomerQueue();
+            }
+        }
+        
+        function assignToFuelStation(customerId, stationIndex) {
+            const customer = gameState.mission3.customers.find(c => c.id === customerId);
+            
+            if (customer && gameState.mission3.fuelStations[stationIndex] === null) {
+                gameState.mission3.fuelStations[stationIndex] = customer;
+                gameState.mission3.customers = gameState.mission3.customers.filter(c => c.id !== customerId);
+                
+                const stationElement = document.getElementById(`fuel${stationIndex + 1}`);
+                stationElement.innerHTML = `
+                    <div class="text-center">
+                        <div class="text-sm font-bold">${customer.name}</div>
+                        <div class="text-xs">${customer.problem}</div>
+                        <div class="text-xs text-yellow-400">⏱️ ${customer.time}s</div>
+                        <div class="text-lg animate-pulse">⛽💨</div>
+                    </div>
+                `;
+                stationElement.classList.add('bg-yellow-800/70');
+                
+                // Start service timer
+                setTimeout(() => {
+                    completeService(stationIndex, customer, 'fuel');
+                }, customer.time * 1000);
+                
+                updateCustomerQueue();
+            }
+        }
+        
+        function animateMechanic(bayIndex, duration) {
+            const bayElement = document.getElementById(`bay${bayIndex + 1}`);
+            let timeLeft = duration;
+            
+            const mechanicTimer = setInterval(() => {
+                timeLeft--;
+                const mechanicDiv = bayElement.querySelector('.text-lg');
+                if (mechanicDiv) {
+                    // Rotate between different mechanic animations
+                    const animations = ['👷‍♂️🔧', '👷‍♂️🔨', '👷‍♂️⚙️', '👷‍♂️🛠️'];
+                    mechanicDiv.textContent = animations[timeLeft % animations.length];
+                    
+                    // Update time display
+                    const timeDiv = bayElement.querySelector('.text-yellow-400');
+                    if (timeDiv) {
+                        timeDiv.textContent = `⏱️ ${timeLeft}s`;
+                    }
+                }
+                
+                if (timeLeft <= 0) {
+                    clearInterval(mechanicTimer);
+                }
+            }, 1000);
+            
+            gameState.mission3.mechanicAnimations[bayIndex] = mechanicTimer;
+        }
+
+        function completeService(index, customer, serviceType) {
+            gameState.mission3.revenue += customer.payment;
+            gameState.mission3.served++;
+            
+            if (serviceType === 'repair') {
+                gameState.mission3.bays[index] = null;
+                
+                // Clear mechanic animation
+                if (gameState.mission3.mechanicAnimations[index]) {
+                    clearInterval(gameState.mission3.mechanicAnimations[index]);
+                    delete gameState.mission3.mechanicAnimations[index];
+                }
+                
+                const bayElement = document.getElementById(`bay${index + 1}`);
+                bayElement.innerHTML = `<span class="text-gray-400">ช่อง ${index + 1} (ว่าง)</span>`;
+                bayElement.classList.remove('bg-blue-900/50');
+                bayElement.classList.add('success-glow');
+                
+                setTimeout(() => {
+                    bayElement.classList.remove('success-glow');
+                }, 1000);
+                
+            } else if (serviceType === 'fuel') {
+                gameState.mission3.fuelStations[index] = null;
+                
+                const stationElement = document.getElementById(`fuel${index + 1}`);
+                stationElement.innerHTML = `<span class="text-gray-400">ปั๊ม ${index + 1} (ว่าง)</span>`;
+                stationElement.classList.remove('bg-yellow-800/70');
+                stationElement.classList.add('success-glow');
+                
+                setTimeout(() => {
+                    stationElement.classList.remove('success-glow');
+                }, 1000);
+            }
+            
+            // Update served counter
+            document.getElementById('served').textContent = `${gameState.mission3.served}/10`;
+            
+            updateManagerStats();
+            
+            // Show completion effect
+            playSound('cheer');
+            
+            // Check win condition - complete 10 services
+            if (gameState.mission3.served >= 10) {
+                setTimeout(() => {
+                    endMission3();
+                }, 1000);
+            }
+        }
+
+        function updateManagerStats() {
+            // Decrease satisfaction for waiting customers
+            gameState.mission3.customers.forEach(customer => {
+                customer.waitTime += 1;
+                if (customer.waitTime > 30) {
+                    gameState.mission3.satisfaction = Math.max(0, gameState.mission3.satisfaction - 2);
+                }
+            });
+            
+            document.getElementById('satisfaction').textContent = `😊 ${gameState.mission3.satisfaction}%`;
+            document.getElementById('revenue').textContent = `💰 ${gameState.mission3.revenue}`;
+            
+            updateCustomerQueue();
+        }
+
+        // Update customer wait times
+        setInterval(() => {
+            if (gameState.currentMission === 3) {
+                updateManagerStats();
+            }
+        }, 1000);
+
+        function nextMission() {
+            document.getElementById(`mission${gameState.currentMission}`).classList.add('hidden');
+            
+            if (gameState.currentMission < 3) {
+                document.getElementById('missionSelect').classList.remove('hidden');
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            document.getElementById(`mission${gameState.currentMission}`).classList.add('hidden');
+            document.getElementById('results').classList.remove('hidden');
+            
+            // Update individual scores
+            document.getElementById('score1').textContent = gameState.scores.pitStop;
+            document.getElementById('score2').textContent = gameState.scores.engine;
+            document.getElementById('score3').textContent = gameState.scores.manager;
+            
+            const totalScore = gameState.scores.pitStop + gameState.scores.engine + gameState.scores.manager;
+            document.getElementById('finalScore').textContent = totalScore;
+            
+            // Determine rank and performance level
+            let rank, rankColor, rankDescription;
+            if (totalScore >= 250) {
+                rank = '👑 GARAGE MASTER';
+                rankColor = 'text-yellow-400';
+                rankDescription = 'ระดับเทพ! คุณคือช่างยนต์ระดับโลก!';
+            } else if (totalScore >= 200) {
+                rank = '🏆 ระดับโปร';
+                rankColor = 'text-purple-400';
+                rankDescription = 'เก่งมาก! พร้อมเป็นหัวหน้าช่างแล้ว';
+            } else if (totalScore >= 150) {
+                rank = '🥇 ช่างเชี่ยวชาญ';
+                rankColor = 'text-blue-400';
+                rankDescription = 'ดีมาก! มีทักษะระดับมืออาชีพ';
+            } else if (totalScore >= 100) {
+                rank = '🥈 ช่างมาตรฐาน';
+                rankColor = 'text-green-400';
+                rankDescription = 'ดี! พื้นฐานแข็งแรง ต้องฝึกฝนต่อ';
+            } else if (totalScore >= 50) {
+                rank = '🥉 มือใหม่';
+                rankColor = 'text-orange-400';
+                rankDescription = 'เริ่มต้นได้ดี แต่ต้องฝึกฝนเพิ่ม';
+            } else {
+                rank = '🔰 ฝึกหัด';
+                rankColor = 'text-red-400';
+                rankDescription = 'ต้องฝึกฝนมากกว่านี้!';
+            }
+            
+            document.getElementById('rank').innerHTML = `<span class="${rankColor}">${rank}</span>`;
+            document.getElementById('rank').innerHTML += `<div class="text-lg text-gray-300 mt-2">${rankDescription}</div>`;
+            
+            // Career path analysis
+            analyzeCareerPath(totalScore);
+            
+            // Global comparison
+            updateGlobalStats(totalScore);
+            
+            // Achievement system
+            updateAchievements();
+        }
+        
+        function analyzeCareerPath(totalScore) {
+            const scores = gameState.scores;
+            const maxScore = Math.max(scores.pitStop, scores.engine, scores.manager);
+            
+            let careerPath = '';
+            let careerDescription = '';
+            let salaryRange = '';
+            let strengths = [];
+            let improvements = [];
+            
+            // Determine primary career path
+            if (maxScore === scores.pitStop) {
+                careerPath = '🏁 ช่างบริการด่วน (Quick Service Technician)';
+                careerDescription = 'คุณมีความสามารถพิเศษในการทำงานภายใต้ความกดดัน ทำงานได้รวดเร็วและแม่นยำ เหมาะกับงานบริการด่วน เปลี่ยนยาง เติมน้ำมัน และการซ่อมบำรุงเบื้องต้น';
+                salaryRange = '💰 เงินเดือน: 18,000 - 35,000 บาท/เดือน';
+                
+                if (scores.pitStop >= 80) strengths.push('⚡ ความเร็วในการทำงานสูงมาก');
+                if (scores.pitStop >= 60) strengths.push('🎯 ความแม่นยำในการทำงาน');
+                if (scores.engine < 50) improvements.push('🔧 ควรเรียนรู้เรื่องเครื่องยนต์เพิ่มเติม');
+                if (scores.manager < 50) improvements.push('👥 ควรพัฒนาทักษะการสื่อสารกับลูกค้า');
+                
+            } else if (maxScore === scores.engine) {
+                careerPath = '🔧 ช่างเครื่องยนต์ (Engine Specialist)';
+                careerDescription = 'คุณมีความสามารถในการวิเคราะห์และแก้ไขปัญหาที่ซับซ้อน เหมาะกับงานซ่อมเครื่องยนต์ ระบบไฟฟ้า และการวินิจฉัยปัญหารถยนต์ขั้นสูง';
+                salaryRange = '💰 เงินเดือน: 25,000 - 50,000 บาท/เดือน';
+                
+                if (scores.engine >= 80) strengths.push('🧠 ความสามารถในการวิเคราะห์สูง');
+                if (scores.engine >= 60) strengths.push('🔍 ทักษะการวินิจฉัยปัญหาดี');
+                if (scores.pitStop < 50) improvements.push('⚡ ควรฝึกความเร็วในการทำงาน');
+                if (scores.manager < 50) improvements.push('💼 ควรเรียนรู้การบริหารงาน');
+                
+            } else {
+                careerPath = '👔 ผู้จัดการศูนย์บริการ (Service Manager)';
+                careerDescription = 'คุณมีทักษะการบริหารจัดการและบริการลูกค้าที่ดีเยี่ยม เหมาะกับตำแหน่งผู้จัดการ หัวหน้าทีม หรือเจ้าของกิจการศูนย์บริการรถยนต์';
+                salaryRange = '💰 เงินเดือน: 30,000 - 80,000 บาท/เดือน';
+                
+                if (scores.manager >= 80) strengths.push('👥 ทักษะการบริหารจัดการสูง');
+                if (scores.manager >= 60) strengths.push('😊 การบริการลูกค้าดีเยี่ยม');
+                if (scores.pitStop < 50) improvements.push('🔧 ควรเรียนรู้เทคนิคการซ่อมเพิ่ม');
+                if (scores.engine < 50) improvements.push('⚙️ ควรศึกษาระบบรถยนต์เพิ่มเติม');
+            }
+            
+            // Secondary skills analysis
+            let secondarySkills = [];
+            if (scores.pitStop >= 70 && maxScore !== scores.pitStop) {
+                secondarySkills.push('🏁 มีความสามารถด้านบริการด่วนเป็นพิเศษ');
+            }
+            if (scores.engine >= 70 && maxScore !== scores.engine) {
+                secondarySkills.push('🔧 มีความรู้ด้านเทคนิคเป็นพิเศษ');
+            }
+            if (scores.manager >= 70 && maxScore !== scores.manager) {
+                secondarySkills.push('👔 มีทักษะการบริหารเป็นพิเศษ');
+            }
+            
+            // Update UI
+            document.getElementById('careerPath').innerHTML = careerPath;
+            document.getElementById('careerDescription').innerHTML = careerDescription;
+            document.getElementById('salaryRange').innerHTML = salaryRange;
+            
+            // Add detailed analysis
+            let analysisHTML = '<div class="mt-4 space-y-3">';
+            
+            if (strengths.length > 0) {
+                analysisHTML += '<div class="bg-green-900/30 p-3 rounded-lg">';
+                analysisHTML += '<h4 class="text-green-400 font-bold mb-2">🌟 จุดแข็งของคุณ:</h4>';
+                strengths.forEach(strength => {
+                    analysisHTML += `<div class="text-sm text-green-300">• ${strength}</div>`;
+                });
+                analysisHTML += '</div>';
+            }
+            
+            if (secondarySkills.length > 0) {
+                analysisHTML += '<div class="bg-blue-900/30 p-3 rounded-lg">';
+                analysisHTML += '<h4 class="text-blue-400 font-bold mb-2">✨ ทักษะเสริม:</h4>';
+                secondarySkills.forEach(skill => {
+                    analysisHTML += `<div class="text-sm text-blue-300">• ${skill}</div>`;
+                });
+                analysisHTML += '</div>';
+            }
+            
+            if (improvements.length > 0) {
+                analysisHTML += '<div class="bg-yellow-900/30 p-3 rounded-lg">';
+                analysisHTML += '<h4 class="text-yellow-400 font-bold mb-2">📈 ควรพัฒนา:</h4>';
+                improvements.forEach(improvement => {
+                    analysisHTML += `<div class="text-sm text-yellow-300">• ${improvement}</div>`;
+                });
+                analysisHTML += '</div>';
+            }
+            
+            analysisHTML += '</div>';
+            document.getElementById('careerDescription').innerHTML += analysisHTML;
+        }
+        
+        function updateGlobalStats(totalScore) {
+            // Simulate global comparison
+            let percentile, betterThan, worldRank;
+            
+            if (totalScore >= 250) {
+                percentile = 99;
+                betterThan = 99;
+                worldRank = Math.floor(Math.random() * 100) + 1;
+            } else if (totalScore >= 200) {
+                percentile = 95;
+                betterThan = 95;
+                worldRank = Math.floor(Math.random() * 500) + 100;
+            } else if (totalScore >= 150) {
+                percentile = 80;
+                betterThan = 80;
+                worldRank = Math.floor(Math.random() * 2000) + 500;
+            } else if (totalScore >= 100) {
+                percentile = 60;
+                betterThan = 60;
+                worldRank = Math.floor(Math.random() * 5000) + 2000;
+            } else if (totalScore >= 50) {
+                percentile = 30;
+                betterThan = 30;
+                worldRank = Math.floor(Math.random() * 10000) + 5000;
+            } else {
+                percentile = 10;
+                betterThan = 10;
+                worldRank = Math.floor(Math.random() * 20000) + 10000;
+            }
+            
+            document.getElementById('percentile').textContent = `${percentile}%`;
+            document.getElementById('betterThan').textContent = `${betterThan}%`;
+            document.getElementById('worldRank').textContent = `#${worldRank}`;
+        }
+        
+        function updateAchievements() {
+            const badges = [];
+            const scores = gameState.scores;
+            
+            // Performance badges
+            if (scores.pitStop >= 90) badges.push({ emoji: '⚡', name: 'Speed Demon', desc: 'Pit Stop เทพ!' });
+            if (scores.engine >= 90) badges.push({ emoji: '🔧', name: 'Engine Master', desc: 'เซียนเครื่องยนต์!' });
+            if (scores.manager >= 90) badges.push({ emoji: '👑', name: 'Boss Level', desc: 'ผู้จัดการระดับเทพ!' });
+            
+            // Combo badges
+            if (gameState.mission1.combo >= 6) badges.push({ emoji: '🔥', name: 'Perfect Combo', desc: 'ทำงานไม่ผิดพลาด!' });
+            if (gameState.mission2.lives === 3) badges.push({ emoji: '💀', name: 'Survivor', desc: 'รอดตายจากระเบิด!' });
+            if (gameState.mission3.satisfaction >= 95) badges.push({ emoji: '😍', name: 'Customer Love', desc: 'ลูกค้าหลงรัก!' });
+            
+            // Special achievements
+            const totalScore = scores.pitStop + scores.engine + scores.manager;
+            if (totalScore >= 250) badges.push({ emoji: '🏆', name: 'Garage Legend', desc: 'ตำนานช่างยนต์!' });
+            if (totalScore >= 200) badges.push({ emoji: '🌟', name: 'Pro Mechanic', desc: 'ช่างมืออาชีพ!' });
+            if (Math.min(scores.pitStop, scores.engine, scores.manager) >= 60) {
+                badges.push({ emoji: '⚖️', name: 'All-Rounder', desc: 'เก่งครบทุกด้าน!' });
+            }
+            
+            // Update badges display
+            const badgeList = document.getElementById('badgeList');
+            badgeList.innerHTML = '';
+            
+            if (badges.length === 0) {
+                badgeList.innerHTML = '<div class="text-gray-400 text-sm">ยังไม่มีความสำเร็จ - ลองเล่นใหม่!</div>';
+            } else {
+                badges.forEach(badge => {
+                    const badgeDiv = document.createElement('div');
+                    badgeDiv.className = 'bg-gradient-to-br from-yellow-600/50 to-orange-600/50 rounded-xl p-3 text-center m-1 neon-border';
+                    badgeDiv.innerHTML = `
+                        <div class="text-2xl mb-1">${badge.emoji}</div>
+                        <div class="text-xs font-bold text-yellow-300">${badge.name}</div>
+                        <div class="text-xs text-gray-300">${badge.desc}</div>
+                    `;
+                    badgeList.appendChild(badgeDiv);
+                });
+            }
+        }
+
+        function restartGame() {
+            gameState = {
+                currentMission: 0,
+                scores: { pitStop: 0, engine: 0, manager: 0 },
+                mission1: { tasks: [false, false, false], timeLeft: 30, timer: null },
+                mission2: { currentProblem: 'smoke', solved: false },
+                mission3: { customers: [], satisfaction: 100, revenue: 0, bays: [null, null, null, null] }
+            };
+            
+            document.getElementById('results').classList.add('hidden');
+            document.getElementById('missionSelect').classList.remove('hidden');
+            
+            // Reset mission 1
+            document.getElementById('countdown1').textContent = '30';
+            for (let i = 1; i <= 3; i++) {
+                const task = document.getElementById(`task${i}`);
+                task.classList.remove('bg-green-900/50', 'success-glow');
+                task.classList.add('bg-red-900/50');
+                task.querySelector('span:last-child').innerHTML = '<span class="text-red-400">❌</span>';
+            }
+            document.getElementById('raceCar').textContent = '🏎️';
+            
+            // Reset mission 2
+            document.getElementById('engineDisplay').textContent = '🚗';
+            document.getElementById('engineStatus').textContent = 'เครื่องยนต์เสีย!';
+            document.getElementById('engineStatus').className = 'text-2xl text-red-400';
+            
+            // Reset mission 3
+            document.getElementById('customerQueue').innerHTML = '';
+            for (let i = 1; i <= 4; i++) {
+                const bay = document.getElementById(`bay${i}`);
+                bay.innerHTML = '<span class="text-gray-400">ว่าง</span>';
+                bay.className = 'customer-queue p-4 rounded-xl text-center min-h-24 flex items-center justify-center';
+            }
+            document.getElementById('satisfaction').textContent = '😊 100%';
+            document.getElementById('revenue').textContent = '💰 0';
+        }
+
+        function playSound(type) {
+            // Sound effect simulation with visual feedback
+            const sounds = {
+                wrench: '🔧✨',
+                cheer: '🎉🏁',
+                fail: '💥❌',
+                vroom: '🚗💨',
+                explosion: '💥🔥'
+            };
+            
+            // Create temporary sound effect display
+            const soundDiv = document.createElement('div');
+            soundDiv.textContent = sounds[type] || '🔊';
+            soundDiv.className = 'fixed top-4 right-4 text-4xl z-50 animate-bounce';
+            document.body.appendChild(soundDiv);
+            
+            setTimeout(() => {
+                document.body.removeChild(soundDiv);
+            }, 1500);
+        }
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9784982015d77b68',t:'MTc1NjcyNzg5MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

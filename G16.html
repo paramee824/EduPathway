@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏨 Hotel Career Simulator - เกมจำลองอาชีพโรงแรม</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Kanit', sans-serif; }
+        
+        .game-card {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            transition: all 0.3s ease;
+        }
+        
+        .game-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(59, 130, 246, 0.3);
+        }
+        
+        .star-rating {
+            color: #fbbf24;
+            font-size: 1.5rem;
+        }
+        
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .choice-btn {
+            transition: all 0.2s ease;
+        }
+        
+        .choice-btn:hover {
+            transform: scale(1.02);
+        }
+        
+        .correct-answer {
+            background: linear-gradient(135deg, #10b981, #34d399);
+            animation: correctPulse 0.5s ease;
+        }
+        
+        .wrong-answer {
+            background: linear-gradient(135deg, #ef4444, #f87171);
+            animation: wrongShake 0.5s ease;
+        }
+        
+        @keyframes correctPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes wrongShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 min-h-screen text-white">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl md:text-5xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500">
+                🏨 Hotel Career Simulator
+            </h1>
+            <p class="text-xl text-blue-200 mb-6">เกมจำลองอาชีพโรงแรม - ค้นพบเส้นทางอาชีพที่เหมาะกับคุณ</p>
+            <div class="flex justify-center items-center space-x-2 mb-4">
+                <span class="text-yellow-400 text-2xl">⭐</span>
+                <span class="text-lg">คะแนนรวม: <span id="totalScore" class="font-bold text-yellow-400">0</span></span>
+            </div>
+        </div>
+
+        <!-- Game Selection Screen -->
+        <div id="gameSelection" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            <div class="game-card rounded-xl p-6 text-center cursor-pointer" onclick="startGame('reception')">
+                <div class="text-6xl mb-4">🛎️</div>
+                <h3 class="text-xl font-semibold mb-2">เกมต้อนรับลูกค้า</h3>
+                <p class="text-blue-200 text-sm mb-4">ฝึกทักษะการสื่อสารและการบริการ</p>
+                <div class="bg-white bg-opacity-20 rounded-lg p-2">
+                    <span class="text-sm">คะแนน: <span id="receptionScore" class="font-bold">0</span>/100</span>
+                </div>
+            </div>
+
+            <div class="game-card rounded-xl p-6 text-center cursor-pointer" onclick="startGame('room')">
+                <div class="text-6xl mb-4">🏠</div>
+                <h3 class="text-xl font-semibold mb-2">เกมจัดห้องพัก</h3>
+                <p class="text-blue-200 text-sm mb-4">ฝึกความละเอียดและความจำ</p>
+                <div class="bg-white bg-opacity-20 rounded-lg p-2">
+                    <span class="text-sm">คะแนน: <span id="roomScore" class="font-bold">0</span>/100</span>
+                </div>
+            </div>
+
+            <div class="game-card rounded-xl p-6 text-center cursor-pointer" onclick="startGame('restaurant')">
+                <div class="text-6xl mb-4">🍽️</div>
+                <h3 class="text-xl font-semibold mb-2">เกมเสิร์ฟอาหาร</h3>
+                <p class="text-blue-200 text-sm mb-4">ฝึกความเร็วและความแม่นยำ</p>
+                <div class="bg-white bg-opacity-20 rounded-lg p-2">
+                    <span class="text-sm">คะแนน: <span id="restaurantScore" class="font-bold">0</span>/100</span>
+                </div>
+            </div>
+
+            <div class="game-card rounded-xl p-6 text-center cursor-pointer" onclick="startGame('complaint')">
+                <div class="text-6xl mb-4">🤝</div>
+                <h3 class="text-xl font-semibold mb-2">เกมแก้ปัญหาลูกค้า</h3>
+                <p class="text-blue-200 text-sm mb-4">ฝึกการแก้ปัญหาเฉพาะหน้า</p>
+                <div class="bg-white bg-opacity-20 rounded-lg p-2">
+                    <span class="text-sm">คะแนน: <span id="complaintScore" class="font-bold">0</span>/100</span>
+                </div>
+            </div>
+
+            <div class="game-card rounded-xl p-6 text-center cursor-pointer" onclick="startGame('management')">
+                <div class="text-6xl mb-4">📊</div>
+                <h3 class="text-xl font-semibold mb-2">เกมบริหารโรงแรม</h3>
+                <p class="text-blue-200 text-sm mb-4">ฝึกทักษะการบริหารจัดการ</p>
+                <div class="bg-white bg-opacity-20 rounded-lg p-2">
+                    <span class="text-sm">คะแนน: <span id="managementScore" class="font-bold">0</span>/100</span>
+                </div>
+            </div>
+
+            <div class="game-card rounded-xl p-6 text-center cursor-pointer bg-gradient-to-br from-yellow-600 to-orange-600" onclick="showResults()">
+                <div class="text-6xl mb-4">📋</div>
+                <h3 class="text-xl font-semibold mb-2">ดูผลการประเมิน</h3>
+                <p class="text-yellow-100 text-sm mb-4">ค้นหาอาชีพที่เหมาะกับคุณ</p>
+                <div class="bg-white bg-opacity-20 rounded-lg p-2">
+                    <span class="text-sm pulse-animation">คลิกเพื่อดูผล!</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game Screen -->
+        <div id="gameScreen" class="hidden">
+            <div class="bg-white bg-opacity-10 rounded-xl p-8 backdrop-blur-sm">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 id="gameTitle" class="text-2xl font-bold"></h2>
+                    <button onclick="backToMenu()" class="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-lg transition-colors">
+                        ← กลับเมนู
+                    </button>
+                </div>
+                
+                <div id="gameContent" class="text-center">
+                    <div id="scenario" class="text-lg mb-6 p-4 bg-blue-800 bg-opacity-50 rounded-lg"></div>
+                    <div id="choices" class="space-y-3"></div>
+                    <div id="feedback" class="mt-6 p-4 rounded-lg hidden"></div>
+                    <button id="nextBtn" class="mt-4 bg-green-500 hover:bg-green-600 px-6 py-2 rounded-lg hidden" onclick="nextQuestion()">
+                        คำถามถัดไป →
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Screen -->
+        <div id="resultsScreen" class="hidden">
+            <div class="bg-white bg-opacity-10 rounded-xl p-8 backdrop-blur-sm">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold mb-4 text-yellow-400">🎉 ผลการประเมินอาชีพ</h2>
+                    <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+                        <div class="bg-blue-800 bg-opacity-50 rounded-lg p-4">
+                            <div class="text-2xl mb-2">🛎️</div>
+                            <div class="text-sm">ต้อนรับ</div>
+                            <div class="font-bold" id="finalReceptionScore">0</div>
+                        </div>
+                        <div class="bg-blue-800 bg-opacity-50 rounded-lg p-4">
+                            <div class="text-2xl mb-2">🏠</div>
+                            <div class="text-sm">จัดห้อง</div>
+                            <div class="font-bold" id="finalRoomScore">0</div>
+                        </div>
+                        <div class="bg-blue-800 bg-opacity-50 rounded-lg p-4">
+                            <div class="text-2xl mb-2">🍽️</div>
+                            <div class="text-sm">เสิร์ฟ</div>
+                            <div class="font-bold" id="finalRestaurantScore">0</div>
+                        </div>
+                        <div class="bg-blue-800 bg-opacity-50 rounded-lg p-4">
+                            <div class="text-2xl mb-2">🤝</div>
+                            <div class="text-sm">แก้ปัญหา</div>
+                            <div class="font-bold" id="finalComplaintScore">0</div>
+                        </div>
+                        <div class="bg-blue-800 bg-opacity-50 rounded-lg p-4">
+                            <div class="text-2xl mb-2">📊</div>
+                            <div class="text-sm">บริหาร</div>
+                            <div class="font-bold" id="finalManagementScore">0</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="careerRecommendation" class="bg-gradient-to-r from-yellow-500 to-orange-500 text-black rounded-xl p-6 mb-6">
+                    <h3 class="text-2xl font-bold mb-4">🎯 อาชีพที่แนะนำสำหรับคุณ</h3>
+                    <div id="recommendedCareer" class="text-lg"></div>
+                </div>
+                
+                <div class="text-center">
+                    <button onclick="resetGame()" class="bg-blue-500 hover:bg-blue-600 px-8 py-3 rounded-lg text-lg font-semibold transition-colors">
+                        🔄 เล่นใหม่
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Game data and state
+        let currentGame = '';
+        let currentQuestion = 0;
+        let gameQuestions = [];
+        let scores = {
+            reception: 0,
+            room: 0,
+            restaurant: 0,
+            complaint: 0,
+            management: 0
+        };
+
+        // Game questions database
+        const gameData = {
+            reception: [
+                {
+                    scenario: "🛎️ ลูกค้าเดินเข้ามาที่เคาน์เตอร์ต้อนรับ คุณจะทักทายอย่างไร?",
+                    choices: [
+                        { text: "สวัสดีครับ ยินดีต้อนรับสู่โรงแรม", correct: true },
+                        { text: "เฮ้ย มาแล้วเหรอ", correct: false },
+                        { text: "รอสักครู่นะ กำลังยุ่งอยู่", correct: false }
+                    ],
+                    feedback: "การทักทายที่สุภาพและอบอุ่นเป็นสิ่งสำคัญในการสร้างความประทับใจแรก"
+                },
+                {
+                    scenario: "👥 ลูกค้าจองห้องแต่ไม่มีเอกสารยืนยันตัวตน คุณจะทำอย่างไร?",
+                    choices: [
+                        { text: "ขอโทษครับ ต้องมีบัตรประชาชนหรือพาสปอร์ตเพื่อเช็กอิน", correct: true },
+                        { text: "ไม่เป็นไร เข้าพักได้เลย", correct: false },
+                        { text: "ให้เพื่อนค้ำประกันแทนได้ไหม", correct: false }
+                    ],
+                    feedback: "การตรวจสอบเอกสารเป็นขั้นตอนสำคัญเพื่อความปลอดภัยของโรงแรม"
+                },
+                {
+                    scenario: "🕐 ลูกค้ามาเช็กอินก่อนเวลา 3 ชั่วโมง แต่ห้องยังไม่พร้อม",
+                    choices: [
+                        { text: "ขอโทษครับ ห้องจะพร้อมตอน 14:00 น. ฝากกระเป๋าไว้ก่อนได้ครับ", correct: true },
+                        { text: "ไม่ได้ครับ กลับมาใหม่ตอนบ่าย", correct: false },
+                        { text: "รอที่ล็อบบี้ไปก่อนนะครับ", correct: false }
+                    ],
+                    feedback: "การให้บริการเก็บกระเป๋าและอธิบายเวลาอย่างชัดเจนแสดงถึงการบริการที่ดี"
+                }
+            ],
+            room: [
+                {
+                    scenario: "🚭 ลูกค้าต้องการห้องสูบบุหรี่ ห้องไหนเหมาะสม?",
+                    choices: [
+                        { text: "ห้อง 301 (Smoking Room พร้อมระบบดูดควัน)", correct: true },
+                        { text: "ห้อง 205 (Non-smoking แต่เปิดหน้าต่างได้)", correct: false },
+                        { text: "ห้องไหนก็ได้ สูบที่ระเบียงแทน", correct: false }
+                    ],
+                    feedback: "ห้องสูบบุหรี่ต้องมีระบบระบายอากาศที่เหมาะสมเพื่อความปลอดภัย"
+                },
+                {
+                    scenario: "🌊 คู่รักต้องการห้องวิวทะเลสำหรับฮันนีมูน",
+                    choices: [
+                        { text: "ห้อง Deluxe Sea View พร้อมเตียงคิงไซส์", correct: true },
+                        { text: "ห้องธรรมดาแต่ราคาถูก", correct: false },
+                        { text: "ห้องวิวสวนที่เงียบสงบ", correct: false }
+                    ],
+                    feedback: "การเลือกห้องให้ตรงกับโอกาสพิเศษจะสร้างความประทับใจให้ลูกค้า"
+                },
+                {
+                    scenario: "👨‍👩‍👧‍👦 ครอบครัว 4 คน (พ่อแม่ + ลูก 2 คน) ต้องการห้องพัก",
+                    choices: [
+                        { text: "ห้อง Family Room 2 เตียงใหญ่ หรือ Connecting Rooms", correct: true },
+                        { text: "ห้องเดี่ยวธรรมดา", correct: false },
+                        { text: "ห้องคู่ 1 เตียง", correct: false }
+                    ],
+                    feedback: "ครอบครัวใหญ่ต้องการพื้นที่และเตียงที่เพียงพอสำหรับทุกคน"
+                }
+            ],
+            restaurant: [
+                {
+                    scenario: "🍝 โต๊ะ 1: สปาเก็ตตี้, โต๊ะ 2: สเต็ก, โต๊ะ 3: สลัด - อาหารพร้อมพร้อมกัน",
+                    choices: [
+                        { text: "เสิร์ฟตามลำดับที่สั่ง: โต๊ะ 1 → 2 → 3", correct: true },
+                        { text: "เสิร์ฟโต๊ะใหญ่ก่อน", correct: false },
+                        { text: "เสิร์ฟแบบสุ่ม", correct: false }
+                    ],
+                    feedback: "การเสิร์ฟตามลำดับที่สั่งแสดงถึงความยุติธรรมและระบบการทำงานที่ดี"
+                },
+                {
+                    scenario: "☕ ลูกค้าสั่งกาแฟร้อน แต่ได้กาแฟเย็น",
+                    choices: [
+                        { text: "ขอโทษครับ เดี๋ยวเปลี่ยนให้ใหม่ทันที", correct: true },
+                        { text: "เอาไปอุ่นในไมโครเวฟแป้บนึง", correct: false },
+                        { text: "กาแฟเย็นก็อร่อยนะครับ", correct: false }
+                    ],
+                    feedback: "การยอมรับข้อผิดพลาดและแก้ไขทันทีเป็นหัวใจของการบริการที่ดี"
+                },
+                {
+                    scenario: "🍰 ลูกค้าแพ้นม แต่เมนูที่สั่งมีครีม",
+                    choices: [
+                        { text: "แจ้งเตือนและแนะนำเมนูทางเลือกที่ไม่มีนม", correct: true },
+                        { text: "ไม่เป็นไร ครีมนิดหน่อย", correct: false },
+                        { text: "ขูดครีมออกให้", correct: false }
+                    ],
+                    feedback: "ความปลอดภัยของลูกค้าเป็นสิ่งสำคัญที่สุด ต้องแจ้งเตือนเรื่องสารก่อภูมิแพ้"
+                }
+            ],
+            complaint: [
+                {
+                    scenario: "❄️ ลูกค้าโทรมาบ่นว่าแอร์ในห้องเสีย อากาศร้อนมาก",
+                    choices: [
+                        { text: "ขอโทษครับ เดี๋ยวส่งช่างมาซ่อมทันที หรือเปลี่ยนห้องให้ครับ", correct: true },
+                        { text: "เปิดหน้าต่างแทนครับ", correct: false },
+                        { text: "รอช่างมาพรุ่งนี้นะครับ", correct: false }
+                    ],
+                    feedback: "การแก้ปัญหาเร่งด่วนและเสนอทางเลือกแสดงถึงการใส่ใจลูกค้า"
+                },
+                {
+                    scenario: "🍽️ อาหารมาช้า 45 นาที ลูกค้าโกรธมาก",
+                    choices: [
+                        { text: "ขอโทษจริงๆ ครับ ให้ส่วนลด 20% และของหวานฟรี", correct: true },
+                        { text: "ช่วงนี้ลูกค้าเยอะครับ", correct: false },
+                        { text: "อาหารอร่อยแน่นอน รอคุ้มครับ", correct: false }
+                    ],
+                    feedback: "การขอโทษจริงใจและให้ค่าชดเชยที่เหมาะสมจะช่วยลดความโกรธของลูกค้า"
+                },
+                {
+                    scenario: "🧹 ลูกค้าพบผมในห้องน้ำ รู้สึกขยะแขยง",
+                    choices: [
+                        { text: "ขอโทษครับ เปลี่ยนห้องให้ทันทีและยกเลิกค่าทำความสะอาด", correct: true },
+                        { text: "เป็นผมของลูกค้าเองมั้งครับ", correct: false },
+                        { text: "เดี๋ยวให้แม่บ้านมาเก็บให้", correct: false }
+                    ],
+                    feedback: "ปัญหาความสะอาดต้องแก้ไขทันทีและให้การชดเชยที่เหมาะสม"
+                }
+            ],
+            management: [
+                {
+                    scenario: "📊 โรงแรมมี 100 ห้อง วันนี้จองแล้ว 85 ห้อง คุณจะจัดพนักงานอย่างไร?",
+                    choices: [
+                        { text: "เพิ่มพนักงานแม่บ้าน 2 คน และพนักงานต้อนรับ 1 คน", correct: true },
+                        { text: "ใช้พนักงานปกติ ไม่ต้องเพิ่ม", correct: false },
+                        { text: "เพิ่มเฉพาะพนักงานรักษาความปลอดภัย", correct: false }
+                    ],
+                    feedback: "การจองสูงต้องเพิ่มพนักงานในจุดที่มีงานหนัก เช่น แม่บ้านและต้อนรับ"
+                },
+                {
+                    scenario: "💰 งบประมาณเดือนนี้เหลือ 50,000 บาท ต้องเลือกซื้ออุปกรณ์",
+                    choices: [
+                        { text: "ซื้อผ้าปูที่นอนชุดใหม่ 30,000 + อุปกรณ์ทำความสะอาด 20,000", correct: true },
+                        { text: "ซื้อทีวีใหม่ทุกห้อง 80,000 (เกินงบ)", correct: false },
+                        { text: "เก็บเงินไว้ไม่ซื้ออะไร", correct: false }
+                    ],
+                    feedback: "การจัดสรรงบประมาณต้องคำนึงถึงความจำเป็นและความพอดีของเงิน"
+                },
+                {
+                    scenario: "⭐ รีวิวโรงแรมลดลงเหลือ 3.5 ดาว จาก 4.2 ดาว",
+                    choices: [
+                        { text: "ประชุมทีมหาสาเหตุ + อบรมพนักงาน + ปรับปรุงสิ่งอำนวยความสะดวก", correct: true },
+                        { text: "ลดราคาห้องพักเพื่อดึงลูกค้า", correct: false },
+                        { text: "ไม่สนใจ รีวิวไม่สำคัญ", correct: false }
+                    ],
+                    feedback: "การลดลงของคะแนนรีวิวต้องหาสาเหตุและแก้ไขอย่างเป็นระบบ"
+                }
+            ]
+        };
+
+        function startGame(gameType) {
+            currentGame = gameType;
+            currentQuestion = 0;
+            gameQuestions = gameData[gameType];
+            
+            document.getElementById('gameSelection').classList.add('hidden');
+            document.getElementById('gameScreen').classList.remove('hidden');
+            
+            const titles = {
+                reception: '🛎️ เกมต้อนรับลูกค้า',
+                room: '🏠 เกมจัดห้องพัก',
+                restaurant: '🍽️ เกมเสิร์ฟอาหาร',
+                complaint: '🤝 เกมแก้ปัญหาลูกค้า',
+                management: '📊 เกมบริหารโรงแรม'
+            };
+            
+            document.getElementById('gameTitle').textContent = titles[gameType];
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const question = gameQuestions[currentQuestion];
+            document.getElementById('scenario').textContent = question.scenario;
+            
+            const choicesDiv = document.getElementById('choices');
+            choicesDiv.innerHTML = '';
+            
+            question.choices.forEach((choice, index) => {
+                const button = document.createElement('button');
+                button.className = 'choice-btn w-full p-4 bg-blue-600 hover:bg-blue-700 rounded-lg text-left transition-colors';
+                button.textContent = choice.text;
+                button.onclick = () => selectAnswer(index, choice.correct);
+                choicesDiv.appendChild(button);
+            });
+            
+            document.getElementById('feedback').classList.add('hidden');
+            document.getElementById('nextBtn').classList.add('hidden');
+        }
+
+        function selectAnswer(selectedIndex, isCorrect) {
+            const buttons = document.querySelectorAll('.choice-btn');
+            const question = gameQuestions[currentQuestion];
+            
+            buttons.forEach((btn, index) => {
+                btn.disabled = true;
+                if (index === selectedIndex) {
+                    btn.className = isCorrect ? 
+                        'choice-btn w-full p-4 rounded-lg text-left correct-answer' :
+                        'choice-btn w-full p-4 rounded-lg text-left wrong-answer';
+                } else if (question.choices[index].correct) {
+                    btn.className = 'choice-btn w-full p-4 rounded-lg text-left correct-answer opacity-70';
+                }
+            });
+            
+            if (isCorrect) {
+                scores[currentGame] += Math.round(100 / gameQuestions.length);
+                document.getElementById(currentGame + 'Score').textContent = scores[currentGame];
+            }
+            
+            const feedbackDiv = document.getElementById('feedback');
+            feedbackDiv.className = isCorrect ? 
+                'mt-6 p-4 rounded-lg bg-green-600 bg-opacity-50' :
+                'mt-6 p-4 rounded-lg bg-red-600 bg-opacity-50';
+            feedbackDiv.textContent = question.feedback;
+            feedbackDiv.classList.remove('hidden');
+            
+            document.getElementById('nextBtn').classList.remove('hidden');
+            updateTotalScore();
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            if (currentQuestion < gameQuestions.length) {
+                showQuestion();
+            } else {
+                backToMenu();
+            }
+        }
+
+        function backToMenu() {
+            document.getElementById('gameScreen').classList.add('hidden');
+            document.getElementById('gameSelection').classList.remove('hidden');
+        }
+
+        function updateTotalScore() {
+            const total = Object.values(scores).reduce((sum, score) => sum + score, 0);
+            document.getElementById('totalScore').textContent = total;
+        }
+
+        function showResults() {
+            document.getElementById('gameSelection').classList.add('hidden');
+            document.getElementById('resultsScreen').classList.remove('hidden');
+            
+            // Update final scores
+            Object.keys(scores).forEach(key => {
+                document.getElementById('final' + key.charAt(0).toUpperCase() + key.slice(1) + 'Score').textContent = scores[key];
+            });
+            
+            // Determine recommended career
+            const maxScore = Math.max(...Object.values(scores));
+            const topSkill = Object.keys(scores).find(key => scores[key] === maxScore);
+            
+            const careerRecommendations = {
+                reception: {
+                    title: "🛎️ Front Office / Reception",
+                    description: "คุณเหมาะกับงานต้อนรับและบริการลูกค้า มีทักษะการสื่อสารที่ดีและสร้างความประทับใจแรกได้เยี่ยม"
+                },
+                room: {
+                    title: "🏠 Housekeeping / Room Division",
+                    description: "คุณมีความละเอียดรอบคอบและความจำดี เหมาะกับงานจัดการห้องพักและดูแลรายละเอียด"
+                },
+                restaurant: {
+                    title: "🍽️ Food & Beverage Service",
+                    description: "คุณมีความเร็วและความแม่นยำในการทำงาน เหมาะกับงานบริการอาหารและเครื่องดื่ม"
+                },
+                complaint: {
+                    title: "🤝 Guest Relations / Customer Care",
+                    description: "คุณมีทักษะการแก้ปัญหาและการจัดการความขัดแย้งที่ดีเยี่ยม เหมาะกับงานดูแลลูกค้า"
+                },
+                management: {
+                    title: "📊 Hotel Management",
+                    description: "คุณมีวิสัยทัศน์ในการบริหารจัดการและการตัดสินใจที่ดี เหมาะกับตำแหน่งผู้จัดการโรงแรม"
+                }
+            };
+            
+            const recommendation = careerRecommendations[topSkill] || careerRecommendations.reception;
+            document.getElementById('recommendedCareer').innerHTML = `
+                <h4 class="text-xl font-bold mb-2">${recommendation.title}</h4>
+                <p>${recommendation.description}</p>
+            `;
+        }
+
+        function resetGame() {
+            scores = {
+                reception: 0,
+                room: 0,
+                restaurant: 0,
+                complaint: 0,
+                management: 0
+            };
+            
+            Object.keys(scores).forEach(key => {
+                document.getElementById(key + 'Score').textContent = '0';
+            });
+            
+            document.getElementById('totalScore').textContent = '0';
+            document.getElementById('resultsScreen').classList.add('hidden');
+            document.getElementById('gameSelection').classList.remove('hidden');
+        }
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'978433fe84847b68',t:'MTc1NjcyMzc4OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

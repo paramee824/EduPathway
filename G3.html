@@ -1,0 +1,1275 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎮 Welding Master VR - เกมช่างเชื่อมสุดเวอร์</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Kanit:wght@300;400;600;700&display=swap');
+        
+        body {
+            font-family: 'Kanit', sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a3a 50%, #2d1b69 100%);
+            overflow-x: hidden;
+        }
+        
+        .orbitron {
+            font-family: 'Orbitron', monospace;
+        }
+        
+        .spark-effect {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #ffeb3b;
+            border-radius: 50%;
+            animation: spark 0.5s ease-out forwards;
+        }
+        
+        @keyframes spark {
+            0% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(0) translate(var(--dx), var(--dy));
+            }
+        }
+        
+        .welding-arc {
+            background: linear-gradient(45deg, #00bcd4, #2196f3, #9c27b0);
+            box-shadow: 0 0 20px #00bcd4, 0 0 40px #2196f3;
+            animation: arc-flicker 0.1s infinite alternate;
+        }
+        
+        @keyframes arc-flicker {
+            0% { opacity: 0.8; }
+            100% { opacity: 1; }
+        }
+        
+        .heat-gauge {
+            background: linear-gradient(90deg, #4caf50 0%, #ffeb3b 50%, #f44336 100%);
+            transition: all 0.3s ease;
+        }
+        
+        .metal-surface {
+            background: linear-gradient(45deg, #37474f, #546e7a, #607d8b);
+            border: 2px solid #263238;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .weld-line {
+            position: absolute;
+            height: 4px;
+            background: linear-gradient(90deg, #ff5722, #ff9800, #ffc107);
+            box-shadow: 0 0 10px #ff5722;
+            border-radius: 2px;
+            transition: all 0.2s ease;
+        }
+        
+        .structure-3d {
+            perspective: 1000px;
+            transform-style: preserve-3d;
+        }
+        
+        .beam {
+            background: linear-gradient(45deg, #455a64, #607d8b);
+            border: 2px solid #37474f;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.3);
+        }
+        
+        .emergency-alert {
+            animation: emergency-blink 0.5s infinite alternate;
+        }
+        
+        @keyframes emergency-blink {
+            0% { background-color: #f44336; }
+            100% { background-color: #d32f2f; }
+        }
+        
+        .pressure-leak {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: radial-gradient(circle, rgba(255,87,34,0.8) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: leak-pulse 0.3s infinite;
+        }
+        
+        @keyframes leak-pulse {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+        
+        .skill-radar {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            border: 2px solid #00bcd4;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(0,188,212,0.1) 0%, transparent 70%);
+        }
+        
+        .floating-ui {
+            backdrop-filter: blur(10px);
+            background: rgba(15, 15, 35, 0.9);
+            border: 1px solid rgba(0, 188, 212, 0.3);
+        }
+        
+        .neon-text {
+            text-shadow: 0 0 10px #00bcd4, 0 0 20px #00bcd4, 0 0 30px #00bcd4;
+        }
+        
+        .game-canvas {
+            border: 2px solid #00bcd4;
+            box-shadow: 0 0 30px rgba(0, 188, 212, 0.5);
+            background: #1a1a2e;
+        }
+        
+        .electrode-cursor {
+            cursor: crosshair;
+        }
+        
+        .welding-sound-wave {
+            position: absolute;
+            border: 2px solid rgba(0, 188, 212, 0.3);
+            border-radius: 50%;
+            animation: sound-wave 1s infinite;
+        }
+        
+        @keyframes sound-wave {
+            0% {
+                transform: scale(0);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(2);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen text-white">
+    <!-- Main Menu -->
+    <div id="mainMenu" class="min-h-screen flex items-center justify-center relative">
+        <div class="absolute inset-0 bg-gradient-to-br from-blue-900/20 to-purple-900/20"></div>
+        
+        <!-- Animated Background Elements -->
+        <div class="absolute inset-0 overflow-hidden">
+            <div class="absolute top-20 left-20 w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></div>
+            <div class="absolute top-40 right-32 w-1 h-1 bg-yellow-400 rounded-full animate-ping"></div>
+            <div class="absolute bottom-32 left-1/4 w-3 h-3 bg-orange-400 rounded-full animate-bounce"></div>
+        </div>
+        
+        <div class="text-center z-10 max-w-4xl mx-auto px-6">
+            <h1 class="text-6xl font-black orbitron neon-text mb-4">
+                🎮 WELDING MASTER VR
+            </h1>
+            <p class="text-2xl text-cyan-300 mb-8">เกมช่างเชื่อมสุดเวอร์ - ทดสอบทักษะการเชื่อมแบบจริง</p>
+            
+            <div class="grid md:grid-cols-3 gap-6 mb-12">
+                <div class="floating-ui p-6 rounded-lg">
+                    <div class="text-4xl mb-4">🔥</div>
+                    <h3 class="text-xl font-bold text-orange-400 mb-2">Precision Sparks</h3>
+                    <p class="text-sm text-gray-300">เชื่อมเส้นตรงไฟฟ้าแรงสูง<br>ควบคุมอุณหภูมิและความแม่นยำ</p>
+                </div>
+                
+                <div class="floating-ui p-6 rounded-lg">
+                    <div class="text-4xl mb-4">🏗️</div>
+                    <h3 class="text-xl font-bold text-blue-400 mb-2">3D Welding Arena</h3>
+                    <p class="text-sm text-gray-300">เชื่อมโครงสร้าง 3 มิติ<br>ปีนป่ายและแก้ปัญหาเฉพาะหน้า</p>
+                </div>
+                
+                <div class="floating-ui p-6 rounded-lg">
+                    <div class="text-4xl mb-4">🚨</div>
+                    <h3 class="text-xl font-bold text-red-400 mb-2">Rescue Welding</h3>
+                    <p class="text-sm text-gray-300">ภารกิจเชื่อมกู้วิกฤต<br>แก้ไขท่อแรงดันแตกก่อนระเบิด</p>
+                </div>
+            </div>
+            
+            <div class="space-y-4">
+                <button onclick="showLevelSelect()" class="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 px-12 py-4 rounded-lg text-xl font-bold orbitron transform hover:scale-105 transition-all duration-300 shadow-lg">
+                    🚀 เลือกด่าน
+                </button>
+                
+                <div class="flex justify-center space-x-4">
+                    <button onclick="showRules()" class="bg-gray-700 hover:bg-gray-600 px-6 py-2 rounded-lg transition-colors">
+                        📋 กติกาการเล่น
+                    </button>
+                    <button onclick="showTips()" class="bg-gray-700 hover:bg-gray-600 px-6 py-2 rounded-lg transition-colors">
+                        💡 คำใบ้
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rules Modal -->
+    <div id="rulesModal" class="fixed inset-0 bg-black/80 flex items-center justify-center z-50 hidden">
+        <div class="floating-ui max-w-2xl mx-4 p-8 rounded-lg">
+            <h2 class="text-3xl font-bold orbitron text-cyan-400 mb-6">📋 กติกาการเล่น</h2>
+            
+            <div class="space-y-4 text-sm">
+                <div class="border-l-4 border-orange-400 pl-4">
+                    <h3 class="font-bold text-orange-400">🔥 ด่านที่ 1: Precision Sparks</h3>
+                    <p>• ใช้เมาส์ลากเส้นเพื่อเชื่อมชิ้นเหล็ก</p>
+                    <p>• ควบคุม Heat Gauge ไม่ให้เกินแดง</p>
+                    <p>• เชื่อมเร็วไป = รอยแตก / ช้าไป = เหล็กละลาย</p>
+                </div>
+                
+                <div class="border-l-4 border-blue-400 pl-4">
+                    <h3 class="font-bold text-blue-400">🏗️ ด่านที่ 2: 3D Welding Arena</h3>
+                    <p>• คลิกเพื่อเคลื่อนที่ในโครงสร้าง 3D</p>
+                    <p>• เลือกจุดเชื่อมและกดเชื่อมให้เสร็จก่อนเวลา</p>
+                    <p>• หลีกเลี่ยงประกายไฟและอุปสรรค</p>
+                </div>
+                
+                <div class="border-l-4 border-red-400 pl-4">
+                    <h3 class="font-bold text-red-400">🚨 ด่านที่ 3: Rescue Welding</h3>
+                    <p>• เลือกอุปกรณ์ที่ถูกต้อง (Electrode, Shield, Gas)</p>
+                    <p>• เชื่อมปิดรอยรั่วก่อนแรงดันระเบิด</p>
+                    <p>• ทำงานภายใต้ความกดดันและเวลาจำกัด</p>
+                </div>
+            </div>
+            
+            <button onclick="closeRules()" class="mt-6 bg-cyan-500 hover:bg-cyan-600 px-6 py-2 rounded-lg transition-colors">
+                เข้าใจแล้ว
+            </button>
+        </div>
+    </div>
+
+    <!-- Tips Modal -->
+    <div id="tipsModal" class="fixed inset-0 bg-black/80 flex items-center justify-center z-50 hidden">
+        <div class="floating-ui max-w-2xl mx-4 p-8 rounded-lg">
+            <h2 class="text-3xl font-bold orbitron text-yellow-400 mb-6">💡 คำใบ้สำหรับมือใหม่</h2>
+            
+            <div class="space-y-4 text-sm">
+                <div class="bg-yellow-900/30 p-4 rounded-lg">
+                    <h3 class="font-bold text-yellow-400 mb-2">🎯 เทคนิคการเชื่อม</h3>
+                    <p>• เคลื่อนเมาส์ด้วยความเร็วสม่ำเสมอ</p>
+                    <p>• สังเกต Heat Gauge อยู่เสมอ</p>
+                    <p>• หยุดพักเมื่อความร้อนสูงเกินไป</p>
+                </div>
+                
+                <div class="bg-blue-900/30 p-4 rounded-lg">
+                    <h3 class="font-bold text-blue-400 mb-2">⚡ การควบคุมความเร็ว</h3>
+                    <p>• เชื่อมช้าๆ ในจุดเริ่มต้น</p>
+                    <p>• เพิ่มความเร็วเมื่อชำนาญแล้ว</p>
+                    <p>• ระวังจุดเชื่อมต่อและมุมโค้ง</p>
+                </div>
+                
+                <div class="bg-red-900/30 p-4 rounded-lg">
+                    <h3 class="font-bold text-red-400 mb-2">🚨 สถานการณ์ฉุกเฉิน</h3>
+                    <p>• อ่านสถานการณ์ก่อนเริ่มเชื่อม</p>
+                    <p>• เลือกอุปกรณ์ให้เหมาะกับงาน</p>
+                    <p>• ใจเย็นและทำงานอย่างเป็นระบบ</p>
+                </div>
+            </div>
+            
+            <button onclick="closeTips()" class="mt-6 bg-yellow-500 hover:bg-yellow-600 px-6 py-2 rounded-lg transition-colors text-black font-bold">
+                เข้าใจแล้ว
+            </button>
+        </div>
+    </div>
+
+    <!-- Level Selection Modal -->
+    <div id="levelSelectModal" class="fixed inset-0 bg-black/80 flex items-center justify-center z-50 hidden">
+        <div class="floating-ui max-w-4xl mx-4 p-8 rounded-lg">
+            <h2 class="text-3xl font-bold orbitron text-cyan-400 mb-6 text-center">🎮 เลือกด่านที่ต้องการเล่น</h2>
+            
+            <div class="grid md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-gradient-to-br from-orange-900/50 to-orange-700/50 p-6 rounded-lg cursor-pointer hover:scale-105 transition-transform" onclick="startLevel(1)">
+                    <div class="text-4xl mb-4 text-center">🔥</div>
+                    <h3 class="text-xl font-bold text-orange-400 mb-2 text-center">ด่าน 1: Precision Sparks</h3>
+                    <p class="text-sm text-gray-300 mb-4">เชื่อมเส้นตรงไฟฟ้าแรงสูง<br>ควบคุมอุณหภูมิและความแม่นยำ</p>
+                    <div class="text-xs text-yellow-300 bg-yellow-900/30 p-2 rounded">
+                        💡 คำใบ้: กดค้างเมาส์แล้วลากช้าๆ ตามเส้นประ
+                    </div>
+                </div>
+                
+                <div class="bg-gradient-to-br from-blue-900/50 to-blue-700/50 p-6 rounded-lg cursor-pointer hover:scale-105 transition-transform" onclick="startLevel(2)">
+                    <div class="text-4xl mb-4 text-center">🏗️</div>
+                    <h3 class="text-xl font-bold text-blue-400 mb-2 text-center">ด่าน 2: 3D Welding Arena</h3>
+                    <p class="text-sm text-gray-300 mb-4">เชื่อมโครงสร้าง 3 มิติ<br>ปีนป่ายและแก้ปัญหาเฉพาะหน้า</p>
+                    <div class="text-xs text-yellow-300 bg-yellow-900/30 p-2 rounded">
+                        💡 คำใบ้: คลิกที่จุดสีแดงเพื่อเชื่อม ทำให้เร็วที่สุด
+                    </div>
+                </div>
+                
+                <div class="bg-gradient-to-br from-red-900/50 to-red-700/50 p-6 rounded-lg cursor-pointer hover:scale-105 transition-transform" onclick="startLevel(3)">
+                    <div class="text-4xl mb-4 text-center">🚨</div>
+                    <h3 class="text-xl font-bold text-red-400 mb-2 text-center">ด่าน 3: Rescue Welding</h3>
+                    <p class="text-sm text-gray-300 mb-4">ภารกิจเชื่อมกู้วิกฤต<br>แก้ไขท่อแรงดันแตกก่อนระเบิด</p>
+                    <div class="text-xs text-yellow-300 bg-yellow-900/30 p-2 rounded">
+                        💡 คำใบ้: เลือกอุปกรณ์ก่อน แล้วคลิกซ่อมรอยรั่ว
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center">
+                <button onclick="closeLevelSelect()" class="bg-gray-600 hover:bg-gray-500 px-6 py-2 rounded-lg transition-colors">
+                    ❌ ปิด
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Screen -->
+    <div id="gameScreen" class="hidden min-h-screen">
+        <!-- Game Header -->
+        <div class="floating-ui p-4 m-4 rounded-lg">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-4">
+                    <h2 id="levelTitle" class="text-2xl font-bold orbitron text-cyan-400"></h2>
+                    <div id="levelProgress" class="text-lg text-gray-300"></div>
+                </div>
+                
+                <div class="flex items-center space-x-6">
+                    <!-- Heat Gauge -->
+                    <div id="heatGaugeContainer" class="hidden">
+                        <label class="text-sm text-gray-300">🌡️ Heat:</label>
+                        <div class="w-32 h-4 bg-gray-700 rounded-full overflow-hidden">
+                            <div id="heatGauge" class="h-full heat-gauge transition-all duration-300" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Timer -->
+                    <div id="timerContainer" class="hidden">
+                        <label class="text-sm text-gray-300">⏱️ Time:</label>
+                        <span id="timer" class="text-xl font-bold orbitron text-yellow-400">60</span>
+                    </div>
+                    
+                    <!-- Pressure Gauge -->
+                    <div id="pressureContainer" class="hidden">
+                        <label class="text-sm text-gray-300">💥 Pressure:</label>
+                        <div class="w-32 h-4 bg-gray-700 rounded-full overflow-hidden">
+                            <div id="pressureGauge" class="h-full bg-gradient-to-r from-green-500 to-red-500 transition-all duration-300" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    
+                    <button onclick="pauseGame()" class="bg-gray-600 hover:bg-gray-500 px-4 py-2 rounded-lg transition-colors">
+                        ⏸️ หยุดชั่วคราว
+                    </button>
+                    <button onclick="restartLevel()" class="bg-orange-600 hover:bg-orange-500 px-4 py-2 rounded-lg transition-colors">
+                        🔄 เริ่มด่านใหม่
+                    </button>
+                    <button onclick="backToMenu()" class="bg-red-600 hover:bg-red-500 px-4 py-2 rounded-lg transition-colors">
+                        🏠 กลับหน้าหลัก
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game Canvas Area -->
+        <div class="flex justify-center p-4">
+            <div id="gameCanvas" class="game-canvas rounded-lg relative" style="width: 800px; height: 600px;">
+                <!-- Level 1: Precision Sparks -->
+                <div id="level1Canvas" class="hidden w-full h-full relative electrode-cursor">
+                    <div class="metal-surface w-full h-full flex items-center justify-center">
+                        <svg id="weldingPath" width="600" height="400" class="absolute">
+                            <path id="targetPath" d="M 50 200 L 550 200" stroke="#607d8b" stroke-width="6" fill="none" stroke-dasharray="15,10" opacity="0.7"/>
+                            <path id="playerPath" d="" stroke="#ff5722" stroke-width="4" fill="none" class="welding-arc"/>
+                        </svg>
+                        <div id="electrode" class="absolute w-6 h-6 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full hidden shadow-lg border-2 border-yellow-300"></div>
+                        
+                        <!-- Start and End markers -->
+                        <div class="absolute left-12 top-1/2 transform -translate-y-1/2 text-green-400 font-bold text-lg animate-pulse">START</div>
+                        <div class="absolute right-12 top-1/2 transform -translate-y-1/2 text-red-400 font-bold text-lg animate-pulse">FINISH</div>
+                    </div>
+                </div>
+
+                <!-- Level 2: 3D Welding Arena -->
+                <div id="level2Canvas" class="hidden w-full h-full relative structure-3d">
+                    <div class="absolute inset-0 bg-gradient-to-b from-gray-800 to-gray-900">
+                        <!-- 3D Structure -->
+                        <div class="absolute top-20 left-20 beam w-16 h-64 transform rotate-12"></div>
+                        <div class="absolute top-40 right-32 beam w-64 h-16 transform -rotate-6"></div>
+                        <div class="absolute bottom-32 left-1/3 beam w-48 h-12 transform rotate-3"></div>
+                        
+                        <!-- Welding Points -->
+                        <div class="weld-point absolute top-32 left-28 w-6 h-6 bg-red-500 rounded-full cursor-pointer animate-pulse" onclick="weldPoint(this)"></div>
+                        <div class="weld-point absolute top-48 right-40 w-6 h-6 bg-red-500 rounded-full cursor-pointer animate-pulse" onclick="weldPoint(this)"></div>
+                        <div class="weld-point absolute bottom-40 left-1/2 w-6 h-6 bg-red-500 rounded-full cursor-pointer animate-pulse" onclick="weldPoint(this)"></div>
+                        
+                        <!-- Player Position -->
+                        <div id="player3D" class="absolute bottom-10 left-1/2 w-8 h-8 bg-cyan-400 rounded-full transform -translate-x-1/2"></div>
+                    </div>
+                </div>
+
+                <!-- Level 3: Rescue Welding -->
+                <div id="level3Canvas" class="hidden w-full h-full relative">
+                    <div class="absolute inset-0 bg-gradient-to-br from-red-900/50 to-orange-900/50">
+                        <!-- Emergency Background -->
+                        <div class="emergency-alert absolute inset-0 opacity-20"></div>
+                        
+                        <!-- Pipe System -->
+                        <div class="absolute top-1/3 left-20 w-64 h-16 bg-gray-600 rounded-lg border-4 border-gray-500">
+                            <!-- Pressure Leaks -->
+                            <div class="pressure-leak absolute top-2 left-32"></div>
+                            <div class="pressure-leak absolute bottom-2 right-48"></div>
+                            <div class="pressure-leak absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></div>
+                        </div>
+                        
+                        <!-- Equipment Selection -->
+                        <div class="absolute bottom-20 left-20 space-x-4">
+                            <button onclick="selectEquipment('electrode')" class="equipment-btn bg-yellow-600 hover:bg-yellow-500 px-4 py-2 rounded-lg">
+                                ⚡ Electrode
+                            </button>
+                            <button onclick="selectEquipment('shield')" class="equipment-btn bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded-lg">
+                                🛡️ Shield
+                            </button>
+                            <button onclick="selectEquipment('gas')" class="equipment-btn bg-green-600 hover:bg-green-500 px-4 py-2 rounded-lg">
+                                💨 Gas
+                            </button>
+                        </div>
+                        
+                        <!-- Leak Points -->
+                        <div class="leak-point absolute top-40 left-52 w-8 h-8 bg-red-600 rounded-full cursor-pointer animate-ping" onclick="repairLeak(this)"></div>
+                        <div class="leak-point absolute top-56 left-84 w-8 h-8 bg-red-600 rounded-full cursor-pointer animate-ping" onclick="repairLeak(this)"></div>
+                        <div class="leak-point absolute top-48 left-68 w-8 h-8 bg-red-600 rounded-full cursor-pointer animate-ping" onclick="repairLeak(this)"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game Instructions -->
+        <div class="floating-ui p-4 m-4 rounded-lg">
+            <p id="gameInstructions" class="text-center text-lg mb-2"></p>
+            <div id="levelHint" class="text-center text-sm text-yellow-300 bg-yellow-900/20 p-2 rounded hidden">
+                💡 <span id="hintText"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Screen -->
+    <div id="resultsScreen" class="hidden min-h-screen flex items-center justify-center">
+        <div class="floating-ui max-w-4xl mx-4 p-8 rounded-lg text-center">
+            <h2 class="text-4xl font-bold orbitron neon-text mb-8">🏆 ผลการประเมิน</h2>
+            
+            <div class="grid md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-gradient-to-br from-orange-900/50 to-orange-700/50 p-6 rounded-lg">
+                    <div class="text-3xl mb-2">🎯</div>
+                    <h3 class="text-xl font-bold text-orange-400 mb-2">ความแม่นยำ</h3>
+                    <div class="text-3xl font-bold orbitron" id="accuracyScore">0%</div>
+                    <div class="w-full bg-gray-700 rounded-full h-2 mt-2">
+                        <div id="accuracyBar" class="bg-orange-400 h-2 rounded-full transition-all duration-1000" style="width: 0%"></div>
+                    </div>
+                </div>
+                
+                <div class="bg-gradient-to-br from-blue-900/50 to-blue-700/50 p-6 rounded-lg">
+                    <div class="text-3xl mb-2">⚡</div>
+                    <h3 class="text-xl font-bold text-blue-400 mb-2">ความเร็ว</h3>
+                    <div class="text-3xl font-bold orbitron" id="speedScore">0%</div>
+                    <div class="w-full bg-gray-700 rounded-full h-2 mt-2">
+                        <div id="speedBar" class="bg-blue-400 h-2 rounded-full transition-all duration-1000" style="width: 0%"></div>
+                    </div>
+                </div>
+                
+                <div class="bg-gradient-to-br from-green-900/50 to-green-700/50 p-6 rounded-lg">
+                    <div class="text-3xl mb-2">🛡️</div>
+                    <h3 class="text-xl font-bold text-green-400 mb-2">ความปลอดภัย</h3>
+                    <div class="text-3xl font-bold orbitron" id="safetyScore">0%</div>
+                    <div class="w-full bg-gray-700 rounded-full h-2 mt-2">
+                        <div id="safetyBar" class="bg-green-400 h-2 rounded-full transition-all duration-1000" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mb-8">
+                <h3 class="text-2xl font-bold mb-4">คะแนนรวม</h3>
+                <div class="text-6xl font-bold orbitron neon-text mb-4" id="totalScore">0</div>
+                <div id="skillLevel" class="text-xl font-bold mb-4"></div>
+                <div id="recommendation" class="text-lg text-gray-300 max-w-2xl mx-auto"></div>
+            </div>
+            
+            <div class="space-x-4">
+                <button onclick="restartGame()" class="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 px-8 py-3 rounded-lg text-lg font-bold orbitron transition-all duration-300">
+                    🔄 เล่นใหม่
+                </button>
+                <button onclick="backToMenu()" class="bg-gray-600 hover:bg-gray-500 px-8 py-3 rounded-lg text-lg font-bold transition-colors">
+                    🏠 กลับหน้าหลัก
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Game State
+        let gameState = {
+            currentLevel: 1,
+            isPlaying: false,
+            isPaused: false,
+            scores: {
+                accuracy: 0,
+                speed: 0,
+                safety: 0
+            },
+            level1: {
+                heat: 0,
+                weldProgress: 0,
+                isWelding: false,
+                playerPath: '',
+                startTime: null
+            },
+            level2: {
+                weldedPoints: 0,
+                totalPoints: 3,
+                timeLeft: 60,
+                playerPosition: { x: 50, y: 90 }
+            },
+            level3: {
+                selectedEquipment: null,
+                repairedLeaks: 0,
+                totalLeaks: 3,
+                pressure: 0,
+                timeLeft: 45
+            }
+        };
+
+        // Audio Context for Sound Effects
+        let audioContext;
+        let weldingSound = false;
+
+        // Initialize Audio
+        function initAudio() {
+            try {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            } catch (e) {
+                console.log('Audio not supported');
+            }
+        }
+
+        // Play Welding Sound Effect
+        function playWeldingSound() {
+            if (!audioContext || weldingSound) return;
+            
+            weldingSound = true;
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.setValueAtTime(200, audioContext.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(100, audioContext.currentTime + 0.1);
+            
+            gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.1);
+            
+            setTimeout(() => { weldingSound = false; }, 100);
+        }
+
+        // Create Spark Effects
+        function createSparks(x, y, count = 5) {
+            for (let i = 0; i < count; i++) {
+                const spark = document.createElement('div');
+                spark.className = 'spark-effect';
+                spark.style.left = x + 'px';
+                spark.style.top = y + 'px';
+                spark.style.setProperty('--dx', (Math.random() - 0.5) * 100 + 'px');
+                spark.style.setProperty('--dy', (Math.random() - 0.5) * 100 + 'px');
+                
+                document.getElementById('gameCanvas').appendChild(spark);
+                
+                setTimeout(() => {
+                    if (spark.parentNode) {
+                        spark.parentNode.removeChild(spark);
+                    }
+                }, 500);
+            }
+        }
+
+        // Show/Hide Modals
+        function showRules() {
+            document.getElementById('rulesModal').classList.remove('hidden');
+        }
+
+        function closeRules() {
+            document.getElementById('rulesModal').classList.add('hidden');
+        }
+
+        function showTips() {
+            document.getElementById('tipsModal').classList.remove('hidden');
+        }
+
+        function closeTips() {
+            document.getElementById('tipsModal').classList.add('hidden');
+        }
+
+        function showLevelSelect() {
+            document.getElementById('levelSelectModal').classList.remove('hidden');
+        }
+
+        function closeLevelSelect() {
+            document.getElementById('levelSelectModal').classList.add('hidden');
+        }
+
+        // Start Game
+        function startGame() {
+            initAudio();
+            gameState.currentLevel = 1;
+            gameState.isPlaying = true;
+            gameState.scores = { accuracy: 0, speed: 0, safety: 0 };
+            
+            document.getElementById('mainMenu').classList.add('hidden');
+            document.getElementById('gameScreen').classList.remove('hidden');
+            
+            startLevel1();
+        }
+
+        // Start Specific Level
+        function startLevel(levelNumber) {
+            closeLevelSelect();
+            initAudio();
+            gameState.currentLevel = levelNumber;
+            gameState.isPlaying = true;
+            gameState.scores = { accuracy: 0, speed: 0, safety: 0 };
+            
+            document.getElementById('mainMenu').classList.add('hidden');
+            document.getElementById('gameScreen').classList.remove('hidden');
+            
+            if (levelNumber === 1) {
+                startLevel1();
+            } else if (levelNumber === 2) {
+                startLevel2();
+            } else if (levelNumber === 3) {
+                startLevel3();
+            }
+        }
+
+        // Level 1: Precision Sparks
+        function startLevel1() {
+            gameState.currentLevel = 1;
+            gameState.level1 = {
+                heat: 0,
+                weldProgress: 0,
+                isWelding: false,
+                playerPath: '',
+                startTime: Date.now()
+            };
+            
+            document.getElementById('levelTitle').textContent = '🔥 Level 1: Precision Sparks';
+            document.getElementById('levelProgress').textContent = 'เชื่อมเส้นตรงจากซ้ายไปขวา';
+            document.getElementById('gameInstructions').textContent = 'ลากเมาส์ตามเส้นประเพื่อเชื่อม - ควบคุมความร้อนไม่ให้เกินแดง!';
+            
+            // Show hint
+            document.getElementById('levelHint').classList.remove('hidden');
+            document.getElementById('hintText').textContent = 'กดค้างเมาส์ซ้ายแล้วลากช้าๆ ตามเส้นประ หยุดเมื่อความร้อนสูงเกินไป';
+            
+            // Show relevant UI
+            document.getElementById('heatGaugeContainer').classList.remove('hidden');
+            document.getElementById('timerContainer').classList.add('hidden');
+            document.getElementById('pressureContainer').classList.add('hidden');
+            
+            // Show level canvas
+            document.getElementById('level1Canvas').classList.remove('hidden');
+            document.getElementById('level2Canvas').classList.add('hidden');
+            document.getElementById('level3Canvas').classList.add('hidden');
+            
+            setupLevel1Events();
+        }
+
+        function setupLevel1Events() {
+            const canvas = document.getElementById('level1Canvas');
+            let isMouseDown = false;
+            
+            // Mouse events
+            canvas.addEventListener('mousedown', function(e) {
+                e.preventDefault();
+                isMouseDown = true;
+                startWelding(e);
+            });
+            
+            canvas.addEventListener('mousemove', function(e) {
+                e.preventDefault();
+                if (isMouseDown) {
+                    updateWelding(e);
+                } else {
+                    // Just update electrode position when not welding
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    const electrode = document.getElementById('electrode');
+                    electrode.style.display = 'block';
+                    electrode.style.left = (x - 8) + 'px';
+                    electrode.style.top = (y - 8) + 'px';
+                }
+            });
+            
+            canvas.addEventListener('mouseup', function(e) {
+                e.preventDefault();
+                isMouseDown = false;
+                stopWelding(e);
+            });
+            
+            canvas.addEventListener('mouseleave', function(e) {
+                e.preventDefault();
+                isMouseDown = false;
+                stopWelding(e);
+            });
+            
+            // Touch events for mobile
+            canvas.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+                isMouseDown = true;
+                const touch = e.touches[0];
+                const mouseEvent = new MouseEvent('mousedown', {
+                    clientX: touch.clientX,
+                    clientY: touch.clientY
+                });
+                startWelding(mouseEvent);
+            });
+            
+            canvas.addEventListener('touchmove', function(e) {
+                e.preventDefault();
+                if (isMouseDown) {
+                    const touch = e.touches[0];
+                    const mouseEvent = new MouseEvent('mousemove', {
+                        clientX: touch.clientX,
+                        clientY: touch.clientY
+                    });
+                    updateWelding(mouseEvent);
+                }
+            });
+            
+            canvas.addEventListener('touchend', function(e) {
+                e.preventDefault();
+                isMouseDown = false;
+                stopWelding();
+            });
+        }
+
+        function handleTouch(e) {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const mouseEvent = new MouseEvent(e.type === 'touchstart' ? 'mousedown' : 'mousemove', {
+                clientX: touch.clientX,
+                clientY: touch.clientY
+            });
+            e.target.dispatchEvent(mouseEvent);
+        }
+
+        function startWelding(e) {
+            if (!gameState.isPlaying || gameState.isPaused) return;
+            
+            e.preventDefault();
+            gameState.level1.isWelding = true;
+            const rect = e.currentTarget.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            // Start new path if not continuing
+            if (!gameState.level1.playerPath || gameState.level1.playerPath === '') {
+                gameState.level1.playerPath = `M ${x} ${y}`;
+            }
+            document.getElementById('playerPath').setAttribute('d', gameState.level1.playerPath);
+            
+            // Show electrode
+            const electrode = document.getElementById('electrode');
+            electrode.style.display = 'block';
+            electrode.style.left = (x - 8) + 'px';
+            electrode.style.top = (y - 8) + 'px';
+            
+            createSparks(x, y, 5);
+            playWeldingSound();
+        }
+
+        function updateWelding(e) {
+            if (!gameState.level1.isWelding || !gameState.isPlaying || gameState.isPaused) return;
+            
+            e.preventDefault();
+            const rect = e.currentTarget.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            // Update electrode position
+            const electrode = document.getElementById('electrode');
+            electrode.style.display = 'block';
+            electrode.style.left = (x - 8) + 'px';
+            electrode.style.top = (y - 8) + 'px';
+            
+            // Update welding path - make sure we have a valid starting point
+            if (!gameState.level1.playerPath || gameState.level1.playerPath === '') {
+                gameState.level1.playerPath = `M ${x} ${y}`;
+            } else {
+                gameState.level1.playerPath += ` L ${x} ${y}`;
+            }
+            
+            // Apply the path to the SVG
+            const playerPathElement = document.getElementById('playerPath');
+            playerPathElement.setAttribute('d', gameState.level1.playerPath);
+            
+            // Calculate welding progress based on horizontal movement (more generous)
+            const progressX = Math.max(0, Math.min(100, (x - 50) / 500 * 100));
+            gameState.level1.weldProgress = Math.max(gameState.level1.weldProgress, progressX);
+            
+            // Much slower heat increase for easier control
+            gameState.level1.heat += 0.5;
+            if (gameState.level1.heat > 100) gameState.level1.heat = 100;
+            
+            updateHeatGauge();
+            createSparks(x, y, 2);
+            
+            // Update progress display
+            document.getElementById('levelProgress').textContent = `ความคืบหน้า: ${Math.round(gameState.level1.weldProgress)}%`;
+            
+            // Check completion (much easier threshold)
+            if (gameState.level1.weldProgress >= 75) {
+                setTimeout(() => {
+                    completeLevel1();
+                }, 500);
+            }
+            
+            // Play sound occasionally to avoid spam
+            if (Math.random() < 0.3) {
+                playWeldingSound();
+            }
+        }
+
+        function stopWelding(e) {
+            if (e) e.preventDefault();
+            
+            gameState.level1.isWelding = false;
+            
+            // Cool down heat gradually (much faster cooling)
+            if (!gameState.level1.coolDownActive) {
+                gameState.level1.coolDownActive = true;
+                const coolDown = setInterval(() => {
+                    if (gameState.level1.heat > 0 && !gameState.level1.isWelding) {
+                        gameState.level1.heat -= 2.0;
+                        if (gameState.level1.heat < 0) gameState.level1.heat = 0;
+                        updateHeatGauge();
+                    } else if (gameState.level1.heat <= 0) {
+                        gameState.level1.coolDownActive = false;
+                        clearInterval(coolDown);
+                    }
+                }, 30);
+            }
+        }
+
+        function updateHeatGauge() {
+            const heatGauge = document.getElementById('heatGauge');
+            heatGauge.style.width = gameState.level1.heat + '%';
+            
+            if (gameState.level1.heat > 80) {
+                heatGauge.style.background = 'linear-gradient(90deg, #f44336 0%, #d32f2f 100%)';
+            } else if (gameState.level1.heat > 50) {
+                heatGauge.style.background = 'linear-gradient(90deg, #ffeb3b 0%, #ff9800 100%)';
+            } else {
+                heatGauge.style.background = 'linear-gradient(90deg, #4caf50 0%, #8bc34a 100%)';
+            }
+        }
+
+        function completeLevel1() {
+            const endTime = Date.now();
+            const timeSpent = (endTime - gameState.level1.startTime) / 1000;
+            
+            // Calculate scores
+            const accuracyScore = Math.max(0, 100 - gameState.level1.heat);
+            const speedScore = Math.max(0, 100 - (timeSpent - 10) * 2);
+            const safetyScore = gameState.level1.heat < 80 ? 100 : 50;
+            
+            gameState.scores.accuracy += accuracyScore / 3;
+            gameState.scores.speed += speedScore / 3;
+            gameState.scores.safety += safetyScore / 3;
+            
+            setTimeout(() => {
+                startLevel2();
+            }, 1000);
+        }
+
+        // Level 2: 3D Welding Arena
+        function startLevel2() {
+            gameState.currentLevel = 2;
+            gameState.level2 = {
+                weldedPoints: 0,
+                totalPoints: 3,
+                timeLeft: 60,
+                playerPosition: { x: 50, y: 90 }
+            };
+            
+            document.getElementById('levelTitle').textContent = '🏗️ Level 2: 3D Welding Arena';
+            document.getElementById('levelProgress').textContent = `เชื่อมจุดที่เหลือ: ${gameState.level2.totalPoints - gameState.level2.weldedPoints}`;
+            document.getElementById('gameInstructions').textContent = 'คลิกที่จุดสีแดงเพื่อเชื่อม - เสร็จก่อนเวลาหมด!';
+            
+            // Show hint
+            document.getElementById('levelHint').classList.remove('hidden');
+            document.getElementById('hintText').textContent = 'คลิกที่จุดสีแดงที่กระพริบ เชื่อมให้เร็วที่สุดก่อนเวลาหมด';
+            
+            // Show relevant UI
+            document.getElementById('heatGaugeContainer').classList.add('hidden');
+            document.getElementById('timerContainer').classList.remove('hidden');
+            document.getElementById('pressureContainer').classList.add('hidden');
+            
+            // Show level canvas
+            document.getElementById('level1Canvas').classList.add('hidden');
+            document.getElementById('level2Canvas').classList.remove('hidden');
+            document.getElementById('level3Canvas').classList.add('hidden');
+            
+            startLevel2Timer();
+        }
+
+        function startLevel2Timer() {
+            const timer = setInterval(() => {
+                if (!gameState.isPlaying || gameState.isPaused) return;
+                
+                gameState.level2.timeLeft--;
+                document.getElementById('timer').textContent = gameState.level2.timeLeft;
+                
+                if (gameState.level2.timeLeft <= 0) {
+                    clearInterval(timer);
+                    completeLevel2();
+                }
+            }, 1000);
+        }
+
+        function weldPoint(element) {
+            if (!gameState.isPlaying) return;
+            
+            element.style.background = '#4caf50';
+            element.classList.remove('animate-pulse');
+            element.onclick = null;
+            
+            gameState.level2.weldedPoints++;
+            document.getElementById('levelProgress').textContent = `เชื่อมจุดที่เหลือ: ${gameState.level2.totalPoints - gameState.level2.weldedPoints}`;
+            
+            // Create welding effect
+            const rect = element.getBoundingClientRect();
+            const canvasRect = document.getElementById('level2Canvas').getBoundingClientRect();
+            createSparks(rect.left - canvasRect.left + 12, rect.top - canvasRect.top + 12, 8);
+            
+            playWeldingSound();
+            
+            if (gameState.level2.weldedPoints >= gameState.level2.totalPoints) {
+                setTimeout(() => {
+                    completeLevel2();
+                }, 500);
+            }
+        }
+
+        function completeLevel2() {
+            // Calculate scores
+            const accuracyScore = (gameState.level2.weldedPoints / gameState.level2.totalPoints) * 100;
+            const speedScore = Math.max(0, (gameState.level2.timeLeft / 60) * 100);
+            const safetyScore = gameState.level2.weldedPoints === gameState.level2.totalPoints ? 100 : 70;
+            
+            gameState.scores.accuracy += accuracyScore / 3;
+            gameState.scores.speed += speedScore / 3;
+            gameState.scores.safety += safetyScore / 3;
+            
+            setTimeout(() => {
+                startLevel3();
+            }, 1000);
+        }
+
+        // Level 3: Rescue Welding
+        function startLevel3() {
+            gameState.currentLevel = 3;
+            gameState.level3 = {
+                selectedEquipment: null,
+                repairedLeaks: 0,
+                totalLeaks: 3,
+                pressure: 0,
+                timeLeft: 45
+            };
+            
+            document.getElementById('levelTitle').textContent = '🚨 Level 3: Rescue Welding';
+            document.getElementById('levelProgress').textContent = `รอยรั่วที่เหลือ: ${gameState.level3.totalLeaks - gameState.level3.repairedLeaks}`;
+            document.getElementById('gameInstructions').textContent = 'เลือกอุปกรณ์แล้วคลิกซ่อมรอยรั่ว - ระวังแรงดันระเบิด!';
+            
+            // Show hint
+            document.getElementById('levelHint').classList.remove('hidden');
+            document.getElementById('hintText').textContent = 'เลือกอุปกรณ์ด้านล่างก่อน (Electrode→Shield→Gas) แล้วคลิกซ่อมรอยรั่วตามลำดับ';
+            
+            // Show relevant UI
+            document.getElementById('heatGaugeContainer').classList.add('hidden');
+            document.getElementById('timerContainer').classList.remove('hidden');
+            document.getElementById('pressureContainer').classList.remove('hidden');
+            
+            // Show level canvas
+            document.getElementById('level1Canvas').classList.add('hidden');
+            document.getElementById('level2Canvas').classList.add('hidden');
+            document.getElementById('level3Canvas').classList.remove('hidden');
+            
+            startLevel3Timer();
+            startPressureIncrease();
+        }
+
+        function startLevel3Timer() {
+            const timer = setInterval(() => {
+                if (!gameState.isPlaying || gameState.isPaused) return;
+                
+                gameState.level3.timeLeft--;
+                document.getElementById('timer').textContent = gameState.level3.timeLeft;
+                
+                if (gameState.level3.timeLeft <= 0) {
+                    clearInterval(timer);
+                    completeLevel3();
+                }
+            }, 1000);
+        }
+
+        function startPressureIncrease() {
+            const pressureTimer = setInterval(() => {
+                if (!gameState.isPlaying || gameState.isPaused) return;
+                
+                gameState.level3.pressure += 2;
+                if (gameState.level3.pressure > 100) gameState.level3.pressure = 100;
+                
+                document.getElementById('pressureGauge').style.width = gameState.level3.pressure + '%';
+                
+                if (gameState.level3.pressure >= 100) {
+                    clearInterval(pressureTimer);
+                    completeLevel3();
+                }
+            }, 500);
+        }
+
+        function selectEquipment(type) {
+            gameState.level3.selectedEquipment = type;
+            
+            // Update button states
+            document.querySelectorAll('.equipment-btn').forEach(btn => {
+                btn.classList.remove('ring-4', 'ring-cyan-400');
+            });
+            
+            event.target.classList.add('ring-4', 'ring-cyan-400');
+        }
+
+        function repairLeak(element) {
+            if (!gameState.isPlaying || !gameState.level3.selectedEquipment) {
+                alert('เลือกอุปกรณ์ก่อนซ่อม!');
+                return;
+            }
+            
+            // Check if correct equipment is selected (simplified logic)
+            const correctEquipment = ['electrode', 'shield', 'gas'][gameState.level3.repairedLeaks];
+            const isCorrect = gameState.level3.selectedEquipment === correctEquipment;
+            
+            if (isCorrect) {
+                element.style.background = '#4caf50';
+                element.classList.remove('animate-ping');
+                element.onclick = null;
+                
+                gameState.level3.repairedLeaks++;
+                gameState.level3.pressure = Math.max(0, gameState.level3.pressure - 20);
+                
+                document.getElementById('levelProgress').textContent = `รอยรั่วที่เหลือ: ${gameState.level3.totalLeaks - gameState.level3.repairedLeaks}`;
+                
+                // Create repair effect
+                const rect = element.getBoundingClientRect();
+                const canvasRect = document.getElementById('level3Canvas').getBoundingClientRect();
+                createSparks(rect.left - canvasRect.left + 16, rect.top - canvasRect.top + 16, 10);
+                
+                playWeldingSound();
+                
+                if (gameState.level3.repairedLeaks >= gameState.level3.totalLeaks) {
+                    setTimeout(() => {
+                        completeLevel3();
+                    }, 500);
+                }
+            } else {
+                gameState.level3.pressure += 10;
+                alert('อุปกรณ์ไม่ถูกต้อง! แรงดันเพิ่มขึ้น');
+            }
+        }
+
+        function completeLevel3() {
+            // Calculate final scores
+            const accuracyScore = (gameState.level3.repairedLeaks / gameState.level3.totalLeaks) * 100;
+            const speedScore = Math.max(0, (gameState.level3.timeLeft / 45) * 100);
+            const safetyScore = Math.max(0, 100 - gameState.level3.pressure);
+            
+            gameState.scores.accuracy += accuracyScore / 3;
+            gameState.scores.speed += speedScore / 3;
+            gameState.scores.safety += safetyScore / 3;
+            
+            gameState.isPlaying = false;
+            showResults();
+        }
+
+        // Show Results
+        function showResults() {
+            document.getElementById('gameScreen').classList.add('hidden');
+            document.getElementById('resultsScreen').classList.remove('hidden');
+            
+            // Animate score display
+            setTimeout(() => {
+                animateScore('accuracy', Math.round(gameState.scores.accuracy));
+            }, 500);
+            
+            setTimeout(() => {
+                animateScore('speed', Math.round(gameState.scores.speed));
+            }, 1000);
+            
+            setTimeout(() => {
+                animateScore('safety', Math.round(gameState.scores.safety));
+            }, 1500);
+            
+            setTimeout(() => {
+                const totalScore = Math.round((gameState.scores.accuracy + gameState.scores.speed + gameState.scores.safety) / 3);
+                animateTotalScore(totalScore);
+                showSkillAssessment(totalScore);
+            }, 2000);
+        }
+
+        function animateScore(type, score) {
+            const scoreElement = document.getElementById(type + 'Score');
+            const barElement = document.getElementById(type + 'Bar');
+            
+            let currentScore = 0;
+            const increment = score / 50;
+            
+            const animation = setInterval(() => {
+                currentScore += increment;
+                if (currentScore >= score) {
+                    currentScore = score;
+                    clearInterval(animation);
+                }
+                
+                scoreElement.textContent = Math.round(currentScore) + '%';
+                barElement.style.width = Math.round(currentScore) + '%';
+            }, 20);
+        }
+
+        function animateTotalScore(totalScore) {
+            const totalElement = document.getElementById('totalScore');
+            let currentScore = 0;
+            const increment = totalScore / 50;
+            
+            const animation = setInterval(() => {
+                currentScore += increment;
+                if (currentScore >= totalScore) {
+                    currentScore = totalScore;
+                    clearInterval(animation);
+                }
+                
+                totalElement.textContent = Math.round(currentScore);
+            }, 20);
+        }
+
+        function showSkillAssessment(totalScore) {
+            const skillLevel = document.getElementById('skillLevel');
+            const recommendation = document.getElementById('recommendation');
+            
+            if (totalScore >= 80) {
+                skillLevel.innerHTML = '🔧 <span class="text-yellow-400">Master Welder</span>';
+                skillLevel.className = 'text-xl font-bold mb-4 text-yellow-400';
+                recommendation.textContent = 'ยอดเยี่ยม! คุณมีทักษะการเชื่อมระดับสูง เหมาะกับงานโครงสร้างใหญ่และงานเชื่อมละเอียดที่ต้องการความแม่นยำสูง';
+            } else if (totalScore >= 65) {
+                skillLevel.innerHTML = '⚡ <span class="text-cyan-400">Quick Responder</span>';
+                skillLevel.className = 'text-xl font-bold mb-4 text-cyan-400';
+                recommendation.textContent = 'ดีมาก! คุณถนัดการแก้ปัญหาเฉพาะหน้า เหมาะกับงานซ่อมฉุกเฉิน โรงงานผลิต และงานที่ต้องการความรวดเร็ว';
+            } else if (totalScore >= 50) {
+                skillLevel.innerHTML = '🎯 <span class="text-green-400">Organizer</span>';
+                skillLevel.className = 'text-xl font-bold mb-4 text-green-400';
+                recommendation.textContent = 'ดี! คุณถนัดการวางแผนและควบคุมงาน เหมาะกับตำแหน่งหัวหน้าช่าง ควบคุมคุณภาพ หรือการจัดการโครงการ';
+            } else {
+                skillLevel.innerHTML = '📚 <span class="text-orange-400">ต้องพัฒนา</span>';
+                skillLevel.className = 'text-xl font-bold mb-4 text-orange-400';
+                recommendation.textContent = 'ยังต้องฝึกฝนเพิ่มเติม แนะนำให้เริ่มต้นเรียนรู้จากงานพื้นฐาน หลีกเลี่ยงงานที่มีความเสี่ยงสูง และฝึกทักษะความแม่นยำ';
+            }
+        }
+
+        // Game Controls
+        function pauseGame() {
+            gameState.isPaused = !gameState.isPaused;
+            const button = event.target;
+            button.textContent = gameState.isPaused ? '▶️ เล่นต่อ' : '⏸️ หยุดชั่วคราว';
+        }
+
+        function restartGame() {
+            // Reset all game state
+            gameState = {
+                currentLevel: 1,
+                isPlaying: false,
+                isPaused: false,
+                scores: { accuracy: 0, speed: 0, safety: 0 },
+                level1: { heat: 0, weldProgress: 0, isWelding: false, playerPath: '', startTime: null },
+                level2: { weldedPoints: 0, totalPoints: 3, timeLeft: 60, playerPosition: { x: 50, y: 90 } },
+                level3: { selectedEquipment: null, repairedLeaks: 0, totalLeaks: 3, pressure: 0, timeLeft: 45 }
+            };
+            
+            // Reset UI elements
+            document.getElementById('playerPath').setAttribute('d', '');
+            document.querySelectorAll('.weld-point').forEach(point => {
+                point.style.background = '#f44336';
+                point.classList.add('animate-pulse');
+                point.onclick = function() { weldPoint(this); };
+            });
+            document.querySelectorAll('.leak-point').forEach(leak => {
+                leak.style.background = '#f44336';
+                leak.classList.add('animate-ping');
+                leak.onclick = function() { repairLeak(this); };
+            });
+            document.querySelectorAll('.equipment-btn').forEach(btn => {
+                btn.classList.remove('ring-4', 'ring-cyan-400');
+            });
+            
+            startGame();
+        }
+
+        function restartLevel() {
+            if (gameState.currentLevel === 1) {
+                startLevel1();
+            } else if (gameState.currentLevel === 2) {
+                startLevel2();
+            } else if (gameState.currentLevel === 3) {
+                startLevel3();
+            }
+        }
+
+        function backToMenu() {
+            document.getElementById('gameScreen').classList.add('hidden');
+            document.getElementById('resultsScreen').classList.add('hidden');
+            document.getElementById('mainMenu').classList.remove('hidden');
+            
+            // Reset game state
+            gameState = {
+                currentLevel: 1,
+                isPlaying: false,
+                isPaused: false,
+                scores: { accuracy: 0, speed: 0, safety: 0 },
+                level1: { heat: 0, weldProgress: 0, isWelding: false, playerPath: '', startTime: null },
+                level2: { weldedPoints: 0, totalPoints: 3, timeLeft: 60, playerPosition: { x: 50, y: 90 } },
+                level3: { selectedEquipment: null, repairedLeaks: 0, totalLeaks: 3, pressure: 0, timeLeft: 45 }
+            };
+            
+            // Reset UI elements
+            document.getElementById('playerPath').setAttribute('d', '');
+            document.getElementById('heatGauge').style.width = '0%';
+            document.querySelectorAll('.weld-point').forEach(point => {
+                point.style.background = '#f44336';
+                point.classList.add('animate-pulse');
+                point.onclick = function() { weldPoint(this); };
+            });
+            document.querySelectorAll('.leak-point').forEach(leak => {
+                leak.style.background = '#f44336';
+                leak.classList.add('animate-ping');
+                leak.onclick = function() { repairLeak(this); };
+            });
+            document.querySelectorAll('.equipment-btn').forEach(btn => {
+                btn.classList.remove('ring-4', 'ring-cyan-400');
+            });
+        }
+
+        // Initialize game when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add some initial visual effects
+            setInterval(() => {
+                if (document.getElementById('mainMenu').classList.contains('hidden')) return;
+                
+                const x = Math.random() * window.innerWidth;
+                const y = Math.random() * window.innerHeight;
+                createSparks(x, y, 1);
+            }, 2000);
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9785c4c4a4d57b68',t:'MTc1Njc0MDIwNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

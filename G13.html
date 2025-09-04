@@ -1,0 +1,2110 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>From Startup to Tech Empire - เกมจำลองเส้นทางธุรกิจคอมพิวเตอร์</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Kanit', sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            overflow-x: hidden;
+        }
+        
+        .cyber-glow {
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+            border: 1px solid rgba(0, 255, 136, 0.5);
+        }
+        
+        .code-block {
+            background: linear-gradient(45deg, #1a1a2e, #16213e);
+            border: 2px solid #00ff88;
+            border-radius: 12px;
+            padding: 15px;
+            margin: 8px;
+            cursor: grab;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 255, 136, 0.3);
+            user-select: none;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-weight: 500;
+        }
+        
+        .code-block:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 25px rgba(0, 255, 136, 0.5);
+            border-color: #00d4ff;
+        }
+        
+        .code-block:active {
+            transform: scale(0.95);
+        }
+        
+        .code-block.used {
+            opacity: 0.3;
+            cursor: not-allowed;
+            transform: scale(0.9);
+        }
+        
+        .drop-zone {
+            min-height: 80px;
+            border: 3px dashed #00ff88;
+            border-radius: 12px;
+            background: rgba(0, 255, 136, 0.1);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 10px 0;
+            position: relative;
+        }
+        
+        .drop-zone.filled {
+            border-color: #00d4ff;
+            background: rgba(0, 212, 255, 0.2);
+        }
+        
+        .drop-zone.correct {
+            border-color: #00ff88;
+            background: rgba(0, 255, 136, 0.3);
+            animation: pulse-green 1s ease-in-out;
+        }
+        
+        .drop-zone.incorrect {
+            border-color: #ff4757;
+            background: rgba(255, 71, 87, 0.3);
+            animation: shake 0.5s ease-in-out;
+        }
+        
+        @keyframes pulse-green {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.7); }
+            50% { box-shadow: 0 0 0 20px rgba(0, 255, 136, 0); }
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+        
+        .server-card {
+            background: linear-gradient(45deg, #2c3e50, #34495e);
+            border: 2px solid #3498db;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .server-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(52, 152, 219, 0.3);
+        }
+        
+        .server-card.active {
+            border-color: #e74c3c;
+            background: linear-gradient(45deg, #c0392b, #e74c3c);
+            box-shadow: 0 0 30px rgba(231, 76, 60, 0.5);
+        }
+        
+        .server-card.working {
+            border-color: #f39c12;
+            background: linear-gradient(45deg, #d68910, #f39c12);
+            animation: working-pulse 2s infinite;
+        }
+        
+        @keyframes working-pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .progress-bar {
+            background: linear-gradient(90deg, #00ff88, #00d4ff);
+            height: 10px;
+            border-radius: 5px;
+            transition: width 0.5s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            animation: progress-shine 2s infinite;
+        }
+        
+        @keyframes progress-shine {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .world-map {
+            background: radial-gradient(circle at center, #0f0f23 0%, #1a1a2e 100%);
+            border-radius: 20px;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid rgba(0, 255, 136, 0.3);
+        }
+        
+        .country-node {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border-radius: 50%;
+            border: 3px solid #00ff88;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            z-index: 10;
+        }
+        
+        .country-node:hover {
+            transform: scale(1.3);
+            box-shadow: 0 0 30px rgba(0, 255, 136, 0.8);
+            z-index: 20;
+        }
+        
+        .country-node.owned {
+            background: linear-gradient(45deg, #00ff88, #00d4ff);
+            border-color: #ffd700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+        }
+        
+        .country-node.available {
+            animation: available-pulse 3s infinite;
+        }
+        
+        @keyframes available-pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.7); }
+            50% { box-shadow: 0 0 0 15px rgba(0, 255, 136, 0); }
+        }
+        
+        .floating-animation {
+            animation: float 4s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+        }
+        
+        .neon-text {
+            text-shadow: 0 0 10px #00ff88, 0 0 20px #00ff88, 0 0 30px #00ff88;
+        }
+        
+        .cyber-button {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: 2px solid #00ff88;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .cyber-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .cyber-button:hover::before {
+            left: 100%;
+        }
+        
+        .cyber-button:hover {
+            background: linear-gradient(45deg, #00ff88, #00d4ff);
+            box-shadow: 0 0 25px rgba(0, 255, 136, 0.5);
+            transform: translateY(-3px);
+        }
+        
+        .cyber-button:active {
+            transform: translateY(0);
+        }
+        
+        .cyber-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .stats-panel {
+            background: rgba(26, 26, 46, 0.9);
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 10px;
+            color: white;
+            font-weight: 500;
+            z-index: 1000;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        .notification.success {
+            background: linear-gradient(45deg, #27ae60, #2ecc71);
+            border: 2px solid #00ff88;
+        }
+        
+        .notification.error {
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+            border: 2px solid #ff4757;
+        }
+        
+        .notification.info {
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            border: 2px solid #00d4ff;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .task-card {
+            background: linear-gradient(45deg, #2c3e50, #34495e);
+            border: 2px solid #f39c12;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 15px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .task-card.urgent {
+            border-color: #e74c3c;
+            animation: urgent-blink 2s infinite;
+        }
+        
+        @keyframes urgent-blink {
+            0%, 100% { border-color: #e74c3c; }
+            50% { border-color: #ff6b6b; }
+        }
+        
+        .staff-card {
+            background: linear-gradient(45deg, #8e44ad, #9b59b6);
+            border: 2px solid #00ff88;
+            border-radius: 15px;
+            padding: 15px;
+            margin: 10px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .staff-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 5px 20px rgba(142, 68, 173, 0.4);
+        }
+        
+        .staff-card.working {
+            border-color: #f39c12;
+            background: linear-gradient(45d, #d68910, #f39c12);
+        }
+        
+        .staff-card.available {
+            border-color: #27ae60;
+        }
+        
+        .connection-line {
+            position: absolute;
+            height: 2px;
+            background: linear-gradient(90deg, #00ff88, #00d4ff);
+            opacity: 0.6;
+            animation: data-flow 3s infinite;
+        }
+        
+        @keyframes data-flow {
+            0% { opacity: 0.3; }
+            50% { opacity: 1; }
+            100% { opacity: 0.3; }
+        }
+    </style>
+</head>
+<body class="min-h-screen text-white">
+    <!-- Game Container -->
+    <div id="gameContainer" class="min-h-screen">
+        <!-- Start Screen -->
+        <div id="startScreen" class="flex items-center justify-center min-h-screen p-4">
+            <div class="text-center cyber-glow bg-gray-900 bg-opacity-90 p-12 rounded-2xl max-w-4xl">
+                <h1 class="text-6xl font-bold mb-8 neon-text floating-animation">🎮 From Startup to Tech Empire</h1>
+                <p class="text-2xl mb-8 text-gray-300">เกมจำลองเส้นทางธุรกิจคอมพิวเตอร์</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+                    <div class="stats-panel p-6 rounded-xl">
+                        <div class="text-4xl mb-3">👨‍💻</div>
+                        <h3 class="text-xl font-semibold mb-2">Phase 1: Coding Factory</h3>
+                        <p class="text-gray-400">เรียงลำดับโค้ดแบบ Puzzle เพื่อสร้างโปรแกรม</p>
+                    </div>
+                    <div class="stats-panel p-6 rounded-xl">
+                        <div class="text-4xl mb-3">🧑‍💼</div>
+                        <h3 class="text-xl font-semibold mb-2">Phase 2: IT Management</h3>
+                        <p class="text-gray-400">บริหารทีมงานและเซิร์ฟเวอร์ให้ทำงานเสร็จทันเวลา</p>
+                    </div>
+                    <div class="stats-panel p-6 rounded-xl">
+                        <div class="text-4xl mb-3">🌍</div>
+                        <h3 class="text-xl font-semibold mb-2">Phase 3: Global Empire</h3>
+                        <p class="text-gray-400">ขยายธุรกิจไปทั่วโลกและจัดการวิกฤต</p>
+                    </div>
+                </div>
+                
+                <button onclick="startGame()" class="cyber-button text-xl px-8 py-4">🚀 เริ่มเกม</button>
+            </div>
+        </div>
+
+        <!-- Phase 1: Coding Factory -->
+        <div id="phase1" class="hidden p-6">
+            <div class="max-w-7xl mx-auto">
+                <!-- Header -->
+                <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8 gap-4">
+                    <h2 class="text-4xl font-bold neon-text">👨‍💻 Phase 1: Coding Factory</h2>
+                    <div class="stats-panel p-6 flex flex-wrap gap-6">
+                        <div class="text-center">
+                            <div class="text-sm text-gray-400">คะแนน</div>
+                            <div id="phase1Score" class="text-2xl text-green-400 font-bold">0</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-sm text-gray-400">เวลา</div>
+                            <div id="phase1Timer" class="text-2xl text-yellow-400 font-bold">90</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-sm text-gray-400">งาน</div>
+                            <div id="phase1Task" class="text-2xl text-blue-400 font-bold">1/3</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Task Description -->
+                <div id="taskDescription" class="cyber-glow bg-gray-900 p-8 rounded-xl mb-8">
+                    <h3 class="text-2xl font-semibold mb-4">🎯 ภารกิจปัจจุบัน</h3>
+                    <p id="taskText" class="text-lg text-gray-300 mb-4">กำลังโหลดภารกิจ...</p>
+                    <div class="bg-gray-800 rounded-lg p-4">
+                        <div class="text-sm text-gray-400 mb-2">ความคืบหน้า</div>
+                        <div class="bg-gray-700 rounded-full h-4">
+                            <div id="taskProgressBar" class="progress-bar h-4 rounded-full" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
+                    <!-- Code Blocks Pool -->
+                    <div class="xl:col-span-1">
+                        <h4 class="text-2xl font-semibold mb-6 flex items-center">
+                            📦 บล็อกโค้ด
+                            <span class="ml-3 text-sm bg-blue-600 px-3 py-1 rounded-full">คลิกเพื่อเลือก</span>
+                        </h4>
+                        <div id="codeBlocksPool" class="space-y-4">
+                            <!-- Code blocks will be generated here -->
+                        </div>
+                    </div>
+
+                    <!-- Assembly Area -->
+                    <div class="xl:col-span-2">
+                        <h4 class="text-2xl font-semibold mb-6 flex items-center">
+                            🔧 พื้นที่ประกอบโปรแกรม
+                            <span class="ml-3 text-sm bg-green-600 px-3 py-1 rounded-full">เรียงตามลำดับ</span>
+                        </h4>
+                        <div id="assemblyArea" class="space-y-4 mb-8">
+                            <!-- Drop zones will be generated here -->
+                        </div>
+                        <div class="flex flex-wrap gap-4">
+                            <button onclick="checkProgram()" class="cyber-button" id="checkBtn">
+                                ✅ ตรวจสอบโปรแกรม
+                            </button>
+                            <button onclick="resetProgram()" class="cyber-button">
+                                🔄 รีเซ็ต
+                            </button>
+                            <button onclick="getHint()" class="cyber-button" id="hintBtn">
+                                💡 คำใบ้ (เหลือ <span id="hintsLeft">2</span>)
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Phase 2: IT Business Management -->
+        <div id="phase2" class="hidden p-6">
+            <div class="max-w-7xl mx-auto">
+                <!-- Header -->
+                <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8 gap-4">
+                    <h2 class="text-4xl font-bold neon-text">🧑‍💼 Phase 2: IT Business Management</h2>
+                    <div class="stats-panel p-6 flex flex-wrap gap-6">
+                        <div class="text-center">
+                            <div class="text-sm text-gray-400">คะแนน</div>
+                            <div id="phase2Score" class="text-2xl text-green-400 font-bold">0</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-sm text-gray-400">งบประมาณ</div>
+                            <div id="budget" class="text-2xl text-yellow-400 font-bold">150,000฿</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-sm text-gray-400">ความพอใจ</div>
+                            <div id="satisfaction" class="text-2xl text-blue-400 font-bold">100%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Current Tasks -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                    <div>
+                        <h4 class="text-2xl font-semibold mb-4">📋 งานที่รอดำเนินการ</h4>
+                        <div id="taskQueue" class="space-y-4 max-h-96 overflow-y-auto">
+                            <!-- Tasks will be generated here -->
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h4 class="text-2xl font-semibold mb-4">⚡ สถานะระบบ</h4>
+                        <div id="systemStatus" class="stats-panel p-6 rounded-xl">
+                            <div class="grid grid-cols-2 gap-4 text-center">
+                                <div>
+                                    <div class="text-3xl mb-2">🖥️</div>
+                                    <div class="text-sm text-gray-400">เซิร์ฟเวอร์ทำงาน</div>
+                                    <div id="activeServers" class="text-xl font-bold text-green-400">0/4</div>
+                                </div>
+                                <div>
+                                    <div class="text-3xl mb-2">👥</div>
+                                    <div class="text-sm text-gray-400">พนักงานทำงาน</div>
+                                    <div id="activeStaff" class="text-xl font-bold text-blue-400">0/3</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
+                    <!-- Servers -->
+                    <div>
+                        <div class="flex justify-between items-center mb-6">
+                            <h4 class="text-2xl font-semibold">🖥️ เซิร์ฟเวอร์และเครื่องคอมพิวเตอร์</h4>
+                            <button onclick="upgradeServer()" class="cyber-button" id="upgradeBtn">
+                                ⬆️ อัพเกรด (25,000฿)
+                            </button>
+                        </div>
+                        <div id="serversGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Servers will be generated here -->
+                        </div>
+                    </div>
+
+                    <!-- Staff -->
+                    <div>
+                        <div class="flex justify-between items-center mb-6">
+                            <h4 class="text-2xl font-semibold">👥 ทีมงาน</h4>
+                            <button onclick="hireStaff()" class="cyber-button" id="hireBtn">
+                                ➕ จ้างพนักงาน (15,000฿)
+                            </button>
+                        </div>
+                        <div id="staffGrid" class="space-y-4">
+                            <!-- Staff will be generated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Phase 3: Global Tech Empire -->
+        <div id="phase3" class="hidden p-6">
+            <div class="max-w-7xl mx-auto">
+                <!-- Header -->
+                <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8 gap-4">
+                    <h2 class="text-4xl font-bold neon-text">🌍 Phase 3: Global Tech Empire</h2>
+                    <div class="stats-panel p-6 flex flex-wrap gap-6">
+                        <div class="text-center">
+                            <div class="text-sm text-gray-400">คะแนน</div>
+                            <div id="phase3Score" class="text-2xl text-green-400 font-bold">0</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-sm text-gray-400">รายได้/เดือน</div>
+                            <div id="revenue" class="text-2xl text-yellow-400 font-bold">500,000฿</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-sm text-gray-400">สาขา</div>
+                            <div id="branches" class="text-2xl text-blue-400 font-bold">1/8</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Event Panel -->
+                <div id="eventPanel" class="cyber-glow bg-gray-900 p-8 rounded-xl mb-8">
+                    <h3 class="text-2xl font-semibold mb-4 flex items-center">
+                        ⚡ เหตุการณ์ปัจจุบัน
+                        <span class="ml-4 text-sm bg-red-600 px-3 py-1 rounded-full animate-pulse">ต้องตัดสินใจ!</span>
+                    </h3>
+                    <p id="eventDescription" class="text-lg text-gray-300 mb-6">บริษัทของคุณกำลังเติบโต เลือกประเทศแรกที่จะขยายธุรกิจ</p>
+                    <div id="eventChoices" class="flex flex-wrap gap-4">
+                        <!-- Event choices will be generated here -->
+                    </div>
+                </div>
+
+                <!-- World Map -->
+                <div class="world-map cyber-glow p-8 h-[500px] relative mb-8">
+                    <h4 class="text-2xl font-semibold mb-6 text-center">🗺️ แผนที่โลก - คลิกเพื่อขยายธุรกิจ</h4>
+                    
+                    <!-- Connection lines will be drawn here -->
+                    <svg class="absolute inset-0 w-full h-full pointer-events-none" id="connectionSvg">
+                        <!-- Connection lines between countries -->
+                    </svg>
+                    
+                    <!-- Countries -->
+                    <div class="country-node owned" style="top: 35%; left: 65%;" onclick="selectCountry('thailand')" data-country="thailand" title="ประเทศไทย (สำนักงานใหญ่)">🇹🇭</div>
+                    <div class="country-node available" style="top: 20%; left: 15%;" onclick="selectCountry('usa')" data-country="usa" title="สหรัฐอเมริกา - ต้นทุน: 800,000฿">🇺🇸</div>
+                    <div class="country-node available" style="top: 30%; left: 45%;" onclick="selectCountry('germany')" data-country="germany" title="เยอรมนี - ต้นทุน: 600,000฿">🇩🇪</div>
+                    <div class="country-node available" style="top: 25%; left: 55%;" onclick="selectCountry('russia')" data-country="russia" title="รัสเซีย - ต้นทุน: 500,000฿">🇷🇺</div>
+                    <div class="country-node available" style="top: 40%; left: 50%;" onclick="selectCountry('india')" data-country="india" title="อินเดีย - ต้นทุน: 400,000฿">🇮🇳</div>
+                    <div class="country-node available" style="top: 45%; left: 70%;" onclick="selectCountry('singapore')" data-country="singapore" title="สิงคโปร์ - ต้นทุน: 450,000฿">🇸🇬</div>
+                    <div class="country-node available" style="top: 15%; left: 75%;" onclick="selectCountry('japan')" data-country="japan" title="ญี่ปุ่น - ต้นทุน: 700,000฿">🇯🇵</div>
+                    <div class="country-node available" style="top: 20%; left: 80%;" onclick="selectCountry('korea')" data-country="korea" title="เกาหลีใต้ - ต้นทุน: 550,000฿">🇰🇷</div>
+                    <div class="country-node available" style="top: 60%; left: 20%;" onclick="selectCountry('brazil')" data-country="brazil" title="บราซิล - ต้นทุน: 350,000฿">🇧🇷</div>
+                </div>
+
+                <!-- Company Stats -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="stats-panel p-6 rounded-xl text-center">
+                        <div class="text-3xl mb-3">💰</div>
+                        <div class="text-lg font-semibold">รายได้รวม</div>
+                        <div id="totalRevenue" class="text-2xl text-green-400 font-bold">500,000฿</div>
+                    </div>
+                    <div class="stats-panel p-6 rounded-xl text-center">
+                        <div class="text-3xl mb-3">👥</div>
+                        <div class="text-lg font-semibold">พนักงานทั้งหมด</div>
+                        <div id="totalEmployees" class="text-2xl text-blue-400 font-bold">25 คน</div>
+                    </div>
+                    <div class="stats-panel p-6 rounded-xl text-center">
+                        <div class="text-3xl mb-3">🏆</div>
+                        <div class="text-lg font-semibold">อันดับโลก</div>
+                        <div id="worldRank" class="text-2xl text-purple-400 font-bold">#156</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Screen -->
+        <div id="resultsScreen" class="hidden flex items-center justify-center min-h-screen p-4">
+            <div class="text-center cyber-glow bg-gray-900 bg-opacity-95 p-12 rounded-2xl max-w-5xl">
+                <h2 class="text-5xl font-bold mb-8 neon-text">🏆 ผลการประเมินความสามารถ</h2>
+                
+                <div id="finalResults" class="space-y-8">
+                    <!-- Results will be populated here -->
+                </div>
+                
+                <div class="mt-10 flex flex-wrap justify-center gap-4">
+                    <button onclick="restartGame()" class="cyber-button text-lg px-6 py-3">
+                        🔄 เล่นใหม่
+                    </button>
+                    <button onclick="showStartScreen()" class="cyber-button text-lg px-6 py-3">
+                        🏠 หน้าหลัก
+                    </button>
+                    <button onclick="shareResults()" class="cyber-button text-lg px-6 py-3">
+                        📤 แชร์ผลลัพธ์
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Game State Management
+        let gameState = {
+            currentPhase: 0,
+            phase1: { 
+                score: 0, 
+                timer: 90, 
+                currentTask: 1, 
+                totalTasks: 3,
+                hintsUsed: 0,
+                maxHints: 2,
+                selectedBlocks: [],
+                correctSequence: []
+            },
+            phase2: { 
+                score: 0, 
+                budget: 150000, 
+                satisfaction: 100, 
+                servers: [], 
+                staff: [], 
+                tasks: [],
+                completedTasks: 0,
+                failedTasks: 0
+            },
+            phase3: { 
+                score: 0, 
+                revenue: 500000, 
+                branches: 1, 
+                ownedCountries: ['thailand'], 
+                events: [],
+                totalRevenue: 500000,
+                employees: 25,
+                worldRank: 156
+            },
+            totalScore: 0,
+            timers: []
+        };
+
+        // Phase 1 Configuration
+        const phase1Tasks = [
+            {
+                id: 1,
+                title: "สร้างระบบล็อกอินผู้ใช้",
+                description: "พัฒนาระบบการเข้าสู่ระบบที่ปลอดภัยสำหรับเว็บไซต์",
+                hint: "เริ่มต้นด้วยการรับข้อมูล จากนั้นตรวจสอบความถูกต้อง",
+                correctOrder: ["start", "input", "validate", "authenticate", "redirect"],
+                blocks: [
+                    { id: "start", text: "🚀 เริ่มต้นระบบ", color: "bg-green-600", description: "เปิดใช้งานระบบล็อกอิน" },
+                    { id: "input", text: "📝 รับข้อมูลผู้ใช้", color: "bg-blue-600", description: "รับ username และ password" },
+                    { id: "validate", text: "🔍 ตรวจสอบรูปแบบ", color: "bg-yellow-600", description: "ตรวจสอบความถูกต้องของข้อมูล" },
+                    { id: "authenticate", text: "🔐 ยืนยันตัวตน", color: "bg-purple-600", description: "เปรียบเทียบกับฐานข้อมูล" },
+                    { id: "redirect", text: "➡️ เข้าสู่หน้าหลัก", color: "bg-red-600", description: "นำผู้ใช้ไปยังหน้าที่ต้องการ" }
+                ]
+            },
+            {
+                id: 2,
+                title: "พัฒนาระบบชำระเงินออนไลน์",
+                description: "สร้างระบบการชำระเงินที่ปลอดภัยและรวดเร็ว",
+                hint: "ต้องคำนวณราคาก่อน จากนั้นจึงประมวลผลการชำระเงิน",
+                correctOrder: ["start", "calculate", "payment", "verify", "confirm"],
+                blocks: [
+                    { id: "start", text: "🚀 เริ่มต้นการชำระเงิน", color: "bg-green-600", description: "เปิดหน้าการชำระเงิน" },
+                    { id: "calculate", text: "💰 คำนวณยอดรวม", color: "bg-blue-600", description: "รวมราคาสินค้าและภาษี" },
+                    { id: "payment", text: "💳 ประมวลผลการชำระ", color: "bg-yellow-600", description: "เชื่อมต่อกับธนาคาร" },
+                    { id: "verify", text: "✅ ตรวจสอบการชำระ", color: "bg-purple-600", description: "ยืนยันการโอนเงิน" },
+                    { id: "confirm", text: "📧 ส่งใบเสร็จ", color: "bg-red-600", description: "ส่งยืนยันให้ลูกค้า" }
+                ]
+            },
+            {
+                id: 3,
+                title: "สร้างระบบจัดการข้อมูลลูกค้า",
+                description: "พัฒนาระบบ CRM สำหรับจัดเก็บและจัดการข้อมูลลูกค้า",
+                hint: "เก็บข้อมูลก่อน จากนั้นจึงประมวลผลและสร้างรายงาน",
+                correctOrder: ["start", "collect", "store", "process", "report"],
+                blocks: [
+                    { id: "start", text: "🚀 เริ่มต้นระบบ CRM", color: "bg-green-600", description: "เปิดใช้งานระบบจัดการลูกค้า" },
+                    { id: "collect", text: "📊 รวบรวมข้อมูล", color: "bg-blue-600", description: "เก็บข้อมูลจากหลายช่องทาง" },
+                    { id: "store", text: "💾 จัดเก็บฐานข้อมูล", color: "bg-yellow-600", description: "บันทึกลงฐานข้อมูล" },
+                    { id: "process", text: "⚙️ ประมวลผลข้อมูล", color: "bg-purple-600", description: "วิเคราะห์และจัดหมวดหมู่" },
+                    { id: "report", text: "📈 สร้างรายงาน", color: "bg-red-600", description: "แสดงผลเป็นกราฟและตาราง" }
+                ]
+            }
+        ];
+
+        // Phase 2 Configuration
+        const serverTypes = [
+            { id: 1, name: "Web Server Alpha", capacity: 60, efficiency: 80, status: "idle", progress: 0, cost: 25000 },
+            { id: 2, name: "Database Server Beta", capacity: 80, efficiency: 90, status: "idle", progress: 0, cost: 25000 },
+            { id: 3, name: "App Server Gamma", capacity: 70, efficiency: 85, status: "idle", progress: 0, cost: 25000 },
+            { id: 4, name: "File Server Delta", capacity: 50, efficiency: 75, status: "idle", progress: 0, cost: 25000 }
+        ];
+
+        const staffTypes = [
+            { id: 1, name: "นาย ก Frontend Dev", skill: "frontend", efficiency: 85, salary: 15000, status: "available", experience: "3 ปี" },
+            { id: 2, name: "นาง ข Backend Dev", skill: "backend", efficiency: 90, salary: 15000, status: "available", experience: "5 ปี" },
+            { id: 3, name: "นาย ค System Admin", skill: "system", efficiency: 80, salary: 15000, status: "available", experience: "4 ปี" }
+        ];
+
+        const taskTemplates = [
+            { name: "พัฒนาเว็บไซต์ E-commerce", difficulty: 3, reward: 35000, time: 45, type: "frontend" },
+            { name: "สร้างระบบฐานข้อมูล", difficulty: 4, reward: 40000, time: 60, type: "backend" },
+            { name: "แก้ไขปัญหาเซิร์ฟเวอร์", difficulty: 2, reward: 25000, time: 30, type: "system" },
+            { name: "อัพเดทระบบรักษาความปลอดภัย", difficulty: 5, reward: 50000, time: 75, type: "system" },
+            { name: "สร้างแอปพลิเคชันมือถือ", difficulty: 4, reward: 45000, time: 90, type: "frontend" },
+            { name: "ปรับปรุงประสิทธิภาพฐานข้อมูล", difficulty: 3, reward: 30000, time: 50, type: "backend" }
+        ];
+
+        // Phase 3 Configuration
+        const countries = {
+            usa: { name: "สหรัฐอเมริกา", cost: 800000, monthlyRevenue: 300000, employees: 50, difficulty: 4, flag: "🇺🇸" },
+            germany: { name: "เยอรมนี", cost: 600000, monthlyRevenue: 200000, employees: 35, difficulty: 3, flag: "🇩🇪" },
+            japan: { name: "ญี่ปุ่น", cost: 700000, monthlyRevenue: 250000, employees: 40, difficulty: 4, flag: "🇯🇵" },
+            singapore: { name: "สิงคโปร์", cost: 450000, monthlyRevenue: 150000, employees: 25, difficulty: 2, flag: "🇸🇬" },
+            india: { name: "อินเดีย", cost: 400000, monthlyRevenue: 180000, employees: 60, difficulty: 3, flag: "🇮🇳" },
+            korea: { name: "เกาหลีใต้", cost: 550000, monthlyRevenue: 190000, employees: 30, difficulty: 3, flag: "🇰🇷" },
+            russia: { name: "รัสเซีย", cost: 500000, monthlyRevenue: 160000, employees: 35, difficulty: 3, flag: "🇷🇺" },
+            brazil: { name: "บราซิล", cost: 350000, monthlyRevenue: 120000, employees: 45, difficulty: 2, flag: "🇧🇷" }
+        };
+
+        const globalEvents = [
+            {
+                id: 1,
+                title: "🚨 เซิร์ฟเวอร์ล่มในสหรัฐอเมริกา",
+                description: "ระบบเซิร์ฟเวอร์หลักในสหรัฐฯ ล่ม ส่งผลกระทบต่อลูกค้า 15,000 คน ต้องแก้ไขด่วน!",
+                choices: [
+                    { text: "💰 ซ่อมด่วนทันที (300,000฿)", effect: { revenue: -300000, score: 50, description: "ลูกค้าประทับใจการแก้ไขที่รวดเร็ว" } },
+                    { text: "⚡ ใช้เซิร์ฟเวอร์สำรอง (100,000฿)", effect: { revenue: -100000, score: 20, description: "แก้ไขได้แต่ลูกค้าบางส่วนไม่พอใจ" } },
+                    { text: "⏰ รอช่างซ่อมปกติ (50,000฿)", effect: { revenue: -50000, score: -30, description: "ประหยัดเงินแต่เสียชื่อเสียง" } }
+                ]
+            },
+            {
+                id: 2,
+                title: "🎯 คู่แข่งปล่อยผลิตภัณฑ์ใหม่",
+                description: "บริษัทคู่แข่งเปิดตัวซอฟต์แวร์ AI ที่ทันสมัยกว่า ลูกค้าเริ่มหันไปใช้บริการของเขา",
+                choices: [
+                    { text: "🚀 พัฒนา AI ใหม่ (500,000฿)", effect: { revenue: -500000, score: 80, description: "สร้างผลิตภัณฑ์ที่เหนือกว่าคู่แข่ง" } },
+                    { text: "💸 ลดราคาแข่งขัน (200,000฿)", effect: { revenue: -200000, score: 30, description: "รักษาลูกค้าได้บางส่วน" } },
+                    { text: "📢 เพิ่มการตลาด (150,000฿)", effect: { revenue: -150000, score: 40, description: "โปรโมทจุดเด่นของเราให้ลูกค้าเห็น" } }
+                ]
+            },
+            {
+                id: 3,
+                title: "👥 ทีมงานหลักลาออกกระทันหัน",
+                description: "นักพัฒนาหลัก 5 คน ลาออกพร้อมกันเพื่อไปตั้งบริษัทใหม่ โครงการสำคัญอาจล่าช้า",
+                choices: [
+                    { text: "💎 จ้างผู้เชี่ยวชาญ (400,000฿)", effect: { revenue: -400000, score: 60, description: "ได้ทีมงานที่มีประสบการณ์สูง" } },
+                    { text: "🎓 ฝึกอบรมพนักงานใหม่ (200,000฿)", effect: { revenue: -200000, score: 35, description: "ใช้เวลานานแต่ประหยัดค่าใช้จ่าย" } },
+                    { text: "🤝 จ้าง Outsource (250,000฿)", effect: { revenue: -250000, score: 45, description: "แก้ปัญหาเฉพาะหน้าได้ดี" } }
+                ]
+            },
+            {
+                id: 4,
+                title: "🏛️ กฎหมายใหม่เรื่องข้อมูลส่วนบุคคล",
+                description: "รัฐบาลออกกฎหมาย PDPA ใหม่ ต้องปรับปรุงระบบให้สอดคล้องภายใน 30 วัน",
+                choices: [
+                    { text: "⚖️ จ้างที่ปรึกษากฎหมาย (300,000฿)", effect: { revenue: -300000, score: 70, description: "ปฏิบัติตามกฎหมายอย่างสมบูรณ์" } },
+                    { text: "🔧 ปรับปรุงระบบเอง (150,000฿)", effect: { revenue: -150000, score: 40, description: "ประหยัดแต่อาจมีช่องโหว่" } },
+                    { text: "⏳ รอดูสถานการณ์ (0฿)", effect: { revenue: 0, score: -50, description: "เสี่ยงโดนปรับและเสียชื่อเสียง" } }
+                ]
+            }
+        ];
+
+        // Utility Functions
+        function showNotification(message, type = 'info', duration = 3000) {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.style.animation = 'slideIn 0.3s ease-out reverse';
+                setTimeout(() => notification.remove(), 300);
+            }, duration);
+        }
+
+        function updateTimer(elementId, value) {
+            const element = document.getElementById(elementId);
+            if (element) {
+                element.textContent = value;
+                if (value <= 10 && value > 0) {
+                    element.style.color = '#ff4757';
+                    element.style.animation = 'pulse 1s infinite';
+                }
+            }
+        }
+
+        function clearAllTimers() {
+            gameState.timers.forEach(timer => clearInterval(timer));
+            gameState.timers = [];
+        }
+
+        // Game Flow Functions
+        function startGame() {
+            document.getElementById('startScreen').classList.add('hidden');
+            clearAllTimers();
+            resetGameState();
+            startPhase1();
+        }
+
+        function resetGameState() {
+            gameState = {
+                currentPhase: 0,
+                phase1: { 
+                    score: 0, 
+                    timer: 90, 
+                    currentTask: 1, 
+                    totalTasks: 3,
+                    hintsUsed: 0,
+                    maxHints: 2,
+                    selectedBlocks: [],
+                    correctSequence: []
+                },
+                phase2: { 
+                    score: 0, 
+                    budget: 150000, 
+                    satisfaction: 100, 
+                    servers: [], 
+                    staff: [], 
+                    tasks: [],
+                    completedTasks: 0,
+                    failedTasks: 0
+                },
+                phase3: { 
+                    score: 0, 
+                    revenue: 500000, 
+                    branches: 1, 
+                    ownedCountries: ['thailand'], 
+                    events: [],
+                    totalRevenue: 500000,
+                    employees: 25,
+                    worldRank: 156
+                },
+                totalScore: 0,
+                timers: []
+            };
+        }
+
+        // Phase 1 Functions
+        function startPhase1() {
+            gameState.currentPhase = 1;
+            document.getElementById('phase1').classList.remove('hidden');
+            initializePhase1();
+            startPhase1Timer();
+        }
+
+        function initializePhase1() {
+            const task = phase1Tasks[gameState.phase1.currentTask - 1];
+            gameState.phase1.correctSequence = task.correctOrder;
+            gameState.phase1.selectedBlocks = [];
+            
+            document.getElementById('taskText').textContent = task.description;
+            document.getElementById('hintsLeft').textContent = gameState.phase1.maxHints - gameState.phase1.hintsUsed;
+            
+            generateCodeBlocks(task.blocks);
+            generateDropZones(task.correctOrder.length);
+            updatePhase1UI();
+        }
+
+        function generateCodeBlocks(blocks) {
+            const pool = document.getElementById('codeBlocksPool');
+            pool.innerHTML = '';
+            
+            const shuffled = [...blocks].sort(() => Math.random() - 0.5);
+            
+            shuffled.forEach(block => {
+                const blockEl = document.createElement('div');
+                blockEl.className = `code-block ${block.color}`;
+                blockEl.dataset.blockId = block.id;
+                blockEl.innerHTML = `
+                    <div class="text-center">
+                        <div class="font-semibold text-lg mb-1">${block.text}</div>
+                        <div class="text-xs opacity-75">${block.description}</div>
+                    </div>
+                `;
+                
+                blockEl.onclick = () => selectCodeBlock(block.id, blockEl);
+                pool.appendChild(blockEl);
+            });
+        }
+
+        function generateDropZones(count) {
+            const area = document.getElementById('assemblyArea');
+            area.innerHTML = '';
+            
+            for (let i = 0; i < count; i++) {
+                const zone = document.createElement('div');
+                zone.className = 'drop-zone';
+                zone.dataset.position = i;
+                zone.innerHTML = `
+                    <div class="text-center">
+                        <div class="text-2xl mb-2">📍</div>
+                        <div class="text-gray-400">ขั้นตอนที่ ${i + 1}</div>
+                        <div class="text-sm text-gray-500">คลิกบล็อกโค้ดเพื่อวางที่นี่</div>
+                    </div>
+                `;
+                
+                zone.onclick = () => placeBlockInZone(i);
+                area.appendChild(zone);
+            }
+        }
+
+        function selectCodeBlock(blockId, blockElement) {
+            // Remove previous selection
+            document.querySelectorAll('.code-block').forEach(el => {
+                el.style.border = '2px solid #00ff88';
+                el.style.transform = 'scale(1)';
+            });
+            
+            // Highlight selected block
+            blockElement.style.border = '3px solid #ffd700';
+            blockElement.style.transform = 'scale(1.05)';
+            
+            // Store selected block
+            gameState.phase1.selectedBlock = blockId;
+            
+            showNotification('เลือกบล็อกแล้ว คลิกที่ตำแหน่งที่ต้องการวาง', 'info', 2000);
+        }
+
+        function placeBlockInZone(position) {
+            if (!gameState.phase1.selectedBlock) {
+                showNotification('กรุณาเลือกบล็อกโค้ดก่อน', 'error');
+                return;
+            }
+            
+            const blockId = gameState.phase1.selectedBlock;
+            const blockElement = document.querySelector(`[data-block-id="${blockId}"]`);
+            const zone = document.querySelector(`[data-position="${position}"]`);
+            
+            if (!blockElement || !zone) return;
+            
+            // Check if position is already filled
+            if (gameState.phase1.selectedBlocks[position]) {
+                // Return previous block to pool
+                const prevBlockId = gameState.phase1.selectedBlocks[position];
+                const prevBlockEl = document.querySelector(`[data-block-id="${prevBlockId}"]`);
+                if (prevBlockEl) {
+                    prevBlockEl.classList.remove('used');
+                    prevBlockEl.onclick = () => selectCodeBlock(prevBlockId, prevBlockEl);
+                }
+            }
+            
+            // Place new block
+            gameState.phase1.selectedBlocks[position] = blockId;
+            
+            // Update zone display
+            const task = phase1Tasks[gameState.phase1.currentTask - 1];
+            const block = task.blocks.find(b => b.id === blockId);
+            
+            zone.innerHTML = `
+                <div class="text-center">
+                    <div class="font-semibold text-lg mb-1">${block.text}</div>
+                    <div class="text-xs opacity-75">${block.description}</div>
+                    <button onclick="removeBlockFromZone(${position})" class="mt-2 text-red-400 hover:text-red-300 text-sm">❌ ลบ</button>
+                </div>
+            `;
+            zone.classList.add('filled');
+            
+            // Mark block as used
+            blockElement.classList.add('used');
+            blockElement.onclick = null;
+            
+            // Clear selection
+            gameState.phase1.selectedBlock = null;
+            document.querySelectorAll('.code-block').forEach(el => {
+                el.style.border = '2px solid #00ff88';
+                el.style.transform = 'scale(1)';
+            });
+            
+            // Update progress
+            updateTaskProgress();
+            
+            showNotification('วางบล็อกสำเร็จ!', 'success', 1500);
+        }
+
+        function removeBlockFromZone(position) {
+            const blockId = gameState.phase1.selectedBlocks[position];
+            if (!blockId) return;
+            
+            const blockElement = document.querySelector(`[data-block-id="${blockId}"]`);
+            const zone = document.querySelector(`[data-position="${position}"]`);
+            
+            // Return block to pool
+            if (blockElement) {
+                blockElement.classList.remove('used');
+                blockElement.onclick = () => selectCodeBlock(blockId, blockElement);
+            }
+            
+            // Clear zone
+            gameState.phase1.selectedBlocks[position] = null;
+            zone.innerHTML = `
+                <div class="text-center">
+                    <div class="text-2xl mb-2">📍</div>
+                    <div class="text-gray-400">ขั้นตอนที่ ${position + 1}</div>
+                    <div class="text-sm text-gray-500">คลิกบล็อกโค้ดเพื่อวางที่นี่</div>
+                </div>
+            `;
+            zone.classList.remove('filled');
+            
+            updateTaskProgress();
+            showNotification('ลบบล็อกแล้ว', 'info', 1500);
+        }
+
+        function updateTaskProgress() {
+            const filledSlots = gameState.phase1.selectedBlocks.filter(block => block !== null).length;
+            const totalSlots = gameState.phase1.correctSequence.length;
+            const progress = (filledSlots / totalSlots) * 100;
+            
+            document.getElementById('taskProgressBar').style.width = `${progress}%`;
+        }
+
+        function checkProgram() {
+            const userSequence = gameState.phase1.selectedBlocks.filter(block => block !== null);
+            const correctSequence = gameState.phase1.correctSequence;
+            
+            if (userSequence.length !== correctSequence.length) {
+                showNotification('กรุณาวางบล็อกให้ครบทุกตำแหน่ง', 'error');
+                return;
+            }
+            
+            let correctCount = 0;
+            const zones = document.querySelectorAll('.drop-zone');
+            
+            // Check each position
+            for (let i = 0; i < correctSequence.length; i++) {
+                const zone = zones[i];
+                if (gameState.phase1.selectedBlocks[i] === correctSequence[i]) {
+                    zone.classList.add('correct');
+                    correctCount++;
+                } else {
+                    zone.classList.add('incorrect');
+                }
+            }
+            
+            // Calculate score
+            const accuracy = (correctCount / correctSequence.length) * 100;
+            let taskScore = 0;
+            
+            if (accuracy === 100) {
+                taskScore = 150;
+                showNotification('🎉 ยอดเยี่ยม! โปรแกรมทำงานสมบูรณ์แบบ', 'success');
+            } else if (accuracy >= 80) {
+                taskScore = 100;
+                showNotification('👍 ดีมาก! โปรแกรมทำงานได้แต่มีข้อผิดพลาดเล็กน้อย', 'success');
+            } else if (accuracy >= 60) {
+                taskScore = 50;
+                showNotification('😐 พอใช้ได้ แต่ต้องแก้ไขหลายจุด', 'error');
+            } else {
+                taskScore = 0;
+                showNotification('❌ ผิดมาก! ลำดับการทำงานไม่ถูกต้อง', 'error');
+            }
+            
+            gameState.phase1.score += taskScore;
+            updatePhase1UI();
+            
+            // Disable check button temporarily
+            document.getElementById('checkBtn').disabled = true;
+            
+            setTimeout(() => {
+                // Clear visual feedback
+                zones.forEach(zone => {
+                    zone.classList.remove('correct', 'incorrect');
+                });
+                
+                if (accuracy >= 60) {
+                    // Move to next task or phase
+                    if (gameState.phase1.currentTask < gameState.phase1.totalTasks) {
+                        gameState.phase1.currentTask++;
+                        initializePhase1();
+                    } else {
+                        endPhase1();
+                    }
+                } else {
+                    // Allow retry
+                    document.getElementById('checkBtn').disabled = false;
+                }
+            }, 3000);
+        }
+
+        function resetProgram() {
+            gameState.phase1.selectedBlocks = [];
+            gameState.phase1.selectedBlock = null;
+            
+            // Reset all blocks
+            document.querySelectorAll('.code-block').forEach(block => {
+                block.classList.remove('used');
+                block.style.border = '2px solid #00ff88';
+                block.style.transform = 'scale(1)';
+                const blockId = block.dataset.blockId;
+                block.onclick = () => selectCodeBlock(blockId, block);
+            });
+            
+            // Reset all zones
+            const zones = document.querySelectorAll('.drop-zone');
+            zones.forEach((zone, index) => {
+                zone.classList.remove('filled', 'correct', 'incorrect');
+                zone.innerHTML = `
+                    <div class="text-center">
+                        <div class="text-2xl mb-2">📍</div>
+                        <div class="text-gray-400">ขั้นตอนที่ ${index + 1}</div>
+                        <div class="text-sm text-gray-500">คลิกบล็อกโค้ดเพื่อวางที่นี่</div>
+                    </div>
+                `;
+                zone.onclick = () => placeBlockInZone(index);
+            });
+            
+            updateTaskProgress();
+            document.getElementById('checkBtn').disabled = false;
+            showNotification('รีเซ็ตโปรแกรมแล้ว', 'info');
+        }
+
+        function getHint() {
+            if (gameState.phase1.hintsUsed >= gameState.phase1.maxHints) {
+                showNotification('ใช้คำใบ้หมดแล้ว', 'error');
+                return;
+            }
+            
+            const task = phase1Tasks[gameState.phase1.currentTask - 1];
+            gameState.phase1.hintsUsed++;
+            
+            showNotification(`💡 คำใบ้: ${task.hint}`, 'info', 5000);
+            
+            document.getElementById('hintsLeft').textContent = gameState.phase1.maxHints - gameState.phase1.hintsUsed;
+            
+            if (gameState.phase1.hintsUsed >= gameState.phase1.maxHints) {
+                document.getElementById('hintBtn').disabled = true;
+            }
+        }
+
+        function startPhase1Timer() {
+            const timer = setInterval(() => {
+                gameState.phase1.timer--;
+                updateTimer('phase1Timer', gameState.phase1.timer);
+                
+                if (gameState.phase1.timer <= 0) {
+                    clearInterval(timer);
+                    showNotification('⏰ หมดเวลา! ไปยังขั้นตอนถัดไป', 'error');
+                    setTimeout(() => endPhase1(), 2000);
+                }
+            }, 1000);
+            
+            gameState.timers.push(timer);
+        }
+
+        function updatePhase1UI() {
+            document.getElementById('phase1Score').textContent = gameState.phase1.score;
+            document.getElementById('phase1Task').textContent = `${gameState.phase1.currentTask}/${gameState.phase1.totalTasks}`;
+        }
+
+        function endPhase1() {
+            gameState.totalScore += gameState.phase1.score;
+            document.getElementById('phase1').classList.add('hidden');
+            
+            showNotification(`Phase 1 เสร็จสิ้น! คะแนน: ${gameState.phase1.score}`, 'success', 3000);
+            setTimeout(() => startPhase2(), 1000);
+        }
+
+        // Phase 2 Functions
+        function startPhase2() {
+            gameState.currentPhase = 2;
+            document.getElementById('phase2').classList.remove('hidden');
+            initializePhase2();
+            startPhase2Simulation();
+        }
+
+        function initializePhase2() {
+            gameState.phase2.servers = JSON.parse(JSON.stringify(serverTypes));
+            gameState.phase2.staff = JSON.parse(JSON.stringify(staffTypes));
+            gameState.phase2.tasks = [];
+            
+            generateServers();
+            generateStaff();
+            updatePhase2UI();
+            
+            showNotification('เริ่ม Phase 2: จัดการทีมและเซิร์ฟเวอร์เพื่อทำงานให้เสร็จ', 'info', 4000);
+        }
+
+        function generateServers() {
+            const grid = document.getElementById('serversGrid');
+            grid.innerHTML = '';
+            
+            gameState.phase2.servers.forEach(server => {
+                const serverEl = document.createElement('div');
+                serverEl.className = `server-card ${server.status}`;
+                serverEl.onclick = () => toggleServer(server.id);
+                
+                const statusText = {
+                    'idle': 'พร้อมใช้งาน',
+                    'working': 'กำลังทำงาน',
+                    'active': 'ถูกเลือก'
+                };
+                
+                const statusColor = {
+                    'idle': 'text-gray-400',
+                    'working': 'text-orange-400',
+                    'active': 'text-red-400'
+                };
+                
+                serverEl.innerHTML = `
+                    <div class="text-xl font-bold mb-2">${server.name}</div>
+                    <div class="grid grid-cols-2 gap-2 text-sm mb-3">
+                        <div>ความจุ: <span class="text-blue-400">${server.capacity}%</span></div>
+                        <div>ประสิทธิภาพ: <span class="text-green-400">${server.efficiency}%</span></div>
+                    </div>
+                    <div class="text-sm ${statusColor[server.status]} mb-3">
+                        สถานะ: ${statusText[server.status]}
+                    </div>
+                    ${server.status === 'working' ? `
+                        <div class="mb-2">
+                            <div class="text-xs text-gray-400 mb-1">ความคืบหน้า</div>
+                            <div class="bg-gray-700 rounded-full h-2">
+                                <div class="progress-bar h-2 rounded-full" style="width: ${server.progress}%"></div>
+                            </div>
+                        </div>
+                    ` : ''}
+                    <div class="text-xs text-gray-500">คลิกเพื่อ${server.status === 'idle' ? 'เปิดใช้งาน' : 'หยุดการทำงาน'}</div>
+                `;
+                
+                grid.appendChild(serverEl);
+            });
+        }
+
+        function generateStaff() {
+            const grid = document.getElementById('staffGrid');
+            grid.innerHTML = '';
+            
+            gameState.phase2.staff.forEach(staff => {
+                const staffEl = document.createElement('div');
+                staffEl.className = `staff-card ${staff.status}`;
+                staffEl.onclick = () => toggleStaff(staff.id);
+                
+                const statusText = {
+                    'available': 'พร้อมทำงาน',
+                    'working': 'กำลังทำงาน'
+                };
+                
+                const statusColor = {
+                    'available': 'text-green-400',
+                    'working': 'text-orange-400'
+                };
+                
+                staffEl.innerHTML = `
+                    <div class="flex justify-between items-start mb-2">
+                        <div>
+                            <div class="font-bold text-lg">${staff.name}</div>
+                            <div class="text-sm text-gray-300">ความเชี่ยวชาญ: ${staff.skill}</div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-sm text-blue-400">ประสิทธิภาพ ${staff.efficiency}%</div>
+                            <div class="text-xs text-gray-400">${staff.experience}</div>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <div class="text-sm ${statusColor[staff.status]}">
+                            ${statusText[staff.status]}
+                        </div>
+                        <div class="text-sm text-yellow-400">
+                            ${staff.salary.toLocaleString()}฿/เดือน
+                        </div>
+                    </div>
+                `;
+                
+                grid.appendChild(staffEl);
+            });
+        }
+
+        function toggleServer(serverId) {
+            const server = gameState.phase2.servers.find(s => s.id === serverId);
+            if (!server) return;
+            
+            if (server.status === 'idle') {
+                server.status = 'active';
+                showNotification(`เปิดใช้งาน ${server.name}`, 'success');
+            } else if (server.status === 'active') {
+                server.status = 'idle';
+                showNotification(`หยุดการทำงาน ${server.name}`, 'info');
+            } else if (server.status === 'working') {
+                showNotification('เซิร์ฟเวอร์กำลังทำงาน ไม่สามารถหยุดได้', 'error');
+                return;
+            }
+            
+            generateServers();
+            updateSystemStatus();
+        }
+
+        function toggleStaff(staffId) {
+            const staff = gameState.phase2.staff.find(s => s.id === staffId);
+            if (!staff) return;
+            
+            if (staff.status === 'available') {
+                staff.status = 'working';
+                showNotification(`${staff.name} เริ่มทำงาน`, 'success');
+            } else {
+                staff.status = 'available';
+                showNotification(`${staff.name} หยุดทำงาน`, 'info');
+            }
+            
+            generateStaff();
+            updateSystemStatus();
+        }
+
+        function hireStaff() {
+            if (gameState.phase2.budget < 15000) {
+                showNotification('งบประมาณไม่เพียงพอในการจ้างพนักงาน', 'error');
+                return;
+            }
+            
+            const newStaffId = gameState.phase2.staff.length + 1;
+            const skills = ['frontend', 'backend', 'system'];
+            const names = ['นาย ง', 'นาง จ', 'นาย ฉ', 'นาง ช', 'นาย ซ'];
+            const positions = ['Junior Dev', 'Senior Dev', 'Tech Lead', 'System Admin', 'DevOps'];
+            
+            const newStaff = {
+                id: newStaffId,
+                name: `${names[Math.floor(Math.random() * names.length)]} ${positions[Math.floor(Math.random() * positions.length)]}`,
+                skill: skills[Math.floor(Math.random() * skills.length)],
+                efficiency: 60 + Math.floor(Math.random() * 30),
+                salary: 15000,
+                status: 'available',
+                experience: `${1 + Math.floor(Math.random() * 5)} ปี`
+            };
+            
+            gameState.phase2.staff.push(newStaff);
+            gameState.phase2.budget -= 15000;
+            
+            generateStaff();
+            updatePhase2UI();
+            showNotification(`จ้าง ${newStaff.name} สำเร็จ!`, 'success');
+        }
+
+        function upgradeServer() {
+            if (gameState.phase2.budget < 25000) {
+                showNotification('งบประมาณไม่เพียงพอในการอัพเกรด', 'error');
+                return;
+            }
+            
+            const availableServers = gameState.phase2.servers.filter(s => s.status === 'idle');
+            if (availableServers.length === 0) {
+                showNotification('ไม่มีเซิร์ฟเวอร์ที่พร้อมอัพเกรด', 'error');
+                return;
+            }
+            
+            const serverToUpgrade = availableServers[Math.floor(Math.random() * availableServers.length)];
+            serverToUpgrade.capacity = Math.min(100, serverToUpgrade.capacity + 15);
+            serverToUpgrade.efficiency = Math.min(100, serverToUpgrade.efficiency + 10);
+            
+            gameState.phase2.budget -= 25000;
+            
+            generateServers();
+            updatePhase2UI();
+            showNotification(`อัพเกรด ${serverToUpgrade.name} สำเร็จ!`, 'success');
+        }
+
+        function updateSystemStatus() {
+            const activeServers = gameState.phase2.servers.filter(s => s.status === 'active' || s.status === 'working').length;
+            const totalServers = gameState.phase2.servers.length;
+            const activeStaff = gameState.phase2.staff.filter(s => s.status === 'working').length;
+            const totalStaff = gameState.phase2.staff.length;
+            
+            document.getElementById('activeServers').textContent = `${activeServers}/${totalServers}`;
+            document.getElementById('activeStaff').textContent = `${activeStaff}/${totalStaff}`;
+        }
+
+        function generateTask() {
+            const template = taskTemplates[Math.floor(Math.random() * taskTemplates.length)];
+            const task = {
+                id: Date.now(),
+                name: template.name,
+                difficulty: template.difficulty,
+                reward: template.reward,
+                timeLimit: template.time,
+                timeRemaining: template.time,
+                type: template.type,
+                progress: 0,
+                status: 'waiting'
+            };
+            
+            gameState.phase2.tasks.push(task);
+            updateTaskQueue();
+            
+            showNotification(`งานใหม่: ${task.name}`, 'info');
+        }
+
+        function updateTaskQueue() {
+            const queue = document.getElementById('taskQueue');
+            queue.innerHTML = '';
+            
+            gameState.phase2.tasks.forEach(task => {
+                const taskEl = document.createElement('div');
+                taskEl.className = `task-card ${task.timeRemaining <= 15 ? 'urgent' : ''}`;
+                
+                const statusColor = {
+                    'waiting': 'text-yellow-400',
+                    'in-progress': 'text-blue-400',
+                    'completed': 'text-green-400',
+                    'failed': 'text-red-400'
+                };
+                
+                const statusText = {
+                    'waiting': 'รอดำเนินการ',
+                    'in-progress': 'กำลังดำเนินการ',
+                    'completed': 'เสร็จสิ้น',
+                    'failed': 'ล้มเหลว'
+                };
+                
+                taskEl.innerHTML = `
+                    <div class="flex justify-between items-start mb-3">
+                        <div>
+                            <div class="font-bold text-lg">${task.name}</div>
+                            <div class="text-sm text-gray-400">ประเภท: ${task.type} | ความยาก: ${'⭐'.repeat(task.difficulty)}</div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-lg text-green-400 font-bold">${task.reward.toLocaleString()}฿</div>
+                            <div class="text-sm text-gray-400">รางวัล</div>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4 mb-3">
+                        <div>
+                            <div class="text-sm text-gray-400">เวลาที่เหลือ</div>
+                            <div class="text-lg ${task.timeRemaining <= 15 ? 'text-red-400' : 'text-yellow-400'} font-bold">
+                                ${task.timeRemaining}s
+                            </div>
+                        </div>
+                        <div>
+                            <div class="text-sm text-gray-400">สถานะ</div>
+                            <div class="text-sm ${statusColor[task.status]} font-semibold">
+                                ${statusText[task.status]}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    ${task.status === 'in-progress' ? `
+                        <div class="mb-3">
+                            <div class="flex justify-between text-sm mb-1">
+                                <span>ความคืบหน้า</span>
+                                <span>${Math.round(task.progress)}%</span>
+                            </div>
+                            <div class="bg-gray-700 rounded-full h-3">
+                                <div class="progress-bar h-3 rounded-full" style="width: ${task.progress}%"></div>
+                            </div>
+                        </div>
+                    ` : ''}
+                    
+                    ${task.status === 'waiting' ? `
+                        <button onclick="startTask(${task.id})" class="cyber-button w-full">
+                            🚀 เริ่มงาน
+                        </button>
+                    ` : ''}
+                `;
+                
+                queue.appendChild(taskEl);
+            });
+        }
+
+        function startTask(taskId) {
+            const task = gameState.phase2.tasks.find(t => t.id === taskId);
+            if (!task || task.status !== 'waiting') return;
+            
+            // Check if we have resources
+            const activeServers = gameState.phase2.servers.filter(s => s.status === 'active');
+            const workingStaff = gameState.phase2.staff.filter(s => s.status === 'working');
+            
+            if (activeServers.length === 0) {
+                showNotification('ต้องเปิดใช้งานเซิร์ฟเวอร์อย่างน้อย 1 เครื่อง', 'error');
+                return;
+            }
+            
+            if (workingStaff.length === 0) {
+                showNotification('ต้องมีพนักงานที่กำลังทำงานอย่างน้อย 1 คน', 'error');
+                return;
+            }
+            
+            // Start task
+            task.status = 'in-progress';
+            
+            // Set servers to working
+            activeServers.forEach(server => {
+                server.status = 'working';
+                server.progress = 0;
+            });
+            
+            generateServers();
+            updateTaskQueue();
+            updateSystemStatus();
+            
+            showNotification(`เริ่มงาน: ${task.name}`, 'success');
+            
+            // Start task progress simulation
+            const taskTimer = setInterval(() => {
+                if (task.status !== 'in-progress') {
+                    clearInterval(taskTimer);
+                    return;
+                }
+                
+                // Calculate progress rate based on resources
+                let progressRate = 0;
+                
+                // Server contribution
+                const workingServers = gameState.phase2.servers.filter(s => s.status === 'working');
+                workingServers.forEach(server => {
+                    progressRate += (server.efficiency / 100) * 0.8;
+                    server.progress = Math.min(100, server.progress + 2);
+                });
+                
+                // Staff contribution
+                const currentWorkingStaff = gameState.phase2.staff.filter(s => s.status === 'working');
+                currentWorkingStaff.forEach(staff => {
+                    let multiplier = 1;
+                    if (staff.skill === task.type) multiplier = 1.5; // Skill match bonus
+                    progressRate += (staff.efficiency / 100) * multiplier * 1.2;
+                });
+                
+                // Apply difficulty penalty
+                progressRate = progressRate / task.difficulty;
+                
+                task.progress += progressRate;
+                task.timeRemaining--;
+                
+                // Check completion
+                if (task.progress >= 100) {
+                    // Task completed
+                    task.status = 'completed';
+                    task.progress = 100;
+                    
+                    gameState.phase2.score += 100;
+                    gameState.phase2.budget += task.reward;
+                    gameState.phase2.satisfaction = Math.min(100, gameState.phase2.satisfaction + 10);
+                    gameState.phase2.completedTasks++;
+                    
+                    // Free up servers
+                    workingServers.forEach(server => {
+                        server.status = 'idle';
+                        server.progress = 0;
+                    });
+                    
+                    showNotification(`✅ งานเสร็จสิ้น: ${task.name} (+${task.reward.toLocaleString()}฿)`, 'success');
+                    
+                    generateServers();
+                    updateTaskQueue();
+                    updatePhase2UI();
+                    updateSystemStatus();
+                    
+                    clearInterval(taskTimer);
+                } else if (task.timeRemaining <= 0) {
+                    // Task failed
+                    task.status = 'failed';
+                    
+                    gameState.phase2.score = Math.max(0, gameState.phase2.score - 50);
+                    gameState.phase2.satisfaction = Math.max(0, gameState.phase2.satisfaction - 20);
+                    gameState.phase2.failedTasks++;
+                    
+                    // Free up servers
+                    workingServers.forEach(server => {
+                        server.status = 'idle';
+                        server.progress = 0;
+                    });
+                    
+                    showNotification(`❌ งานล้มเหลว: ${task.name} (เกินเวลา)`, 'error');
+                    
+                    generateServers();
+                    updateTaskQueue();
+                    updatePhase2UI();
+                    updateSystemStatus();
+                    
+                    clearInterval(taskTimer);
+                } else {
+                    // Continue working
+                    generateServers();
+                    updateTaskQueue();
+                }
+            }, 1000);
+            
+            gameState.timers.push(taskTimer);
+        }
+
+        function startPhase2Simulation() {
+            // Generate initial tasks
+            setTimeout(() => generateTask(), 2000);
+            
+            // Generate new tasks periodically
+            const taskGenerator = setInterval(() => {
+                if (gameState.currentPhase !== 2) {
+                    clearInterval(taskGenerator);
+                    return;
+                }
+                
+                if (gameState.phase2.tasks.filter(t => t.status === 'waiting' || t.status === 'in-progress').length < 3) {
+                    generateTask();
+                }
+            }, 8000);
+            
+            gameState.timers.push(taskGenerator);
+            
+            // End phase after certain conditions
+            const phaseChecker = setInterval(() => {
+                if (gameState.currentPhase !== 2) {
+                    clearInterval(phaseChecker);
+                    return;
+                }
+                
+                const totalTasks = gameState.phase2.completedTasks + gameState.phase2.failedTasks;
+                if (totalTasks >= 8 || gameState.phase2.satisfaction <= 0) {
+                    clearInterval(phaseChecker);
+                    setTimeout(() => endPhase2(), 2000);
+                }
+            }, 1000);
+            
+            gameState.timers.push(phaseChecker);
+        }
+
+        function updatePhase2UI() {
+            document.getElementById('phase2Score').textContent = gameState.phase2.score;
+            document.getElementById('budget').textContent = gameState.phase2.budget.toLocaleString() + '฿';
+            document.getElementById('satisfaction').textContent = gameState.phase2.satisfaction + '%';
+            
+            // Update button states
+            document.getElementById('hireBtn').disabled = gameState.phase2.budget < 15000;
+            document.getElementById('upgradeBtn').disabled = gameState.phase2.budget < 25000;
+        }
+
+        function endPhase2() {
+            gameState.totalScore += gameState.phase2.score;
+            document.getElementById('phase2').classList.add('hidden');
+            
+            const performance = gameState.phase2.completedTasks >= 5 ? 'ดีเยี่ยม' : 
+                               gameState.phase2.completedTasks >= 3 ? 'ดี' : 'ต้องปรับปรุง';
+            
+            showNotification(`Phase 2 เสร็จสิ้น! ผลงาน: ${performance} (${gameState.phase2.completedTasks} งาน)`, 'success', 4000);
+            setTimeout(() => startPhase3(), 1000);
+        }
+
+        // Phase 3 Functions
+        function startPhase3() {
+            gameState.currentPhase = 3;
+            document.getElementById('phase3').classList.remove('hidden');
+            initializePhase3();
+            startPhase3Events();
+        }
+
+        function initializePhase3() {
+            updatePhase3UI();
+            generateRandomEvent();
+            drawConnections();
+            
+            showNotification('เริ่ม Phase 3: ขยายธุรกิจไปทั่วโลกและจัดการวิกฤต', 'info', 4000);
+        }
+
+        function drawConnections() {
+            const svg = document.getElementById('connectionSvg');
+            svg.innerHTML = '';
+            
+            // Draw connections between owned countries
+            const ownedNodes = gameState.phase3.ownedCountries.map(country => 
+                document.querySelector(`[data-country="${country}"]`)
+            ).filter(node => node);
+            
+            for (let i = 0; i < ownedNodes.length - 1; i++) {
+                for (let j = i + 1; j < ownedNodes.length; j++) {
+                    const node1 = ownedNodes[i];
+                    const node2 = ownedNodes[j];
+                    
+                    const rect1 = node1.getBoundingClientRect();
+                    const rect2 = node2.getBoundingClientRect();
+                    const svgRect = svg.getBoundingClientRect();
+                    
+                    const x1 = rect1.left - svgRect.left + rect1.width / 2;
+                    const y1 = rect1.top - svgRect.top + rect1.height / 2;
+                    const x2 = rect2.left - svgRect.left + rect2.width / 2;
+                    const y2 = rect2.top - svgRect.top + rect2.height / 2;
+                    
+                    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                    line.setAttribute('x1', x1);
+                    line.setAttribute('y1', y1);
+                    line.setAttribute('x2', x2);
+                    line.setAttribute('y2', y2);
+                    line.setAttribute('stroke', '#00ff88');
+                    line.setAttribute('stroke-width', '2');
+                    line.setAttribute('opacity', '0.6');
+                    line.classList.add('connection-line');
+                    
+                    svg.appendChild(line);
+                }
+            }
+        }
+
+        function selectCountry(countryCode) {
+            const country = countries[countryCode];
+            if (!country) return;
+            
+            if (gameState.phase3.ownedCountries.includes(countryCode)) {
+                showNotification(`${country.name} เป็นสาขาของเราอยู่แล้ว`, 'info');
+                return;
+            }
+            
+            if (gameState.phase3.revenue < country.cost) {
+                showNotification(`งบประมาณไม่เพียงพอ ต้องการ ${country.cost.toLocaleString()}฿`, 'error');
+                return;
+            }
+            
+            // Expand to country
+            gameState.phase3.revenue -= country.cost;
+            gameState.phase3.ownedCountries.push(countryCode);
+            gameState.phase3.branches++;
+            gameState.phase3.score += 150;
+            gameState.phase3.totalRevenue += country.monthlyRevenue;
+            gameState.phase3.employees += country.employees;
+            
+            // Update world rank
+            gameState.phase3.worldRank = Math.max(1, gameState.phase3.worldRank - 20);
+            
+            // Update country visual
+            const countryNode = document.querySelector(`[data-country="${countryCode}"]`);
+            if (countryNode) {
+                countryNode.classList.remove('available');
+                countryNode.classList.add('owned');
+            }
+            
+            drawConnections();
+            updatePhase3UI();
+            
+            showNotification(`🎉 เปิดสาขาใน${country.name}สำเร็จ! (+${country.monthlyRevenue.toLocaleString()}฿/เดือน)`, 'success');
+            
+            // Check win condition
+            if (gameState.phase3.branches >= 6) {
+                setTimeout(() => endPhase3(), 3000);
+            }
+        }
+
+        function generateRandomEvent() {
+            const availableEvents = globalEvents.filter(event => 
+                !gameState.phase3.events.includes(event.id)
+            );
+            
+            if (availableEvents.length === 0) return;
+            
+            const event = availableEvents[Math.floor(Math.random() * availableEvents.length)];
+            gameState.phase3.events.push(event.id);
+            
+            document.getElementById('eventDescription').textContent = event.description;
+            
+            const choicesEl = document.getElementById('eventChoices');
+            choicesEl.innerHTML = '';
+            
+            event.choices.forEach((choice, index) => {
+                const button = document.createElement('button');
+                button.className = 'cyber-button';
+                button.textContent = choice.text;
+                button.onclick = () => handleEventChoice(choice.effect, event.title);
+                choicesEl.appendChild(button);
+            });
+        }
+
+        function handleEventChoice(effect, eventTitle) {
+            gameState.phase3.revenue += effect.revenue || 0;
+            gameState.phase3.score += effect.score || 0;
+            
+            // Ensure revenue doesn't go negative
+            gameState.phase3.revenue = Math.max(0, gameState.phase3.revenue);
+            
+            updatePhase3UI();
+            
+            showNotification(effect.description, effect.score > 0 ? 'success' : 'error', 4000);
+            
+            // Generate next event after delay
+            setTimeout(() => {
+                if (gameState.currentPhase === 3 && gameState.phase3.branches < 6) {
+                    generateRandomEvent();
+                }
+            }, 6000);
+        }
+
+        function startPhase3Events() {
+            // Monthly revenue update
+            const revenueTimer = setInterval(() => {
+                if (gameState.currentPhase !== 3) {
+                    clearInterval(revenueTimer);
+                    return;
+                }
+                
+                gameState.phase3.revenue += gameState.phase3.totalRevenue;
+                updatePhase3UI();
+                showNotification(`💰 รายได้ประจำเดือน: +${gameState.phase3.totalRevenue.toLocaleString()}฿`, 'success', 2000);
+            }, 15000); // Every 15 seconds = 1 month in game
+            
+            gameState.timers.push(revenueTimer);
+            
+            // End phase checker
+            const endChecker = setInterval(() => {
+                if (gameState.currentPhase !== 3) {
+                    clearInterval(endChecker);
+                    return;
+                }
+                
+                // End if bankrupt or achieved goal
+                if (gameState.phase3.revenue <= 0) {
+                    clearInterval(endChecker);
+                    showNotification('บริษัทล้มละลาย! เกมจบ', 'error');
+                    setTimeout(() => endPhase3(), 3000);
+                } else if (gameState.phase3.branches >= 6) {
+                    clearInterval(endChecker);
+                    showNotification('🏆 สร้างอาณาจักรเทคโนโลยีสำเร็จ!', 'success');
+                    setTimeout(() => endPhase3(), 3000);
+                }
+            }, 1000);
+            
+            gameState.timers.push(endChecker);
+        }
+
+        function updatePhase3UI() {
+            document.getElementById('phase3Score').textContent = gameState.phase3.score;
+            document.getElementById('revenue').textContent = gameState.phase3.revenue.toLocaleString() + '฿';
+            document.getElementById('branches').textContent = `${gameState.phase3.branches}/8`;
+            document.getElementById('totalRevenue').textContent = gameState.phase3.totalRevenue.toLocaleString() + '฿';
+            document.getElementById('totalEmployees').textContent = gameState.phase3.employees + ' คน';
+            document.getElementById('worldRank').textContent = '#' + gameState.phase3.worldRank;
+        }
+
+        function endPhase3() {
+            gameState.totalScore += gameState.phase3.score;
+            clearAllTimers();
+            showResults();
+        }
+
+        // Results and Utility Functions
+        function showResults() {
+            document.getElementById('phase3').classList.add('hidden');
+            document.getElementById('resultsScreen').classList.remove('hidden');
+            
+            const phase1Score = gameState.phase1.score;
+            const phase2Score = gameState.phase2.score;
+            const phase3Score = gameState.phase3.score;
+            const total = gameState.totalScore;
+            
+            // Determine career path
+            let careerPath = "";
+            let careerIcon = "";
+            let careerDescription = "";
+            
+            const scores = [
+                { phase: "Developer", score: phase1Score, icon: "👨‍💻" },
+                { phase: "Manager", score: phase2Score, icon: "🧑‍💼" },
+                { phase: "Entrepreneur", score: phase3Score, icon: "🌍" }
+            ];
+            
+            scores.sort((a, b) => b.score - a.score);
+            
+            const topPhase = scores[0];
+            
+            if (topPhase.phase === "Developer") {
+                careerPath = "สาย Developer (นักพัฒนา)";
+                careerIcon = "👨‍💻";
+                careerDescription = "คุณมีความสามารถเด่นในการเขียนโค้ดและแก้ปัญหาเชิงเทคนิค เหมาะกับการเป็นนักพัฒนาซอฟต์แวร์ โปรแกรมเมอร์ หรือ Technical Lead";
+            } else if (topPhase.phase === "Manager") {
+                careerPath = "สาย Business/Management (ผู้จัดการ)";
+                careerIcon = "🧑‍💼";
+                careerDescription = "คุณมีทักษะในการบริหารจัดการทีมและทรัพยากร เหมาะกับการเป็นผู้จัดการโครงการ Product Manager หรือ IT Manager";
+            } else {
+                careerPath = "สาย Strategic/Entrepreneur (ผู้ประกอบการ)";
+                careerIcon = "🌍";
+                careerDescription = "คุณมีวิสัยทัศน์และความสามารถในการวางแผนระยะยาว เหมาะกับการเป็นผู้ประกอบการ CEO หรือนักกลยุทธ์ธุรกิจ";
+            }
+            
+            // Determine overall rating
+            let rating = "";
+            let ratingColor = "";
+            let ratingDescription = "";
+            
+            if (total >= 600) {
+                rating = "🏆 ระดับยอดเยี่ยม (90-100%)";
+                ratingColor = "text-yellow-400";
+                ratingDescription = "คุณมีศักยภาพสูงมากในการเป็นผู้นำด้าน IT Business พร้อมสำหรับตำแหน่งระดับสูง";
+            } else if (total >= 450) {
+                rating = "🥇 ระดับดีเยี่ยม (80-89%)";
+                ratingColor = "text-green-400";
+                ratingDescription = "คุณมีความสามารถดีเยี่ยมและพร้อมสำหรับการทำงานในระดับผู้จัดการ";
+            } else if (total >= 300) {
+                rating = "🥈 ระดับดี (60-79%)";
+                ratingColor = "text-blue-400";
+                ratingDescription = "คุณมีพื้นฐานที่ดีและเหมาะสมกับการทำงานในทีมธุรกิจคอมพิวเตอร์";
+            } else if (total >= 150) {
+                rating = "🥉 ระดับพอใช้ (40-59%)";
+                ratingColor = "text-orange-400";
+                ratingDescription = "คุณมีพื้นฐานแต่ควรฝึกฝนทักษะการวางแผนและคิดเชิงธุรกิจเพิ่มเติม";
+            } else {
+                rating = "📚 ระดับต้องปรับปรุง (ต่ำกว่า 40%)";
+                ratingColor = "text-red-400";
+                ratingDescription = "คุณควรศึกษาและฝึกฝนเพิ่มเติมในทุกด้านเพื่อพัฒนาทักษะ";
+            }
+            
+            // Additional achievements
+            const achievements = [];
+            if (phase1Score >= 300) achievements.push("🎯 Master Coder - เขียนโค้ดได้อย่างเชี่ยวชาญ");
+            if (phase2Score >= 300) achievements.push("👑 Team Leader - บริหารทีมได้อย่างมีประสิทธิภาพ");
+            if (phase3Score >= 300) achievements.push("🌟 Global Visionary - มีวิสัยทัศน์ระดับโลก");
+            if (gameState.phase3.branches >= 6) achievements.push("🏢 Empire Builder - สร้างอาณาจักรธุรกิจสำเร็จ");
+            if (gameState.phase1.hintsUsed === 0) achievements.push("🧠 Problem Solver - แก้ปัญหาได้ด้วยตนเอง");
+            
+            document.getElementById('finalResults').innerHTML = `
+                <div class="space-y-8">
+                    <div class="text-center">
+                        <div class="text-8xl mb-4">${careerIcon}</div>
+                        <h3 class="text-3xl font-bold text-green-400 mb-2">${careerPath}</h3>
+                        <div class="text-xl ${ratingColor} mb-4">${rating}</div>
+                        <p class="text-lg text-gray-300 max-w-2xl mx-auto">${careerDescription}</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="stats-panel p-6 rounded-xl text-center">
+                            <div class="text-3xl mb-2">👨‍💻</div>
+                            <div class="text-lg font-semibold">Phase 1: Coding</div>
+                            <div class="text-3xl text-green-400 font-bold">${phase1Score}</div>
+                            <div class="text-sm text-gray-400">คะแนน</div>
+                        </div>
+                        <div class="stats-panel p-6 rounded-xl text-center">
+                            <div class="text-3xl mb-2">🧑‍💼</div>
+                            <div class="text-lg font-semibold">Phase 2: Management</div>
+                            <div class="text-3xl text-blue-400 font-bold">${phase2Score}</div>
+                            <div class="text-sm text-gray-400">คะแนน</div>
+                        </div>
+                        <div class="stats-panel p-6 rounded-xl text-center">
+                            <div class="text-3xl mb-2">🌍</div>
+                            <div class="text-lg font-semibold">Phase 3: Strategy</div>
+                            <div class="text-3xl text-purple-400 font-bold">${phase3Score}</div>
+                            <div class="text-sm text-gray-400">คะแนน</div>
+                        </div>
+                    </div>
+                    
+                    <div class="stats-panel p-8 rounded-xl text-center">
+                        <div class="text-2xl font-bold mb-4">คะแนนรวม</div>
+                        <div class="text-6xl ${ratingColor} font-bold mb-4">${total}</div>
+                        <p class="text-lg text-gray-300">${ratingDescription}</p>
+                    </div>
+                    
+                    ${achievements.length > 0 ? `
+                        <div class="stats-panel p-6 rounded-xl">
+                            <h4 class="text-xl font-bold mb-4 text-center">🏆 ความสำเร็จที่ได้รับ</h4>
+                            <div class="space-y-2">
+                                ${achievements.map(achievement => `
+                                    <div class="text-center p-3 bg-gray-800 rounded-lg">
+                                        ${achievement}
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+                    
+                    <div class="stats-panel p-6 rounded-xl">
+                        <h4 class="text-xl font-bold mb-4 text-center">📊 สถิติการเล่น</h4>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                            <div>
+                                <div class="text-2xl text-blue-400 font-bold">${gameState.phase2.completedTasks}</div>
+                                <div class="text-sm text-gray-400">งานที่เสร็จ</div>
+                            </div>
+                            <div>
+                                <div class="text-2xl text-green-400 font-bold">${gameState.phase3.branches}</div>
+                                <div class="text-sm text-gray-400">สาขาทั่วโลก</div>
+                            </div>
+                            <div>
+                                <div class="text-2xl text-yellow-400 font-bold">${gameState.phase3.employees}</div>
+                                <div class="text-sm text-gray-400">พนักงานรวม</div>
+                            </div>
+                            <div>
+                                <div class="text-2xl text-purple-400 font-bold">#${gameState.phase3.worldRank}</div>
+                                <div class="text-sm text-gray-400">อันดับโลก</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function restartGame() {
+            // Hide results screen
+            document.getElementById('resultsScreen').classList.add('hidden');
+            
+            // Reset all country nodes
+            document.querySelectorAll('.country-node').forEach(node => {
+                node.classList.remove('owned');
+                if (node.dataset.country !== 'thailand') {
+                    node.classList.add('available');
+                } else {
+                    node.classList.add('owned');
+                }
+            });
+            
+            // Clear connections
+            document.getElementById('connectionSvg').innerHTML = '';
+            
+            // Start new game
+            startGame();
+        }
+
+        function showStartScreen() {
+            // Hide all screens
+            ['resultsScreen', 'phase1', 'phase2', 'phase3'].forEach(screenId => {
+                document.getElementById(screenId).classList.add('hidden');
+            });
+            
+            // Show start screen
+            document.getElementById('startScreen').classList.remove('hidden');
+            
+            // Clear timers
+            clearAllTimers();
+            
+            // Reset country nodes
+            document.querySelectorAll('.country-node').forEach(node => {
+                node.classList.remove('owned');
+                if (node.dataset.country !== 'thailand') {
+                    node.classList.add('available');
+                } else {
+                    node.classList.add('owned');
+                }
+            });
+            
+            // Clear connections
+            document.getElementById('connectionSvg').innerHTML = '';
+        }
+
+        function shareResults() {
+            const phase1Score = gameState.phase1.score;
+            const phase2Score = gameState.phase2.score;
+            const phase3Score = gameState.phase3.score;
+            const total = gameState.totalScore;
+            
+            let careerPath = "";
+            if (phase1Score >= phase2Score && phase1Score >= phase3Score) {
+                careerPath = "Developer";
+            } else if (phase2Score >= phase1Score && phase2Score >= phase3Score) {
+                careerPath = "Manager";
+            } else {
+                careerPath = "Entrepreneur";
+            }
+            
+            const shareText = `🎮 ผมเพิ่งเล่น "From Startup to Tech Empire" เสร็จ!\n\n` +
+                            `🏆 คะแนนรวม: ${total} คะแนน\n` +
+                            `👨‍💻 Coding: ${phase1Score}\n` +
+                            `🧑‍💼 Management: ${phase2Score}\n` +
+                            `🌍 Strategy: ${phase3Score}\n\n` +
+                            `📊 ผลลัพธ์: เหมาะกับสาย ${careerPath}\n` +
+                            `🏢 สาขาทั่วโลก: ${gameState.phase3.branches} แห่ง\n\n` +
+                            `มาลองเล่นกันดู! 🚀`;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: 'From Startup to Tech Empire - ผลลัพธ์ของฉัน',
+                    text: shareText
+                });
+            } else {
+                // Fallback: copy to clipboard
+                navigator.clipboard.writeText(shareText).then(() => {
+                    showNotification('คัดลอกผลลัพธ์แล้ว!', 'success');
+                }).catch(() => {
+                    showNotification('ไม่สามารถคัดลอกได้', 'error');
+                });
+            }
+        }
+
+        // Initialize game when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add floating animations with random delays
+            document.querySelectorAll('.floating-animation').forEach(el => {
+                el.style.animationDelay = Math.random() * 2 + 's';
+            });
+            
+            // Add available pulse to country nodes
+            document.querySelectorAll('.country-node.available').forEach(node => {
+                node.style.animationDelay = Math.random() * 3 + 's';
+            });
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97958c4bb36dd02e',t:'MTc1NjkwNTY2My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

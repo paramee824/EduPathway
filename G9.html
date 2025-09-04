@@ -1,0 +1,1467 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔧 เกมฝึกทักษะช่างเครื่องมือวัดและควบคุม</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #5568a0;
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            background: #e54c4e;
+            padding: 20px;
+            border-radius: 15px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .score-board {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .score-item {
+            background: #ecb445;
+            color: #333;
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: 2px solid #333;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .game-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .game-card {
+            background: #e54c4e;
+            padding: 20px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 3px solid transparent;
+        }
+
+        .game-card:hover {
+            transform: translateY(-5px);
+            border-color: #ecb445;
+            box-shadow: 0 10px 25px rgba(236, 180, 69, 0.3);
+        }
+
+        .game-card.active {
+            border-color: #ecb445;
+            background: #ecb445;
+            color: #333;
+        }
+
+        .game-area {
+            background: #e54c4e;
+            padding: 30px;
+            border-radius: 15px;
+            min-height: 500px;
+        }
+
+        .circuit-game {
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .component {
+            background: #5568a0;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 3px solid #ecb445;
+            user-select: none;
+            color: white;
+        }
+
+        .component:hover {
+            background: #ecb445;
+            color: #333;
+        }
+
+        .component.connected {
+            background: #ecb445;
+            color: #333;
+            animation: pulse 2s infinite;
+        }
+
+        .component.selected {
+            background: #ecb445;
+            color: #333;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .wire-area {
+            position: relative;
+            height: 200px;
+            background: #5568a0;
+            border-radius: 10px;
+            border: 2px dashed #ecb445;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .wire {
+            position: absolute;
+            height: 4px;
+            background: #ecb445;
+            border-radius: 2px;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .wire.active {
+            opacity: 1;
+            animation: electricity 1s infinite;
+        }
+
+        @keyframes electricity {
+            0%, 100% { box-shadow: 0 0 5px #ecb445; }
+            50% { box-shadow: 0 0 15px #ecb445, 0 0 25px #ecb445; }
+        }
+
+        .control-panel {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .gauge {
+            background: #5568a0;
+            border-radius: 50%;
+            width: 150px;
+            height: 150px;
+            position: relative;
+            margin: 0 auto;
+            border: 5px solid #ecb445;
+        }
+
+        .gauge-needle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 3px;
+            height: 60px;
+            background: #ecb445;
+            transform-origin: bottom center;
+            transform: translate(-50%, -100%) rotate(-90deg);
+            transition: transform 0.5s ease;
+            border-radius: 2px;
+        }
+
+        .gauge-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            background: #5568a0;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            border: 3px solid #ecb445;
+        }
+
+        .slider-container {
+            margin: 20px 0;
+        }
+
+        .slider {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: #5568a0;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: #ecb445;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(236, 180, 69, 0.5);
+        }
+
+        .instrument-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .instrument {
+            background: #5568a0;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 3px solid #ecb445;
+            color: white;
+        }
+
+        .instrument:hover {
+            background: #ecb445;
+            color: #333;
+        }
+
+        .instrument.selected {
+            background: #ecb445;
+            color: #333;
+        }
+
+        .question-area {
+            background: #5568a0;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 2px solid #ecb445;
+        }
+
+        .options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .option {
+            background: #5568a0;
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid #ecb445;
+            text-align: center;
+            color: white;
+        }
+
+        .option:hover {
+            background: #ecb445;
+            color: #333;
+        }
+
+        .option.correct {
+            background: #ecb445;
+            color: #333;
+        }
+
+        .option.wrong {
+            background: #e54c4e;
+            color: white;
+        }
+
+        .btn {
+            background: #ecb445;
+            color: #333;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            margin: 10px 5px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(236, 180, 69, 0.4);
+            background: #5568a0;
+            color: white;
+        }
+
+        .status-light {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #5568a0;
+            display: inline-block;
+            margin: 0 5px;
+            transition: all 0.3s ease;
+            border: 2px solid #ecb445;
+        }
+
+        .status-light.on {
+            background: #ecb445;
+            box-shadow: 0 0 15px #ecb445;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #5568a0;
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 10px 0;
+            border: 2px solid #ecb445;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #ecb445;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .completion-message {
+            background: #ecb445;
+            color: #333;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+        }
+
+        .modal-content {
+            background-color: #e54c4e;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .close {
+            color: white;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #ecb445;
+        }
+
+        .difficulty-indicator {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            margin-left: 10px;
+        }
+
+        .easy { background: #ecb445; color: #333; }
+        .medium { background: #e54c4e; color: white; }
+        .hard { background: #5568a0; color: white; }
+
+        .attempts-counter {
+            background: #5568a0;
+            color: white;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+            text-align: center;
+        }
+
+        .final-assessment {
+            background: #ecb445;
+            color: #333;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .skill-meter {
+            background: #5568a0;
+            height: 20px;
+            border-radius: 10px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+
+        .skill-fill {
+            height: 100%;
+            background: #ecb445;
+            transition: width 0.5s ease;
+        }
+
+        .game-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .summary-card {
+            background: #5568a0;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            border: 2px solid #ecb445;
+        }
+
+        @media (max-width: 768px) {
+            .circuit-game {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .score-board {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .header h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔧 เกมฝึกทักษะช่างเครื่องมือวัดและควบคุม ⚙️</h1>
+            <p>ฝึกทักษะการต่อวงจร การควบคุม การวัด และการแก้ปัญหา 🛠️</p>
+            <div style="margin-top: 15px;">
+                <button class="btn" onclick="showRules()">📋 กติกาการเล่น</button>
+                <button class="btn" onclick="startGame()" id="startBtn">🎮 เริ่มเกม</button>
+                <button class="btn" onclick="nextGame()" id="nextBtn" style="display: none;">➡️ ด่านถัดไป</button>
+            </div>
+        </div>
+
+        <div class="score-board">
+            <div class="score-item">
+                <div>🏆 คะแนนรวม</div>
+                <div id="totalScore">0</div>
+            </div>
+            <div class="score-item">
+                <div>⚡ ความแม่นยำ</div>
+                <div id="accuracy">100%</div>
+            </div>
+            <div class="score-item">
+                <div>🎯 เลเวล</div>
+                <div id="level">1</div>
+            </div>
+            <div class="score-item">
+                <div>⏱️ เวลา</div>
+                <div id="timer">00:00</div>
+            </div>
+        </div>
+
+        <div class="game-selector">
+            <div class="game-card active" onclick="selectGame('circuit')">
+                <h3>⚡ เกมต่อวงจรเซนเซอร์ <span class="difficulty-indicator hard">ยาก</span></h3>
+                <p>ต่อวงจรเซนเซอร์ 3 ตัว + PLC + HMI + Alarm 🔌</p>
+                <div class="status-light" id="circuit-status"></div>
+            </div>
+            <div class="game-card" onclick="selectGame('control')">
+                <h3>🎛️ เกมปรับค่าควบคุม <span class="difficulty-indicator easy">ง่าย</span></h3>
+                <p>ควบคุมค่าต่างๆ ให้อยู่ในช่วงที่กำหนด 📊</p>
+                <div class="status-light" id="control-status"></div>
+            </div>
+            <div class="game-card" onclick="selectGame('matching')">
+                <h3>🔧 เกมจับคู่เครื่องมือวัด <span class="difficulty-indicator easy">ง่าย</span></h3>
+                <p>เลือกเครื่องมือวัดที่เหมาะสมกับงาน 🛠️</p>
+                <div class="status-light" id="matching-status"></div>
+            </div>
+            <div class="game-card" onclick="selectGame('troubleshoot')">
+                <h3>🔍 เกมแก้ปัญหาในโรงงาน <span class="difficulty-indicator hard">ยาก</span></h3>
+                <p>วิเคราะห์และแก้ไขปัญหาที่เกิดขึ้น ⚙️</p>
+                <div class="status-light" id="troubleshoot-status"></div>
+            </div>
+        </div>
+
+        <div class="game-area" id="gameArea">
+            <!-- เกมต่อวงจรเซนเซอร์ -->
+            <div id="circuitGame" class="game-content">
+                <h2>⚡ เกมต่อวงจรเซนเซอร์ (ระดับยาก)</h2>
+                <p>คลิกเพื่อเชื่อมต่อ: เซนเซอร์ทั้ง 3 → PLC → HMI และ Alarm 🔌</p>
+                <p><small>ลำดับที่ถูกต้อง: Thermocouple→PLC, Pressure→PLC, Flow→PLC, PLC→HMI, PLC→Alarm</small></p>
+                <div class="attempts-counter">
+                    ⚠️ โอกาสผิดพลาด: <span id="attemptsLeft">3</span>/3 ครั้ง
+                </div>
+                
+                <div class="circuit-game">
+                    <div style="display: flex; flex-direction: column; gap: 15px;">
+                        <div class="component" id="thermocouple" onclick="selectComponent('thermocouple')">
+                            🌡️<br>Thermocouple<br>
+                            <small>เซนเซอร์วัดอุณหภูมิ</small>
+                        </div>
+                        <div class="component" id="pressure-sensor" onclick="selectComponent('pressure-sensor')">
+                            💨<br>Pressure Sensor<br>
+                            <small>เซนเซอร์วัดแรงดัน</small>
+                        </div>
+                        <div class="component" id="flow-sensor" onclick="selectComponent('flow-sensor')">
+                            🌊<br>Flow Sensor<br>
+                            <small>เซนเซอร์วัดการไหล</small>
+                        </div>
+                    </div>
+                    
+                    <div class="wire-area" id="wireArea">
+                        <div class="wire" id="wire1"></div>
+                        <div class="wire" id="wire2"></div>
+                        <div class="wire" id="wire3"></div>
+                        <div class="wire" id="wire4"></div>
+                        <div class="wire" id="wire5"></div>
+                        <div style="color: white; text-align: center;">
+                            คลิกเพื่อเชื่อมต่อวงจร<br>
+                            <small>ต้องเชื่อมต่อ 5 การเชื่อมต่อ</small>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 15px;">
+                        <div class="component" id="plc" onclick="selectComponent('plc')">
+                            🖥️<br>PLC<br>
+                            <small>ตัวควบคุมหลัก</small>
+                        </div>
+                        <div class="component" id="hmi" onclick="selectComponent('hmi')">
+                            📱<br>HMI<br>
+                            <small>หน้าจอแสดงผล</small>
+                        </div>
+                        <div class="component" id="alarm" onclick="selectComponent('alarm')">
+                            🚨<br>Alarm<br>
+                            <small>สัญญาณเตือน</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="text-align: center; margin-top: 20px;">
+                    <button class="btn" onclick="checkCircuit()">ตรวจสอบวงจร</button>
+                    <button class="btn" onclick="resetCircuit()">รีเซ็ต</button>
+                    <div style="margin-top: 10px;">
+                        สถานะ: <span class="status-light" id="circuitLight"></span>
+                        <span id="circuitStatus">ยังไม่เชื่อมต่อ</span>
+                    </div>
+                </div>
+                
+                <div class="completion-message" id="circuitComplete">
+                    🎉 ยินดีด้วย! คุณต่อวงจรได้ถูกต้อง! ได้ 100 คะแนน
+                </div>
+            </div>
+
+            <!-- เกมปรับค่าควบคุม -->
+            <div id="controlGame" class="game-content" style="display: none;">
+                <h2>🎛️ เกมปรับค่าควบคุม</h2>
+                <p>ปรับค่าให้ตรงกับ Set Point ที่กำหนด (ต้องได้ความแม่นยำ 100% เท่านั้น)</p>
+                
+                <div class="control-panel">
+                    <div>
+                        <h3>🌡️ อุณหภูมิ</h3>
+                        <div class="gauge">
+                            <div class="gauge-needle" id="tempNeedle"></div>
+                            <div class="gauge-center"></div>
+                        </div>
+                        <div class="slider-container">
+                            <label>ปรับอุณหภูมิ: <span id="tempValue">25</span>°C</label>
+                            <input type="range" class="slider" id="tempSlider" min="0" max="100" value="25">
+                        </div>
+                        <div>เป้าหมาย: <span id="tempTarget">50</span>°C</div>
+                    </div>
+                    
+                    <div>
+                        <h3>💨 แรงดัน</h3>
+                        <div class="gauge">
+                            <div class="gauge-needle" id="pressureNeedle"></div>
+                            <div class="gauge-center"></div>
+                        </div>
+                        <div class="slider-container">
+                            <label>ปรับแรงดัน: <span id="pressureValue">0</span> Bar</label>
+                            <input type="range" class="slider" id="pressureSlider" min="0" max="10" value="0" step="0.1">
+                        </div>
+                        <div>เป้าหมาย: <span id="pressureTarget">5.0</span> Bar</div>
+                    </div>
+                </div>
+                
+                <div style="text-align: center; margin-top: 20px;">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="controlProgress"></div>
+                    </div>
+                    <div>ความแม่นยำ: <span id="controlAccuracy">0%</span></div>
+                    <button class="btn" onclick="newControlChallenge()">ความท้าทายใหม่</button>
+                </div>
+                
+                <div class="completion-message" id="controlComplete">
+                    🎯 เยี่ยม! ความแม่นยำ 100%! ได้ 50 คะแนน
+                </div>
+            </div>
+
+            <!-- เกมจับคู่เครื่องมือวัด -->
+            <div id="matchingGame" class="game-content" style="display: none;">
+                <h2>🔧 เกมจับคู่เครื่องมือวัด</h2>
+                
+                <div class="question-area">
+                    <h3 id="matchingQuestion">ต้องการวัดอุณหภูมิในท่อ ควรใช้เครื่องมือใด?</h3>
+                </div>
+                
+                <div class="instrument-grid">
+                    <div class="instrument" onclick="selectInstrument('thermometer')">
+                        🌡️<br>Thermometer<br>
+                        <small>วัดอุณหภูมิ</small>
+                    </div>
+                    <div class="instrument" onclick="selectInstrument('pressure')">
+                        📊<br>Pressure Gauge<br>
+                        <small>วัดแรงดัน</small>
+                    </div>
+                    <div class="instrument" onclick="selectInstrument('flow')">
+                        🌊<br>Flow Meter<br>
+                        <small>วัดอัตราการไหล</small>
+                    </div>
+                    <div class="instrument" onclick="selectInstrument('multimeter')">
+                        ⚡<br>Multimeter<br>
+                        <small>วัดไฟฟ้า</small>
+                    </div>
+                </div>
+                
+                <div style="text-align: center; margin-top: 20px;">
+                    <div>คะแนน: <span id="matchingScore">0</span>/5</div>
+                </div>
+                
+                <div class="completion-message" id="matchingComplete">
+                    🏆 เสร็จสิ้นการจับคู่เครื่องมือวัดแล้ว! คะแนนรวม: <span id="finalMatchingScore">0</span>/5
+                </div>
+            </div>
+
+            <!-- เกมแก้ปัญหาในโรงงาน -->
+            <div id="troubleshootGame" class="game-content" style="display: none;">
+                <h2>🔍 เกมแก้ปัญหาในโรงงาน</h2>
+                
+                <div class="question-area">
+                    <h3 id="troubleshootScenario">สถานการณ์: ค่าแรงดันในระบบไม่ขึ้น แม้ว่าปั๊มจะทำงานอยู่</h3>
+                    <p>คุณจะตรวจสอบอะไรก่อน?</p>
+                </div>
+                
+                <div class="options" id="troubleshootOptions">
+                    <div class="option" onclick="selectTroubleshootOption(0)">
+                        ตรวจสอบการรั่วไหลของท่อ
+                    </div>
+                    <div class="option" onclick="selectTroubleshootOption(1)">
+                        เปลี่ยนปั๊มใหม่ทันที
+                    </div>
+                    <div class="option" onclick="selectTroubleshootOption(2)">
+                        ตรวจสอบวาล์วปิด-เปิด
+                    </div>
+                    <div class="option" onclick="selectTroubleshootOption(3)">
+                        รีสตาร์ทระบบทั้งหมด
+                    </div>
+                </div>
+                
+                <div style="text-align: center; margin-top: 20px;">
+                    <div>คะแนนการแก้ปัญหา: <span id="troubleshootScore">0</span>/3</div>
+                </div>
+                
+                <div class="completion-message" id="troubleshootComplete">
+                    🔧 เสร็จสิ้นการแก้ปัญหาทั้งหมดแล้ว! คะแนนรวม: <span id="finalTroubleshootScore">0</span>/3
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal กติกาการเล่น -->
+        <div id="rulesModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeRules()">&times;</span>
+                <h2>📋 กติกาการเล่น</h2>
+                
+                <h3>🎯 วัตถุประสงค์</h3>
+                <p>ฝึกทักษะช่างเครื่องมือวัดและควบคุมผ่านเกม 4 ด่าน</p>
+                
+                <h3>🎮 วิธีการเล่น</h3>
+                <ul>
+                    <li><strong>⚡ วงจรเซนเซอร์:</strong> ต่อวงจรให้ถูกต้อง (มีโอกาสผิด 3 ครั้ง)</li>
+                    <li><strong>🎛️ ปรับค่าควบคุม:</strong> ปรับค่าให้ความแม่นยำ > 90%</li>
+                    <li><strong>🔧 จับคู่เครื่องมือ:</strong> เลือกเครื่องมือที่เหมาะสม</li>
+                    <li><strong>🔍 แก้ปัญหา:</strong> เลือกวิธีแก้ปัญหาที่ถูกต้อง</li>
+                </ul>
+                
+                <h3>🏆 การให้คะแนน</h3>
+                <ul>
+                    <li>วงจรเซนเซอร์: 100 คะแนน (ลดลง 25 คะแนนต่อครั้งที่ผิด)</li>
+                    <li>ปรับค่าควบคุม: 50 คะแนน</li>
+                    <li>จับคู่เครื่องมือ: 20 คะแนนต่อข้อ</li>
+                    <li>แก้ปัญหา: 30 คะแนนต่อข้อ</li>
+                </ul>
+                
+                <h3>📊 การประเมินผล</h3>
+                <p>เล่นครบทุกด่านจะได้รับการประเมินทักษะและคำแนะนำ</p>
+            </div>
+        </div>
+
+        <!-- Modal ผลการประเมิน -->
+        <div id="assessmentModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeAssessment()">&times;</span>
+                <h2>🏆 ผลการประเมินทักษะ</h2>
+                
+                <div class="final-assessment">
+                    <h3 id="overallGrade">🎯 ระดับทักษะ: ดีมาก</h3>
+                    <p id="assessmentText">คุณมีทักษะที่เหมาะสมสำหรับงานช่างเครื่องมือวัด</p>
+                </div>
+                
+                <div class="game-summary" id="gameSummary">
+                    <!-- สรุปคะแนนแต่ละด่าน -->
+                </div>
+                
+                <div>
+                    <h3>📈 ทักษะด้านต่างๆ</h3>
+                    <div>
+                        <label>🔌 การต่อวงจร:</label>
+                        <div class="skill-meter">
+                            <div class="skill-fill" id="circuitSkill"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <label>🎛️ การควบคุม:</label>
+                        <div class="skill-meter">
+                            <div class="skill-fill" id="controlSkill"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <label>🔧 ความรู้เครื่องมือ:</label>
+                        <div class="skill-meter">
+                            <div class="skill-fill" id="knowledgeSkill"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <label>🔍 การแก้ปัญหา:</label>
+                        <div class="skill-meter">
+                            <div class="skill-fill" id="problemSkill"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="text-align: center; margin-top: 20px;">
+                    <button class="btn" onclick="resetAllGames()">🔄 เล่นใหม่</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let gameState = {
+            currentGame: 'circuit',
+            totalScore: 0,
+            accuracy: 100,
+            level: 1,
+            startTime: Date.now(),
+            circuitConnections: [],
+            selectedComponent: null,
+            matchingQuestionIndex: 0,
+            troubleshootQuestionIndex: 0,
+            matchingScore: 0,
+            troubleshootScore: 0,
+            controlScore: 0,
+            circuitScore: 0,
+            circuitAttempts: 3,
+            wrongAttempts: 0,
+            circuitCompleted: false,
+            controlCompleted: false,
+            matchingCompleted: false,
+            troubleshootCompleted: false,
+            allGamesCompleted: false
+        };
+
+        // ข้อมูลคำถาม
+        const matchingQuestions = [
+            { question: "ต้องการวัดอุณหภูมิในท่อ ควรใช้เครื่องมือใด?", answer: "thermometer" },
+            { question: "ต้องการวัดแรงดันน้ำในระบบ ควรใช้เครื่องมือใด?", answer: "pressure" },
+            { question: "ต้องการวัดอัตราการไหลของของเหลว ควรใช้เครื่องมือใด?", answer: "flow" },
+            { question: "ต้องการวัดแรงดันไฟฟ้า ควรใช้เครื่องมือใด?", answer: "multimeter" },
+            { question: "ต้องการตรวจสอบกระแสไฟฟ้า ควรใช้เครื่องมือใด?", answer: "multimeter" }
+        ];
+
+        const troubleshootScenarios = [
+            {
+                scenario: "ค่าแรงดันในระบบไม่ขึ้น แม้ว่าปั๊มจะทำงานอยู่",
+                question: "คุณจะตรวจสอบอะไรก่อน?",
+                options: [
+                    "ตรวจสอบการรั่วไหลของท่อ",
+                    "เปลี่ยนปั๊มใหม่ทันที", 
+                    "ตรวจสอบวาล์วปิด-เปิด",
+                    "รีสตาร์ทระบบทั้งหมด"
+                ],
+                correct: 0
+            },
+            {
+                scenario: "เซนเซอร์อุณหภูมิแสดงค่าผิดปกติ (แสดง 999°C)",
+                question: "วิธีแก้ไขที่ถูกต้องคือ?",
+                options: [
+                    "ปรับค่า Calibration ใหม่",
+                    "ตรวจสอบการเชื่อมต่อสายไฟ",
+                    "เปลี่ยนเซนเซอร์ใหม่",
+                    "รีเซ็ตระบบ PLC"
+                ],
+                correct: 1
+            },
+            {
+                scenario: "ระบบ Alarm ไม่ทำงานเมื่อค่าเกินกำหนด",
+                question: "ควรตรวจสอบอะไรบ้าง?",
+                options: [
+                    "ตรวจสอบการตั้งค่า Set Point",
+                    "เปลี่ยนหลอดไฟ Alarm",
+                    "ตรวจสอบโปรแกรม PLC",
+                    "ทั้งข้อ 1 และ 3"
+                ],
+                correct: 3
+            }
+        ];
+
+        // ฟังก์ชันเลือกเกม
+        function selectGame(gameType) {
+            // อัพเดท UI
+            document.querySelectorAll('.game-card').forEach(card => card.classList.remove('active'));
+            event.target.closest('.game-card').classList.add('active');
+            
+            // ซ่อนเกมทั้งหมด
+            document.querySelectorAll('.game-content').forEach(content => content.style.display = 'none');
+            
+            // แสดงเกมที่เลือก
+            document.getElementById(gameType + 'Game').style.display = 'block';
+            gameState.currentGame = gameType;
+            
+            // เริ่มเกมใหม่
+            initializeGame(gameType);
+        }
+
+        // ฟังก์ชันเริ่มเกม
+        function initializeGame(gameType) {
+            switch(gameType) {
+                case 'circuit':
+                    resetCircuit();
+                    break;
+                case 'control':
+                    newControlChallenge();
+                    break;
+                case 'matching':
+                    if (!gameState.matchingCompleted) {
+                        gameState.matchingQuestionIndex = 0;
+                        gameState.matchingScore = 0;
+                        document.getElementById('matchingScore').textContent = '0';
+                        showMatchingQuestion();
+                    }
+                    break;
+                case 'troubleshoot':
+                    if (!gameState.troubleshootCompleted) {
+                        gameState.troubleshootQuestionIndex = 0;
+                        gameState.troubleshootScore = 0;
+                        document.getElementById('troubleshootScore').textContent = '0';
+                        showTroubleshootScenario();
+                    }
+                    break;
+            }
+        }
+
+        // เกมต่อวงจร
+        function selectComponent(componentId) {
+            if (gameState.circuitCompleted) return;
+            
+            if (gameState.selectedComponent === null) {
+                gameState.selectedComponent = componentId;
+                document.getElementById(componentId).classList.add('selected');
+            } else if (gameState.selectedComponent !== componentId) {
+                // เชื่อมต่อ
+                gameState.circuitConnections.push([gameState.selectedComponent, componentId]);
+                document.getElementById(gameState.selectedComponent).classList.remove('selected');
+                gameState.selectedComponent = null;
+                updateWires();
+            } else {
+                // ยกเลิกการเลือก
+                document.getElementById(componentId).classList.remove('selected');
+                gameState.selectedComponent = null;
+            }
+        }
+
+        function updateWires() {
+            const connections = gameState.circuitConnections;
+            const wires = ['wire1', 'wire2', 'wire3', 'wire4', 'wire5'];
+            
+            // แสดงสายไฟตามจำนวนการเชื่อมต่อ
+            connections.forEach((connection, index) => {
+                if (index < wires.length) {
+                    const wire = document.getElementById(wires[index]);
+                    wire.style.opacity = '1';
+                    wire.style.top = `${30 + (index * 35)}px`;
+                    wire.style.left = '20px';
+                    wire.style.width = '60%';
+                    wire.style.background = getWireColor(connection);
+                }
+            });
+        }
+        
+        function getWireColor(connection) {
+            // สีสายไฟตามประเภทการเชื่อมต่อ
+            if (connection.includes('thermocouple')) return '#ff6b6b';
+            if (connection.includes('pressure-sensor')) return '#4ecdc4';
+            if (connection.includes('flow-sensor')) return '#45b7d1';
+            if (connection.includes('hmi')) return '#96ceb4';
+            if (connection.includes('alarm')) return '#feca57';
+            return '#ecb445';
+        }
+
+        function checkCircuit() {
+            if (gameState.circuitCompleted) return;
+            
+            const connections = gameState.circuitConnections;
+            
+            // ตรวจสอบการเชื่อมต่อที่ถูกต้อง (ต้องมี 5 การเชื่อมต่อ)
+            let hasThermocoupleToPlc = connections.some(conn => 
+                (conn[0] === 'thermocouple' && conn[1] === 'plc') ||
+                (conn[0] === 'plc' && conn[1] === 'thermocouple')
+            );
+            
+            let hasPressureToPlc = connections.some(conn => 
+                (conn[0] === 'pressure-sensor' && conn[1] === 'plc') ||
+                (conn[0] === 'plc' && conn[1] === 'pressure-sensor')
+            );
+            
+            let hasFlowToPlc = connections.some(conn => 
+                (conn[0] === 'flow-sensor' && conn[1] === 'plc') ||
+                (conn[0] === 'plc' && conn[1] === 'flow-sensor')
+            );
+            
+            let hasPlcToHmi = connections.some(conn => 
+                (conn[0] === 'plc' && conn[1] === 'hmi') ||
+                (conn[0] === 'hmi' && conn[1] === 'plc')
+            );
+            
+            let hasPlcToAlarm = connections.some(conn => 
+                (conn[0] === 'plc' && conn[1] === 'alarm') ||
+                (conn[0] === 'alarm' && conn[1] === 'plc')
+            );
+            
+            let isCorrect = connections.length === 5 && hasThermocoupleToPlc && 
+                           hasPressureToPlc && hasFlowToPlc && hasPlcToHmi && hasPlcToAlarm;
+            
+            if (isCorrect) {
+                document.getElementById('circuitLight').classList.add('on');
+                document.getElementById('circuitStatus').textContent = 'วงจรทำงานถูกต้อง! 🎉';
+                document.querySelectorAll('.component').forEach(comp => comp.classList.add('connected'));
+                document.querySelectorAll('.wire').forEach(wire => wire.classList.add('active'));
+                
+                // คำนวณคะแนนตามจำนวนครั้งที่ผิด
+                const baseScore = 100;
+                const penalty = gameState.wrongAttempts * 25;
+                gameState.circuitScore = Math.max(25, baseScore - penalty);
+                
+                // แสดงข้อความเสร็จสิ้น
+                document.getElementById('circuitComplete').innerHTML = 
+                    `🎉 ยินดีด้วย! คุณต่อวงจรได้ถูกต้อง! ได้ ${gameState.circuitScore} คะแนน<br>
+                    <small>ผิดพลาด ${gameState.wrongAttempts} ครั้ง</small>`;
+                document.getElementById('circuitComplete').style.display = 'block';
+                gameState.circuitCompleted = true;
+                
+                // เพิ่มคะแนน
+                gameState.totalScore += gameState.circuitScore;
+                updateScoreBoard();
+                showNextButton();
+                
+                // เสียงแจ้งเตือน
+                playSuccessSound();
+            } else {
+                gameState.wrongAttempts++;
+                gameState.circuitAttempts--;
+                document.getElementById('attemptsLeft').textContent = gameState.circuitAttempts;
+                
+                if (gameState.circuitAttempts <= 0) {
+                    document.getElementById('circuitStatus').textContent = 'หมดโอกาส! กดรีเซ็ตเพื่อเล่นใหม่ ❌';
+                    document.getElementById('circuitComplete').innerHTML = 
+                        `❌ หมดโอกาสแล้ว! คะแนนที่ได้: 0 คะแนน`;
+                    document.getElementById('circuitComplete').style.display = 'block';
+                    gameState.circuitCompleted = true;
+                    gameState.circuitScore = 0;
+                    checkAllGamesCompleted();
+                } else {
+                    document.getElementById('circuitStatus').textContent = 
+                        `วงจรยังไม่ถูกต้อง เหลือโอกาส ${gameState.circuitAttempts} ครั้ง ⚠️`;
+                }
+            }
+        }
+
+        function resetCircuit() {
+            gameState.circuitConnections = [];
+            gameState.selectedComponent = null;
+            gameState.circuitCompleted = false;
+            gameState.circuitAttempts = 3;
+            gameState.wrongAttempts = 0;
+            gameState.circuitScore = 0;
+            
+            document.getElementById('attemptsLeft').textContent = '3';
+            document.querySelectorAll('.component').forEach(comp => {
+                comp.classList.remove('connected', 'selected');
+            });
+            
+            // รีเซ็ตสายไฟทั้ง 5 เส้น
+            ['wire1', 'wire2', 'wire3', 'wire4', 'wire5'].forEach(wireId => {
+                const wire = document.getElementById(wireId);
+                wire.style.opacity = '0';
+                wire.classList.remove('active');
+                wire.style.background = '#ecb445';
+            });
+            
+            document.getElementById('circuitLight').classList.remove('on');
+            document.getElementById('circuitStatus').textContent = 'ยังไม่เชื่อมต่อ (ต้องเชื่อมต่อ 5 จุด)';
+            document.getElementById('circuitComplete').style.display = 'none';
+        }
+
+        // เกมควบคุม
+        function newControlChallenge() {
+            const tempTarget = Math.floor(Math.random() * 80) + 20;
+            const pressureTarget = (Math.random() * 8 + 1).toFixed(1);
+            
+            document.getElementById('tempTarget').textContent = tempTarget;
+            document.getElementById('pressureTarget').textContent = pressureTarget;
+            
+            // รีเซ็ตค่า
+            document.getElementById('tempSlider').value = 25;
+            document.getElementById('pressureSlider').value = 0;
+            document.getElementById('controlComplete').style.display = 'none';
+            updateControlValues();
+        }
+
+        function updateControlValues() {
+            const tempValue = document.getElementById('tempSlider').value;
+            const pressureValue = document.getElementById('pressureSlider').value;
+            
+            document.getElementById('tempValue').textContent = tempValue;
+            document.getElementById('pressureValue').textContent = pressureValue;
+            
+            // อัพเดทเข็มวัด
+            const tempAngle = (tempValue / 100) * 180 - 90;
+            const pressureAngle = (pressureValue / 10) * 180 - 90;
+            
+            document.getElementById('tempNeedle').style.transform = 
+                `translate(-50%, -100%) rotate(${tempAngle}deg)`;
+            document.getElementById('pressureNeedle').style.transform = 
+                `translate(-50%, -100%) rotate(${pressureAngle}deg)`;
+            
+            // คำนวณความแม่นยำ
+            const tempTarget = parseInt(document.getElementById('tempTarget').textContent);
+            const pressureTarget = parseFloat(document.getElementById('pressureTarget').textContent);
+            
+            const tempError = Math.abs(tempValue - tempTarget);
+            const pressureError = Math.abs(pressureValue - pressureTarget);
+            
+            const tempAccuracy = Math.max(0, 100 - (tempError * 2));
+            const pressureAccuracy = Math.max(0, 100 - (pressureError * 20));
+            
+            const overallAccuracy = (tempAccuracy + pressureAccuracy) / 2;
+            
+            document.getElementById('controlAccuracy').textContent = Math.round(overallAccuracy) + '%';
+            document.getElementById('controlProgress').style.width = overallAccuracy + '%';
+            
+            if (overallAccuracy >= 100) {
+                if (document.getElementById('controlComplete').style.display === 'none') {
+                    document.getElementById('controlComplete').style.display = 'block';
+                    if (!gameState.controlCompleted) {
+                        gameState.controlScore = 50;
+                        gameState.totalScore += gameState.controlScore;
+                        gameState.controlCompleted = true;
+                        updateScoreBoard();
+                        showNextButton();
+                        playSuccessSound();
+                    }
+                }
+            } else {
+                document.getElementById('controlComplete').style.display = 'none';
+            }
+        }
+
+        // Event listeners สำหรับ sliders
+        document.getElementById('tempSlider').addEventListener('input', updateControlValues);
+        document.getElementById('pressureSlider').addEventListener('input', updateControlValues);
+
+        // เกมจับคู่เครื่องมือ
+        function showMatchingQuestion() {
+            if (gameState.matchingQuestionIndex < matchingQuestions.length) {
+                const question = matchingQuestions[gameState.matchingQuestionIndex];
+                document.getElementById('matchingQuestion').textContent = question.question;
+                
+                // รีเซ็ตการเลือก
+                document.querySelectorAll('.instrument').forEach(inst => {
+                    inst.classList.remove('selected');
+                    inst.style.background = '#5568a0';
+                    inst.style.color = 'white';
+                });
+                
+                document.getElementById('matchingComplete').style.display = 'none';
+            } else {
+                // เสร็จสิ้นเกม
+                document.getElementById('finalMatchingScore').textContent = gameState.matchingScore;
+                document.getElementById('matchingComplete').style.display = 'block';
+                gameState.matchingCompleted = true;
+                showNextButton();
+            }
+        }
+
+        function selectInstrument(instrumentType) {
+            if (gameState.matchingQuestionIndex >= matchingQuestions.length) return;
+            
+            const question = matchingQuestions[gameState.matchingQuestionIndex];
+            const isCorrect = instrumentType === question.answer;
+            
+            // แสดงผล
+            document.querySelectorAll('.instrument').forEach(inst => inst.classList.remove('selected'));
+            const selectedInstrument = event.target.closest('.instrument');
+            selectedInstrument.classList.add('selected');
+            
+            if (isCorrect) {
+                selectedInstrument.style.background = '#ecb445';
+                selectedInstrument.style.color = '#333';
+                gameState.matchingScore++;
+                document.getElementById('matchingScore').textContent = gameState.matchingScore;
+                gameState.totalScore += 20;
+                updateScoreBoard();
+                playSuccessSound();
+            } else {
+                selectedInstrument.style.background = '#e54c4e';
+                selectedInstrument.style.color = 'white';
+                gameState.totalScore = Math.max(0, gameState.totalScore - 15);
+                updateScoreBoard();
+            }
+            
+            setTimeout(() => {
+                gameState.matchingQuestionIndex++;
+                showMatchingQuestion();
+            }, 1500);
+        }
+
+
+
+        // เกมแก้ปัญหา
+        function showTroubleshootScenario() {
+            if (gameState.troubleshootQuestionIndex < troubleshootScenarios.length) {
+                const scenario = troubleshootScenarios[gameState.troubleshootQuestionIndex];
+                document.getElementById('troubleshootScenario').textContent = 
+                    'สถานการณ์: ' + scenario.scenario;
+                
+                // แสดงคำถาม
+                const scenarioElement = document.getElementById('troubleshootScenario');
+                scenarioElement.innerHTML = 'สถานการณ์: ' + scenario.scenario + '<br><p>' + scenario.question + '</p>';
+                
+                const optionsContainer = document.getElementById('troubleshootOptions');
+                optionsContainer.innerHTML = '';
+                
+                scenario.options.forEach((option, index) => {
+                    const optionDiv = document.createElement('div');
+                    optionDiv.className = 'option';
+                    optionDiv.textContent = option;
+                    optionDiv.onclick = () => selectTroubleshootOption(index);
+                    optionsContainer.appendChild(optionDiv);
+                });
+                
+                document.getElementById('troubleshootComplete').style.display = 'none';
+            } else {
+                // เสร็จสิ้นเกม
+                document.getElementById('finalTroubleshootScore').textContent = gameState.troubleshootScore;
+                document.getElementById('troubleshootComplete').style.display = 'block';
+                gameState.troubleshootCompleted = true;
+                showNextButton();
+            }
+        }
+
+        function selectTroubleshootOption(optionIndex) {
+            if (gameState.troubleshootQuestionIndex >= troubleshootScenarios.length) return;
+            
+            const scenario = troubleshootScenarios[gameState.troubleshootQuestionIndex];
+            const isCorrect = optionIndex === scenario.correct;
+            
+            const options = document.querySelectorAll('#troubleshootOptions .option');
+            options.forEach(option => option.classList.remove('correct', 'wrong'));
+            
+            if (isCorrect) {
+                options[optionIndex].classList.add('correct');
+                gameState.troubleshootScore++;
+                document.getElementById('troubleshootScore').textContent = gameState.troubleshootScore;
+                gameState.totalScore += 30;
+                updateScoreBoard();
+                playSuccessSound();
+            } else {
+                options[optionIndex].classList.add('wrong');
+                options[scenario.correct].classList.add('correct');
+                gameState.totalScore = Math.max(0, gameState.totalScore - 15);
+                updateScoreBoard();
+            }
+            
+            setTimeout(() => {
+                gameState.troubleshootQuestionIndex++;
+                showTroubleshootScenario();
+            }, 2000);
+        }
+
+
+
+        // ฟังก์ชันอัพเดทคะแนน
+        function updateScoreBoard() {
+            document.getElementById('totalScore').textContent = gameState.totalScore;
+            
+            // อัพเดทเวลา
+            const elapsed = Math.floor((Date.now() - gameState.startTime) / 1000);
+            const minutes = Math.floor(elapsed / 60);
+            const seconds = elapsed % 60;
+            document.getElementById('timer').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        // ฟังก์ชันเสียง
+        function playSuccessSound() {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+                oscillator.frequency.setValueAtTime(1000, audioContext.currentTime + 0.1);
+                
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.3);
+            } catch (e) {
+                // ไม่สามารถเล่นเสียงได้
+            }
+        }
+
+
+
+        // ฟังก์ชันแสดงกติกา
+        function showRules() {
+            document.getElementById('rulesModal').style.display = 'block';
+        }
+
+        function closeRules() {
+            document.getElementById('rulesModal').style.display = 'none';
+        }
+
+        // ฟังก์ชันแสดงผลการประเมิน
+        function showFinalAssessment() {
+            const totalPossible = 100 + 50 + 100 + 90; // คะแนนเต็มของแต่ละเกม
+            const percentage = (gameState.totalScore / totalPossible) * 100;
+            
+            let grade, assessment, recommendation;
+            
+            if (percentage >= 90) {
+                grade = "🏆 ยอดเยี่ยม (A)";
+                assessment = "คุณมีทักษะที่ยอดเยี่ยมสำหรับงานช่างเครื่องมือวัดและควบคุม";
+                recommendation = "เหมาะสำหรับตำแหน่ง: หัวหน้าช่างเครื่องมือวัด, วิศวกรควบคุมระบบ";
+            } else if (percentage >= 80) {
+                grade = "🎯 ดีมาก (B+)";
+                assessment = "คุณมีทักษะที่ดีมากและพร้อมสำหรับงานช่างเครื่องมือวัด";
+                recommendation = "เหมาะสำหรับตำแหน่ง: ช่างเครื่องมือวัดอาวุโส, ช่างบำรุงรักษา";
+            } else if (percentage >= 70) {
+                grade = "👍 ดี (B)";
+                assessment = "คุณมีทักษะพื้นฐานที่ดี แต่ควรฝึกฝนเพิ่มเติม";
+                recommendation = "เหมาะสำหรับตำแหน่ง: ช่างเครื่องมือวัด, ผู้ช่วยช่างเทคนิค";
+            } else if (percentage >= 60) {
+                grade = "📚 พอใช้ (C+)";
+                assessment = "คุณมีความรู้พื้นฐาน แต่ต้องฝึกฝนและเรียนรู้เพิ่มเติม";
+                recommendation = "แนะนำ: ฝึกอบรมเพิ่มเติม, เริ่มจากตำแหน่งผู้ช่วยช่าง";
+            } else {
+                grade = "⚠️ ต้องปรับปรุง (C)";
+                assessment = "คุณต้องเรียนรู้และฝึกฝนทักษะเพิ่มเติมอย่างมาก";
+                recommendation = "แนะนำ: เข้าคอร์สฝึกอบรมพื้นฐาน, ศึกษาเพิ่มเติม";
+            }
+            
+            document.getElementById('overallGrade').textContent = `🎯 ระดับทักษะ: ${grade}`;
+            document.getElementById('assessmentText').innerHTML = `
+                <p>${assessment}</p>
+                <p><strong>💼 ${recommendation}</strong></p>
+                <p>📊 คะแนนรวม: ${gameState.totalScore}/${totalPossible} (${percentage.toFixed(1)}%)</p>
+            `;
+            
+            // สร้างสรุปคะแนนแต่ละด่าน
+            const summaryHTML = `
+                <div class="summary-card">
+                    <h4>⚡ วงจรเซนเซอร์</h4>
+                    <p>${gameState.circuitScore}/100 คะแนน</p>
+                    <small>ผิดพลาด ${gameState.wrongAttempts} ครั้ง</small>
+                </div>
+                <div class="summary-card">
+                    <h4>🎛️ ปรับค่าควบคุม</h4>
+                    <p>${gameState.controlScore}/50 คะแนน</p>
+                    <small>${gameState.controlCompleted ? 'ผ่าน' : 'ไม่ผ่าน'}</small>
+                </div>
+                <div class="summary-card">
+                    <h4>🔧 จับคู่เครื่องมือ</h4>
+                    <p>${gameState.matchingScore * 20}/100 คะแนน</p>
+                    <small>${gameState.matchingScore}/5 ข้อถูก</small>
+                </div>
+                <div class="summary-card">
+                    <h4>🔍 แก้ปัญหา</h4>
+                    <p>${gameState.troubleshootScore * 30}/90 คะแนน</p>
+                    <small>${gameState.troubleshootScore}/3 ข้อถูก</small>
+                </div>
+            `;
+            document.getElementById('gameSummary').innerHTML = summaryHTML;
+            
+            // อัพเดทแถบทักษะ
+            document.getElementById('circuitSkill').style.width = `${(gameState.circuitScore / 100) * 100}%`;
+            document.getElementById('controlSkill').style.width = `${(gameState.controlScore / 50) * 100}%`;
+            document.getElementById('knowledgeSkill').style.width = `${(gameState.matchingScore / 5) * 100}%`;
+            document.getElementById('problemSkill').style.width = `${(gameState.troubleshootScore / 3) * 100}%`;
+            
+            document.getElementById('assessmentModal').style.display = 'block';
+        }
+
+        function closeAssessment() {
+            document.getElementById('assessmentModal').style.display = 'none';
+        }
+
+        // ฟังก์ชันรีเซ็ตเกมทั้งหมด
+        function resetAllGames() {
+            gameState = {
+                currentGame: 'circuit',
+                totalScore: 0,
+                accuracy: 100,
+                level: 1,
+                startTime: Date.now(),
+                circuitConnections: [],
+                selectedComponent: null,
+                matchingQuestionIndex: 0,
+                troubleshootQuestionIndex: 0,
+                matchingScore: 0,
+                troubleshootScore: 0,
+                controlScore: 0,
+                circuitScore: 0,
+                circuitAttempts: 3,
+                wrongAttempts: 0,
+                circuitCompleted: false,
+                controlCompleted: false,
+                matchingCompleted: false,
+                troubleshootCompleted: false,
+                allGamesCompleted: false
+            };
+            
+            closeAssessment();
+            
+            // รีเซ็ตทุกเกม
+            resetCircuit();
+            newControlChallenge();
+            document.getElementById('matchingScore').textContent = '0';
+            document.getElementById('troubleshootScore').textContent = '0';
+            
+            // รีเซ็ต UI
+            document.querySelectorAll('.completion-message').forEach(msg => {
+                msg.style.display = 'none';
+            });
+            
+            updateScoreBoard();
+            
+            // แสดงปุ่มเริ่มเกมใหม่
+            document.getElementById('startBtn').style.display = 'inline-block';
+            document.getElementById('nextBtn').style.display = 'none';
+            
+            // ซ่อนเกมทั้งหมด
+            document.querySelectorAll('.game-content').forEach(content => content.style.display = 'none');
+        }
+
+        // ฟังก์ชันเริ่มเกม
+        function startGame() {
+            document.getElementById('startBtn').style.display = 'none';
+            selectGame('circuit');
+        }
+
+        // ฟังก์ชันแสดงปุ่มด่านถัดไป
+        function showNextButton() {
+            document.getElementById('nextBtn').style.display = 'inline-block';
+        }
+
+        // ฟังก์ชันไปด่านถัดไป
+        function nextGame() {
+            const gameOrder = ['circuit', 'control', 'matching', 'troubleshoot'];
+            const currentIndex = gameOrder.indexOf(gameState.currentGame);
+            
+            if (currentIndex < gameOrder.length - 1) {
+                const nextGameType = gameOrder[currentIndex + 1];
+                selectGame(nextGameType);
+                document.getElementById('nextBtn').style.display = 'none';
+            } else {
+                // เกมทั้งหมดเสร็จสิ้น
+                checkAllGamesCompleted();
+                document.getElementById('nextBtn').style.display = 'none';
+            }
+        }
+
+        // ฟังก์ชันตรวจสอบเกมทั้งหมดเสร็จสิ้น (อัพเดท)
+        function checkAllGamesCompleted() {
+            if (gameState.circuitCompleted && gameState.controlCompleted && 
+                gameState.matchingCompleted && gameState.troubleshootCompleted && 
+                !gameState.allGamesCompleted) {
+                
+                gameState.allGamesCompleted = true;
+                setTimeout(() => {
+                    showFinalAssessment();
+                }, 1000);
+            }
+        }
+
+        // เริ่มเกม
+        window.onload = function() {
+            // ซ่อนเกมทั้งหมดในตอนเริ่ม
+            document.querySelectorAll('.game-content').forEach(content => content.style.display = 'none');
+            setInterval(updateScoreBoard, 1000);
+        };
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'977a2e89113e45bd',t:'MTc1NjYxODcwNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

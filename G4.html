@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚡ Electric Hero: Voltage Crisis</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600;700&display=swap');
+        
+        body {
+            font-family: 'Kanit', sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a3e 50%, #2d2d5f 100%);
+            min-height: 100vh;
+        }
+        
+        .electric-glow {
+            text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff, 0 0 30px #00ffff;
+            animation: electricPulse 2s infinite alternate;
+        }
+        
+        @keyframes electricPulse {
+            0% { text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff, 0 0 30px #00ffff; }
+            100% { text-shadow: 0 0 15px #ffff00, 0 0 30px #ffff00, 0 0 45px #ffff00; }
+        }
+        
+        .stage-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .stage-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 255, 255, 0.3);
+        }
+        
+        .energy-bar {
+            background: linear-gradient(90deg, #ef4444 0%, #eab308 50%, #22c55e 100%);
+            transition: width 0.5s ease;
+        }
+        
+        .wire-connection {
+            stroke: #fbbf24;
+            stroke-width: 3;
+            fill: none;
+            filter: drop-shadow(0 0 5px #fbbf24);
+        }
+        
+        .building {
+            transition: all 0.5s ease;
+        }
+        
+        .building.powered {
+            background: linear-gradient(to top, #fbbf24, #f59e0b) !important;
+            box-shadow: 0 0 20px #fbbf24;
+        }
+        
+        .tool-item {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .tool-item:hover {
+            transform: scale(1.05);
+        }
+        
+        .tool-item.selected {
+            border: 3px solid #22c55e;
+            box-shadow: 0 0 15px #22c55e;
+        }
+        
+        .circuit-button {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .circuit-button.active {
+            background: #fbbf24 !important;
+            box-shadow: 0 0 20px #fbbf24;
+        }
+        
+        .breaker-btn {
+            transition: all 0.3s ease;
+        }
+        
+        .countdown-warning {
+            animation: flash 1s infinite;
+        }
+        
+        @keyframes flash {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .success-animation {
+            animation: successPulse 1s ease-out;
+        }
+        
+        @keyframes successPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body class="text-white">
+    <!-- Header -->
+    <div class="bg-black bg-opacity-60 p-4 sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <h1 class="text-2xl md:text-3xl font-bold electric-glow">⚡ Electric Hero: Voltage Crisis</h1>
+            <div class="flex items-center space-x-4">
+                <div class="flex items-center space-x-2">
+                    <span class="text-sm md:text-base">พลังงาน:</span>
+                    <div class="w-20 md:w-32 bg-gray-700 rounded-full p-1">
+                        <div id="energyBar" class="energy-bar h-3 rounded-full" style="width: 100%;"></div>
+                    </div>
+                    <span id="energyText" class="text-sm md:text-base font-bold">100%</span>
+                </div>
+                <div class="text-sm md:text-base">คะแนน: <span id="scoreText" class="font-bold text-yellow-400">0</span></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="max-w-6xl mx-auto p-4">
+        <!-- Stage Selection Screen -->
+        <div id="stageSelection" class="text-center py-8">
+            <h2 class="text-3xl md:text-4xl font-bold mb-8 electric-glow">เลือกด่านที่ต้องการเล่น</h2>
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="stage-card bg-blue-900 bg-opacity-80 p-6 rounded-xl border-2 border-blue-500" onclick="selectStage(1)">
+                    <div class="text-5xl mb-4">🏙️</div>
+                    <h3 class="text-xl font-bold mb-2">ด่านที่ 1</h3>
+                    <p class="text-blue-300 mb-2">Power Surge City</p>
+                    <p class="text-sm opacity-80">เชื่อมต่อไฟฟ้าให้เมือง</p>
+                </div>
+                <div class="stage-card bg-purple-900 bg-opacity-80 p-6 rounded-xl border-2 border-purple-500" onclick="selectStage(2)">
+                    <div class="text-5xl mb-4">🗼</div>
+                    <h3 class="text-xl font-bold mb-2">ด่านที่ 2</h3>
+                    <p class="text-purple-300 mb-2">High Voltage Tower</p>
+                    <p class="text-sm opacity-80">ซ่อมเสาส่งไฟแรงสูง</p>
+                </div>
+                <div class="stage-card bg-red-900 bg-opacity-80 p-6 rounded-xl border-2 border-red-500" onclick="selectStage(3)">
+                    <div class="text-5xl mb-4">⚠️</div>
+                    <h3 class="text-xl font-bold mb-2">ด่านที่ 3</h3>
+                    <p class="text-red-300 mb-2">Core Meltdown</p>
+                    <p class="text-sm opacity-80">หยุดเครื่องปั่นไฟระเบิด</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stage 1: Power Surge City -->
+        <div id="stage1" class="hidden">
+            <div class="bg-black bg-opacity-70 p-6 rounded-xl mb-6">
+                <h2 class="text-2xl md:text-3xl font-bold mb-4 text-blue-400">🏙️ ด่านที่ 1: Power Surge City</h2>
+                <p class="text-base md:text-lg mb-4">คลิกที่โรงไฟฟ้า แล้วคลิกที่อาคารเพื่อเชื่อมต่อสายไฟ</p>
+                <div class="flex flex-wrap gap-4">
+                    <button onclick="showHint(1)" class="bg-yellow-600 hover:bg-yellow-700 px-4 py-2 rounded-lg text-sm">💡 คำใบ้</button>
+                    <button onclick="resetStage()" class="bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded-lg text-sm">🔄 เริ่มใหม่</button>
+                    <button onclick="backToMenu()" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg text-sm">🏠 กลับเมนู</button>
+                </div>
+            </div>
+            
+            <div class="bg-gray-900 rounded-xl p-6 relative" style="height: 400px;">
+                <!-- Power Plant -->
+                <div id="powerPlant" class="absolute left-4 top-4 w-16 h-12 bg-yellow-500 rounded-lg flex items-center justify-center text-xl cursor-pointer hover:bg-yellow-400 transition-colors" onclick="selectPowerPlant()">
+                    ⚡
+                </div>
+                <div class="absolute left-4 top-20 text-xs text-yellow-400">โรงไฟฟ้า</div>
+                
+                <!-- Buildings -->
+                <div id="building1" class="building absolute right-16 top-4 w-12 h-16 bg-gray-600 rounded-lg flex items-center justify-center text-lg cursor-pointer hover:bg-gray-500 transition-colors" onclick="connectToBuilding(1)">
+                    🏢
+                </div>
+                <div id="building2" class="building absolute right-16 top-28 w-12 h-16 bg-gray-600 rounded-lg flex items-center justify-center text-lg cursor-pointer hover:bg-gray-500 transition-colors" onclick="connectToBuilding(2)">
+                    🏠
+                </div>
+                <div id="building3" class="building absolute right-16 bottom-4 w-12 h-16 bg-gray-600 rounded-lg flex items-center justify-center text-lg cursor-pointer hover:bg-gray-500 transition-colors" onclick="connectToBuilding(3)">
+                    🏭
+                </div>
+                
+                <!-- Wire connections will be drawn here -->
+                <svg class="absolute inset-0 w-full h-full pointer-events-none">
+                    <path id="wire1" class="wire-connection hidden" d="M 80 40 L 400 40"></path>
+                    <path id="wire2" class="wire-connection hidden" d="M 80 40 L 400 120"></path>
+                    <path id="wire3" class="wire-connection hidden" d="M 80 40 L 400 350"></path>
+                </svg>
+                
+                <!-- Status -->
+                <div class="absolute bottom-4 left-4 bg-black bg-opacity-80 p-3 rounded-lg">
+                    <div class="text-sm">สถานะ: <span id="stage1Status">เลือกโรงไฟฟ้าก่อน</span></div>
+                    <div class="text-sm">อาคารที่มีไฟ: <span id="poweredBuildings">0/3</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stage 2: High Voltage Tower -->
+        <div id="stage2" class="hidden">
+            <div class="bg-black bg-opacity-70 p-6 rounded-xl mb-6">
+                <h2 class="text-2xl md:text-3xl font-bold mb-4 text-purple-400">🗼 ด่านที่ 2: High Voltage Tower</h2>
+                <p class="text-base md:text-lg mb-4">เลือกเครื่องมือที่ถูกต้องตามลำดับเพื่อซ่อมสายไฟอย่างปลอดภัย</p>
+                <div class="flex flex-wrap gap-4">
+                    <button onclick="showHint(2)" class="bg-yellow-600 hover:bg-yellow-700 px-4 py-2 rounded-lg text-sm">💡 คำใบ้</button>
+                    <button onclick="resetStage()" class="bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded-lg text-sm">🔄 เริ่มใหม่</button>
+                    <button onclick="backToMenu()" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg text-sm">🏠 กลับเมนู</button>
+                </div>
+            </div>
+            
+            <div class="bg-gradient-to-b from-blue-900 to-gray-900 rounded-xl p-6 relative" style="height: 500px;">
+                <!-- Tower -->
+                <div class="absolute left-1/2 transform -translate-x-1/2 w-6 bg-gray-600 rounded" style="height: 400px; top: 50px;"></div>
+                
+                <!-- Broken Wire -->
+                <div class="absolute left-1/2 top-32 transform -translate-x-1/2 w-24 h-1 bg-red-500 animate-pulse"></div>
+                <div class="absolute left-1/2 top-28 transform -translate-x-1/2 text-2xl">⚡💥</div>
+                
+                <!-- Tools -->
+                <div class="absolute bottom-4 left-4 bg-black bg-opacity-80 p-4 rounded-xl">
+                    <h3 class="text-lg font-bold mb-3">เลือกเครื่องมือ:</h3>
+                    <div class="grid grid-cols-3 gap-3 mb-4">
+                        <div class="tool-item bg-gray-700 p-3 rounded-lg text-center" onclick="selectTool('gloves')" data-tool="gloves">
+                            <div class="text-2xl mb-1">🧤</div>
+                            <div class="text-xs">ถุงมือ</div>
+                        </div>
+                        <div class="tool-item bg-gray-700 p-3 rounded-lg text-center" onclick="selectTool('insulator')" data-tool="insulator">
+                            <div class="text-2xl mb-1">🛡️</div>
+                            <div class="text-xs">ฉนวน</div>
+                        </div>
+                        <div class="tool-item bg-gray-700 p-3 rounded-lg text-center" onclick="selectTool('pliers')" data-tool="pliers">
+                            <div class="text-2xl mb-1">🔧</div>
+                            <div class="text-xs">คีม</div>
+                        </div>
+                    </div>
+                    <button id="repairButton" onclick="attemptRepair()" class="w-full bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg disabled:bg-gray-600 disabled:cursor-not-allowed" disabled>
+                        ซ่อมสายไฟ
+                    </button>
+                </div>
+                
+                <!-- Status -->
+                <div class="absolute bottom-4 right-4 bg-black bg-opacity-80 p-4 rounded-xl">
+                    <div class="text-sm mb-2">ขั้นตอน: <span id="repairStep">1/3</span></div>
+                    <div class="text-sm">สถานะ: <span id="stage2Status">เลือกเครื่องมือ</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stage 3: Core Meltdown -->
+        <div id="stage3" class="hidden">
+            <div class="bg-black bg-opacity-70 p-6 rounded-xl mb-6">
+                <h2 class="text-2xl md:text-3xl font-bold mb-4 text-red-400">⚠️ ด่านที่ 3: Core Meltdown</h2>
+                <p class="text-base md:text-lg mb-2">เครื่องปั่นไฟจะระเบิดใน <span id="countdownTimer" class="text-red-400 font-bold countdown-warning">180</span> วินาที!</p>
+                <p class="text-sm mb-4 opacity-80">เปิดเบรกเกอร์ทั้งหมด แล้วเชื่อมสายไฟทุกเส้น</p>
+                <div class="flex flex-wrap gap-4">
+                    <button onclick="showHint(3)" class="bg-yellow-600 hover:bg-yellow-700 px-4 py-2 rounded-lg text-sm">💡 คำใบ้</button>
+                    <button onclick="resetStage()" class="bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded-lg text-sm">🔄 เริ่มใหม่</button>
+                    <button onclick="backToMenu()" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg text-sm">🏠 กลับเมนู</button>
+                </div>
+            </div>
+            
+            <div class="bg-red-900 bg-opacity-50 rounded-xl p-6 relative" style="height: 500px;">
+                <!-- Control Panel -->
+                <div class="absolute left-4 top-4 bg-black bg-opacity-80 p-4 rounded-xl">
+                    <h3 class="text-lg font-bold mb-3">แผงควบคุม:</h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center space-x-3">
+                            <span class="w-16 text-sm">สาย A:</span>
+                            <div class="circuit-button bg-gray-600" onclick="toggleCircuit('A')" data-circuit="A"></div>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <span class="w-16 text-sm">สาย B:</span>
+                            <div class="circuit-button bg-gray-600" onclick="toggleCircuit('B')" data-circuit="B"></div>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <span class="w-16 text-sm">สาย C:</span>
+                            <div class="circuit-button bg-gray-600" onclick="toggleCircuit('C')" data-circuit="C"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Breaker Panel -->
+                <div class="absolute right-4 top-4 bg-black bg-opacity-80 p-4 rounded-xl">
+                    <h3 class="text-lg font-bold mb-3">เบรกเกอร์:</h3>
+                    <div class="space-y-2">
+                        <button class="breaker-btn w-full bg-red-600 hover:bg-red-700 px-3 py-2 rounded text-sm" onclick="toggleBreaker(1)" data-breaker="1">
+                            เบรกเกอร์ 1: OFF
+                        </button>
+                        <button class="breaker-btn w-full bg-red-600 hover:bg-red-700 px-3 py-2 rounded text-sm" onclick="toggleBreaker(2)" data-breaker="2">
+                            เบรกเกอร์ 2: OFF
+                        </button>
+                        <button class="breaker-btn w-full bg-red-600 hover:bg-red-700 px-3 py-2 rounded text-sm" onclick="toggleBreaker(3)" data-breaker="3">
+                            เบรกเกอร์ 3: OFF
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Core Status -->
+                <div class="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
+                    <div class="text-6xl mb-4 animate-pulse">⚡</div>
+                    <div id="coreStatus" class="text-xl font-bold text-red-400 mb-2">CRITICAL OVERLOAD!</div>
+                    <div class="text-lg">อุณหภูมิ: <span id="temperatureDisplay" class="text-red-400 font-bold">95°C</span></div>
+                </div>
+                
+                <!-- Warning Lights -->
+                <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+                    <div class="w-6 h-6 bg-red-500 rounded-full animate-pulse"></div>
+                    <div class="w-6 h-6 bg-red-500 rounded-full animate-pulse" style="animation-delay: 0.3s;"></div>
+                    <div class="w-6 h-6 bg-red-500 rounded-full animate-pulse" style="animation-delay: 0.6s;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Screen -->
+        <div id="resultsScreen" class="hidden text-center py-8">
+            <h2 class="text-3xl md:text-4xl font-bold mb-8 electric-glow">🏆 ผลการประเมิน</h2>
+            <div class="bg-black bg-opacity-70 p-8 rounded-xl max-w-2xl mx-auto">
+                <div id="finalScore" class="text-5xl font-bold mb-4 text-yellow-400">0</div>
+                <div id="rankDisplay" class="text-2xl font-bold mb-4"></div>
+                <div id="recommendationText" class="text-lg mb-6"></div>
+                <div id="skillAnalysis" class="text-left space-y-2 mb-6 text-sm"></div>
+                <button onclick="resetGame()" class="bg-blue-600 hover:bg-blue-700 px-8 py-3 rounded-lg text-lg">
+                    🔄 เล่นใหม่
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hint Modal -->
+    <div id="hintModal" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center hidden z-50">
+        <div class="bg-gray-900 p-6 rounded-xl max-w-md mx-4">
+            <h3 class="text-xl font-bold mb-4 text-yellow-400">💡 คำใบ้</h3>
+            <p id="hintText" class="text-base mb-4"></p>
+            <button onclick="closeHint()" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg">ปิด</button>
+        </div>
+    </div>
+
+    <script>
+        // Game State
+        let gameState = {
+            currentStage: 0,
+            energy: 100,
+            score: 0,
+            hintsUsed: 0,
+            stageScores: [0, 0, 0],
+            
+            // Stage 1 specific
+            powerPlantSelected: false,
+            connectedBuildings: [],
+            
+            // Stage 2 specific
+            selectedTool: null,
+            repairStep: 1,
+            correctSequence: ['gloves', 'insulator', 'pliers'],
+            usedTools: [],
+            
+            // Stage 3 specific
+            circuitStates: { A: false, B: false, C: false },
+            breakerStates: { 1: false, 2: false, 3: false },
+            countdownTimer: null,
+            timeLeft: 180
+        };
+
+        // Hints for each stage
+        const hints = {
+            1: "คลิกที่โรงไฟฟ้า (⚡) ก่อน แล้วคลิกที่อาคารแต่ละหลังเพื่อเชื่อมต่อสายไฟ",
+            2: "ใส่ถุงมือก่อน → ใช้ฉนวนป้องกัน → ใช้คีมซ่อมสายไฟ (ตามลำดับนี้)",
+            3: "เปิดเบรกเกอร์ 1, 2, 3 ทั้งหมด แล้วเชื่อมสาย A, B, C ทั้งหมด"
+        };
+
+        // Initialize game
+        function initGame() {
+            updateUI();
+        }
+
+        // Update UI elements
+        function updateUI() {
+            document.getElementById('energyBar').style.width = gameState.energy + '%';
+            document.getElementById('energyText').textContent = gameState.energy + '%';
+            document.getElementById('scoreText').textContent = gameState.score;
+        }
+
+        // Stage selection
+        function selectStage(stageNum) {
+            gameState.currentStage = stageNum;
+            hideAllScreens();
+            document.getElementById('stage' + stageNum).classList.remove('hidden');
+            
+            if (stageNum === 3) {
+                startCountdown();
+            }
+        }
+
+        // Hide all screens
+        function hideAllScreens() {
+            document.getElementById('stageSelection').classList.add('hidden');
+            document.getElementById('stage1').classList.add('hidden');
+            document.getElementById('stage2').classList.add('hidden');
+            document.getElementById('stage3').classList.add('hidden');
+            document.getElementById('resultsScreen').classList.add('hidden');
+        }
+
+        // Back to main menu
+        function backToMenu() {
+            if (gameState.countdownTimer) {
+                clearInterval(gameState.countdownTimer);
+            }
+            hideAllScreens();
+            document.getElementById('stageSelection').classList.remove('hidden');
+            gameState.currentStage = 0;
+        }
+
+        // Reset current stage
+        function resetStage() {
+            if (gameState.currentStage === 1) {
+                resetStage1();
+            } else if (gameState.currentStage === 2) {
+                resetStage2();
+            } else if (gameState.currentStage === 3) {
+                resetStage3();
+            }
+        }
+
+        // Show hint
+        function showHint(stageNum) {
+            gameState.hintsUsed++;
+            gameState.score = Math.max(0, gameState.score - 5);
+            updateUI();
+            
+            document.getElementById('hintText').textContent = hints[stageNum];
+            document.getElementById('hintModal').classList.remove('hidden');
+        }
+
+        // Close hint modal
+        function closeHint() {
+            document.getElementById('hintModal').classList.add('hidden');
+        }
+
+        // STAGE 1: Power Surge City
+        function selectPowerPlant() {
+            gameState.powerPlantSelected = true;
+            document.getElementById('powerPlant').classList.add('success-animation');
+            document.getElementById('stage1Status').textContent = 'เลือกอาคารที่ต้องการเชื่อมต่อ';
+            
+            setTimeout(() => {
+                document.getElementById('powerPlant').classList.remove('success-animation');
+            }, 1000);
+        }
+
+        function connectToBuilding(buildingNum) {
+            if (!gameState.powerPlantSelected) {
+                alert('⚠️ เลือกโรงไฟฟ้าก่อน!');
+                return;
+            }
+
+            if (gameState.connectedBuildings.includes(buildingNum)) {
+                alert('🔌 อาคารนี้มีไฟแล้ว!');
+                return;
+            }
+
+            // Connect building
+            gameState.connectedBuildings.push(buildingNum);
+            const building = document.getElementById('building' + buildingNum);
+            building.classList.add('powered', 'success-animation');
+            
+            // Show wire
+            document.getElementById('wire' + buildingNum).classList.remove('hidden');
+            
+            // Update score
+            gameState.score += 20;
+            gameState.stageScores[0] += 20;
+            updateUI();
+            
+            // Update status
+            document.getElementById('poweredBuildings').textContent = gameState.connectedBuildings.length + '/3';
+            
+            // Check completion
+            if (gameState.connectedBuildings.length === 3) {
+                setTimeout(() => {
+                    completeStage(1);
+                }, 1000);
+            }
+        }
+
+        function resetStage1() {
+            gameState.powerPlantSelected = false;
+            gameState.connectedBuildings = [];
+            
+            // Reset UI
+            document.querySelectorAll('.building').forEach(building => {
+                building.classList.remove('powered', 'success-animation');
+            });
+            
+            document.querySelectorAll('.wire-connection').forEach(wire => {
+                wire.classList.add('hidden');
+            });
+            
+            document.getElementById('stage1Status').textContent = 'เลือกโรงไฟฟ้าก่อน';
+            document.getElementById('poweredBuildings').textContent = '0/3';
+        }
+
+        // STAGE 2: High Voltage Tower
+        function selectTool(toolType) {
+            // Remove previous selection
+            document.querySelectorAll('.tool-item').forEach(tool => {
+                tool.classList.remove('selected');
+            });
+            
+            // Select new tool
+            document.querySelector(`[data-tool="${toolType}"]`).classList.add('selected');
+            gameState.selectedTool = toolType;
+            
+            // Enable repair button
+            document.getElementById('repairButton').disabled = false;
+            document.getElementById('stage2Status').textContent = 'กดปุ่มซ่อมสายไฟ';
+        }
+
+        function attemptRepair() {
+            if (!gameState.selectedTool) {
+                alert('⚠️ เลือกเครื่องมือก่อน!');
+                return;
+            }
+
+            const correctTool = gameState.correctSequence[gameState.repairStep - 1];
+            
+            if (gameState.selectedTool === correctTool) {
+                // Correct tool
+                gameState.usedTools.push(gameState.selectedTool);
+                gameState.score += 15;
+                gameState.stageScores[1] += 15;
+                updateUI();
+                
+                if (gameState.repairStep === 3) {
+                    // Stage complete
+                    document.getElementById('stage2Status').textContent = 'ซ่อมสำเร็จ!';
+                    setTimeout(() => {
+                        completeStage(2);
+                    }, 1000);
+                } else {
+                    // Next step
+                    gameState.repairStep++;
+                    document.getElementById('repairStep').textContent = gameState.repairStep + '/3';
+                    document.getElementById('stage2Status').textContent = 'เลือกเครื่องมือต่อไป';
+                    
+                    // Reset tool selection
+                    document.querySelectorAll('.tool-item').forEach(tool => {
+                        tool.classList.remove('selected');
+                    });
+                    gameState.selectedTool = null;
+                    document.getElementById('repairButton').disabled = true;
+                }
+            } else {
+                // Wrong tool - electric shock!
+                gameState.energy = Math.max(0, gameState.energy - 25);
+                updateUI();
+                alert('⚡ ไฟช็อต! เครื่องมือผิด - ลองใหม่');
+                resetStage2();
+            }
+        }
+
+        function resetStage2() {
+            gameState.selectedTool = null;
+            gameState.repairStep = 1;
+            gameState.usedTools = [];
+            
+            // Reset UI
+            document.querySelectorAll('.tool-item').forEach(tool => {
+                tool.classList.remove('selected');
+            });
+            
+            document.getElementById('repairStep').textContent = '1/3';
+            document.getElementById('stage2Status').textContent = 'เลือกเครื่องมือ';
+            document.getElementById('repairButton').disabled = true;
+        }
+
+        // STAGE 3: Core Meltdown
+        function startCountdown() {
+            gameState.timeLeft = 180;
+            gameState.countdownTimer = setInterval(() => {
+                gameState.timeLeft--;
+                document.getElementById('countdownTimer').textContent = gameState.timeLeft;
+                
+                if (gameState.timeLeft <= 0) {
+                    clearInterval(gameState.countdownTimer);
+                    alert('💥 เวลาหมด! เครื่องปั่นไฟระเบิด!');
+                    gameState.energy = 0;
+                    updateUI();
+                    showResults();
+                }
+            }, 1000);
+        }
+
+        function toggleCircuit(circuit) {
+            gameState.circuitStates[circuit] = !gameState.circuitStates[circuit];
+            const button = document.querySelector(`[data-circuit="${circuit}"]`);
+            
+            if (gameState.circuitStates[circuit]) {
+                button.classList.add('active');
+            } else {
+                button.classList.remove('active');
+            }
+            
+            checkMeltdownSolution();
+        }
+
+        function toggleBreaker(breakerNum) {
+            gameState.breakerStates[breakerNum] = !gameState.breakerStates[breakerNum];
+            const button = document.querySelector(`[data-breaker="${breakerNum}"]`);
+            
+            if (gameState.breakerStates[breakerNum]) {
+                button.textContent = `เบรกเกอร์ ${breakerNum}: ON`;
+                button.classList.remove('bg-red-600', 'hover:bg-red-700');
+                button.classList.add('bg-green-600', 'hover:bg-green-700');
+            } else {
+                button.textContent = `เบรกเกอร์ ${breakerNum}: OFF`;
+                button.classList.remove('bg-green-600', 'hover:bg-green-700');
+                button.classList.add('bg-red-600', 'hover:bg-red-700');
+            }
+            
+            checkMeltdownSolution();
+        }
+
+        function checkMeltdownSolution() {
+            const allBreakersOn = gameState.breakerStates[1] && gameState.breakerStates[2] && gameState.breakerStates[3];
+            const allCircuitsOn = gameState.circuitStates.A && gameState.circuitStates.B && gameState.circuitStates.C;
+            
+            // Update temperature
+            const activeBreakers = Object.values(gameState.breakerStates).filter(state => state).length;
+            const activeCircuits = Object.values(gameState.circuitStates).filter(state => state).length;
+            const temperature = 95 - (activeBreakers * 15) - (activeCircuits * 10);
+            
+            document.getElementById('temperatureDisplay').textContent = temperature + '°C';
+            
+            if (temperature < 50) {
+                document.getElementById('temperatureDisplay').className = 'text-green-400 font-bold';
+            } else if (temperature < 80) {
+                document.getElementById('temperatureDisplay').className = 'text-yellow-400 font-bold';
+            } else {
+                document.getElementById('temperatureDisplay').className = 'text-red-400 font-bold';
+            }
+            
+            // Check if solved
+            if (allBreakersOn && allCircuitsOn) {
+                clearInterval(gameState.countdownTimer);
+                gameState.score += 50 + gameState.timeLeft; // Bonus for remaining time
+                gameState.stageScores[2] += 50 + gameState.timeLeft;
+                updateUI();
+                
+                document.getElementById('coreStatus').textContent = 'SYSTEM STABILIZED!';
+                document.getElementById('coreStatus').className = 'text-xl font-bold text-green-400 mb-2';
+                
+                setTimeout(() => {
+                    completeStage(3);
+                }, 2000);
+            }
+        }
+
+        function resetStage3() {
+            if (gameState.countdownTimer) {
+                clearInterval(gameState.countdownTimer);
+            }
+            
+            gameState.circuitStates = { A: false, B: false, C: false };
+            gameState.breakerStates = { 1: false, 2: false, 3: false };
+            gameState.timeLeft = 180;
+            
+            // Reset UI
+            document.querySelectorAll('.circuit-button').forEach(button => {
+                button.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.breaker-btn').forEach(button => {
+                const breakerNum = button.dataset.breaker;
+                button.textContent = `เบรกเกอร์ ${breakerNum}: OFF`;
+                button.classList.remove('bg-green-600', 'hover:bg-green-700');
+                button.classList.add('bg-red-600', 'hover:bg-red-700');
+            });
+            
+            document.getElementById('coreStatus').textContent = 'CRITICAL OVERLOAD!';
+            document.getElementById('coreStatus').className = 'text-xl font-bold text-red-400 mb-2';
+            document.getElementById('temperatureDisplay').textContent = '95°C';
+            document.getElementById('temperatureDisplay').className = 'text-red-400 font-bold';
+            
+            startCountdown();
+        }
+
+        // Complete stage
+        function completeStage(stageNum) {
+            alert(`🎉 ด่านที่ ${stageNum} สำเร็จ!`);
+            
+            // Check if all stages completed or this is the final stage
+            if (stageNum === 3 || gameState.stageScores.filter(score => score > 0).length === 3) {
+                showResults();
+            } else {
+                backToMenu();
+            }
+        }
+
+        // Show results
+        function showResults() {
+            hideAllScreens();
+            document.getElementById('resultsScreen').classList.remove('hidden');
+            
+            const totalScore = gameState.score;
+            document.getElementById('finalScore').textContent = totalScore;
+            
+            let rank, recommendation;
+            
+            if (totalScore >= 150) {
+                rank = '⚡ Voltage Master';
+                recommendation = 'เหมาะเป็นหัวหน้าช่าง/วิศวกรไฟฟ้า';
+            } else if (totalScore >= 100) {
+                rank = '🔧 Circuit Specialist';
+                recommendation = 'เหมาะงานติดตั้ง/ซ่อมบำรุงระดับสูง';
+            } else if (totalScore >= 50) {
+                rank = '🔌 Apprentice Electrician';
+                recommendation = 'พื้นฐานดี ต้องฝึกเพิ่ม';
+            } else {
+                rank = '☠️ Shock Risk';
+                recommendation = 'ต้องกลับไปฝึกใหม่เพราะเสี่ยงไฟช็อตสูง';
+            }
+            
+            document.getElementById('rankDisplay').textContent = rank;
+            document.getElementById('recommendationText').textContent = recommendation;
+            
+            // Skill analysis
+            const bestStage = gameState.stageScores.indexOf(Math.max(...gameState.stageScores));
+            let specialization = '';
+            
+            if (bestStage === 0) {
+                specialization = 'สายติดตั้ง (Installation) - เชื่อมต่อระบบได้ดี';
+            } else if (bestStage === 1) {
+                specialization = 'สายซ่อมบำรุง (Maintenance) - ระมัดระวังและเลือกอุปกรณ์ถูก';
+            } else {
+                specialization = 'สายควบคุม/วิศวกรรมไฟฟ้า (Control & Engineering) - ทำงานภายใต้แรงกดดันได้ดี';
+            }
+            
+            document.getElementById('skillAnalysis').innerHTML = `
+                <div><strong>ความเชี่ยวชาญ:</strong> ${specialization}</div>
+                <div><strong>คะแนนด่าน 1:</strong> ${gameState.stageScores[0]} คะแนน</div>
+                <div><strong>คะแนนด่าน 2:</strong> ${gameState.stageScores[1]} คะแนน</div>
+                <div><strong>คะแนนด่าน 3:</strong> ${gameState.stageScores[2]} คะแนน</div>
+                <div><strong>คำใบ้ที่ใช้:</strong> ${gameState.hintsUsed} ครั้ง</div>
+                <div><strong>พลังงานคงเหลือ:</strong> ${gameState.energy}%</div>
+            `;
+        }
+
+        // Reset entire game
+        function resetGame() {
+            gameState = {
+                currentStage: 0,
+                energy: 100,
+                score: 0,
+                hintsUsed: 0,
+                stageScores: [0, 0, 0],
+                powerPlantSelected: false,
+                connectedBuildings: [],
+                selectedTool: null,
+                repairStep: 1,
+                correctSequence: ['gloves', 'insulator', 'pliers'],
+                usedTools: [],
+                circuitStates: { A: false, B: false, C: false },
+                breakerStates: { 1: false, 2: false, 3: false },
+                countdownTimer: null,
+                timeLeft: 180
+            };
+            
+            if (gameState.countdownTimer) {
+                clearInterval(gameState.countdownTimer);
+            }
+            
+            hideAllScreens();
+            document.getElementById('stageSelection').classList.remove('hidden');
+            updateUI();
+        }
+
+        // Initialize game when page loads
+        window.onload = function() {
+            initGame();
+        };
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'978cf21382517b50',t:'MTc1NjgxNTQ2MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

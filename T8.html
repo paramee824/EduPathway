@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>แบบทดสอบความถนัดด้านช่างก่อสร้างและสถาปัตยกรรม</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=PK+Maehongson+Round+Demo&display=swap" rel="stylesheet">
+    <style>
+         body {
+            font-family: 'PK Maehongson Round Demo', cursive;
+            background: linear-gradient(135deg, #f3f4f6, #e9ecef);
+            transition: background-color 0.3s ease;
+            background-image: url("P8.png");
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-attachment: fixed;
+            padding: 20px;
+            margin: 0 auto;
+            border-radius: 10px;
+            font-size: 16px;
+            font-family: 'PK Maehongson Round Demo', sans-serif;
+            line-height: 1.6;
+            color: #000000;
+            max-width: 100vw;
+            box-sizing: border-box;
+        }
+        .text-body {
+            font-family: 'PK Maehongson Round Demo', cursive;
+        }
+        .bg-card {
+            background: rgba(255, 255, 255, 0.9); /* ทำให้พื้นหลังโปร่งแสงเล็กน้อย */
+            border-radius: 2rem;
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.15), 0 10px 20px -5px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: fadeIn 1s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .text-gradient {
+            background-image: linear-gradient(to right, #9333ea, #6b21a8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-fill-color: transparent;
+        }
+        .btn-primary {
+            background: linear-gradient(45deg, #9333ea, #6b21a8);
+            box-shadow: 0 8px 25px -5px rgba(147, 51, 234, 0.5), 0 4px 6px -2px rgba(147, 51, 234, 0.25);
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 12px 30px -8px rgba(147, 51, 234, 0.7), 0 6px 12px -3px rgba(147, 51, 234, 0.4);
+        }
+        .btn-exit {
+            background: linear-gradient(45deg, #dc2626, #ef4444);
+            box-shadow: 0 8px 25px -5px rgba(220, 38, 38, 0.5), 0 4px 6px -2px rgba(220, 38, 38, 0.25);
+            transition: all 0.3s ease;
+        }
+        .btn-exit:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 12px 30px -8px rgba(220, 38, 38, 0.7), 0 6px 12px -3px rgba(220, 38, 38, 0.4);
+        }
+        .btn-prev {
+            background: linear-gradient(45deg, #dc2626, #ef4444);
+            box-shadow: 0 8px 25px -5px rgba(220, 38, 38, 0.5), 0 4px 6px -2px rgba(220, 38, 38, 0.25);
+            transition: all 0.3s ease;
+        }
+        .btn-prev:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 12px 30px -8px rgba(220, 38, 38, 0.7), 0 6px 12px -3px rgba(220, 38, 38, 0.4);
+        }
+        .btn-submit {
+            background: linear-gradient(45deg, #22c55e, #10b981);
+            box-shadow: 0 8px 25px -5px rgba(34, 197, 94, 0.5), 0 4px 6px -2px rgba(34, 197, 94, 0.25);
+            transition: all 0.3s ease;
+        }
+        .btn-submit:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 12px 30px -8px rgba(34, 197, 94, 0.7), 0 6px 12px -3px rgba(34, 197, 94, 0.4);
+        }
+        .btn-secondary {
+            background-color: #e2e8f0;
+            color: #4a5568;
+            transition: all 0.3s ease;
+        }
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            background-color: #cfd8e3;
+        }
+        input[type="radio"]:checked + label {
+            background: linear-gradient(to right, #a855f7, #6b21a8);
+            color: white;
+            border-color: #a855f7;
+            transform: translateY(-4px);
+            box-shadow: 0 8px 15px -3px rgba(168, 85, 247, 0.5), 0 4px 6px -2px rgba(168, 85, 247, 0.25);
+        }
+        label {
+            transition: all 0.2s ease;
+        }
+        label:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .confetti-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+        }
+        .timer-glow {
+            box-shadow: 0 0 10px 5px #ce0000, 0 0 20px 10px #ce0000;
+            animation: pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse-glow {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8 min-h-screen flex items-center justify-center">
+
+    <!-- Splash Screen -->
+    <div id="splash-screen" class="min-h-screen flex items-center justify-center text-center w-full">
+        <div class="bg-card p-8 md:p-12 w-full max-w-xl animate-fadeIn">
+            <div class="mb-6">
+                <!-- SVG Icon for Construction theme (T-square, Compass, and Building) -->
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-24 w-24 mx-auto text-[#9333ea] animate-bounce-slow">
+                    <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 6a.75.75 0 00-1.5 0v6l-3.25 1.88a.75.75 0 00.75 1.3l3.5-2.03V6z" clip-rule="evenodd" />
+                </svg>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-bold mb-4 text-gradient">แบบทดสอบความถนัดด้านช่างก่อสร้างและสถาปัตยกรรม</h1>
+            <p class="text-xl md:text-2xl text-gray-700 leading-relaxed">
+                สำหรับสาขา: ช่างก่อสร้าง, ช่างเขียนแบบเครื่องกล
+            </p>
+            <p class="text-xl md:text-2xl text-gray-700 leading-relaxed mb-6">
+                วัดความเข้าใจด้านแบบแปลน, การคำนวณวัสดุ, การวัดมิติ, การออกแบบเชิงเทคนิค
+            </p>
+            <p class="text-lg md:text-xl text-gray-500 mb-8">ทั้งหมด 30 ข้อ</p>
+            <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 w-full">
+                <button id="startButton" class="flex-1 px-8 py-4 text-xl font-semibold text-white rounded-full transition duration-300 transform hover:scale-105 btn-primary">
+                    เริ่มต้นทำแบบทดสอบ
+                </button>
+                <button id="leaveButton" class="flex-1 px-8 py-4 text-xl font-semibold text-white rounded-full transition duration-300 transform hover:scale-105 btn-exit">
+                    ออกจากแบบทดสอบ
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Test Container -->
+    <div id="test-container" class="hidden min-h-screen flex items-center justify-center w-full">
+        <div class="bg-card p-8 md:p-12 w-full max-w-4xl">
+            <div id="progress-container" class="w-full h-3 bg-gray-200 rounded-full mb-6">
+                <div id="progress-bar" class="h-full bg-gradient-to-r from-[#a855f7] to-[#6b21a8] rounded-full transition-all duration-300" style="width: 0%;"></div>
+            </div>
+            
+            <div class="flex justify-between items-center mb-4 text-lg md:text-xl">
+                <p id="question-number" class="text-gray-500"></p>
+                <div id="timer" class="text-white bg-gradient-to-r from-[#ce0000] to-[#e64d4d] font-bold text-lg md:text-xl p-2 rounded-full border-2 border-transparent transition-all">
+                    60
+                </div>
+            </div>
+            
+            <h2 id="question-text" class="text-2xl md:text-3xl font-semibold mb-6 leading-relaxed"></h2>
+            
+            <div id="options-container" class="space-y-4">
+                <!-- Options will be dynamically inserted here -->
+            </div>
+            
+            <div class="mt-8 flex flex-col md:flex-row justify-between space-y-4 md:space-y-0 md:space-x-4">
+                <button id="prevButton" class="w-full md:w-auto px-6 py-3 text-lg font-medium text-white rounded-full transform hover:scale-105 btn-prev" disabled>
+                    &larr; ข้อก่อนหน้า
+                </button>
+                <button id="nextButton" class="w-full md:w-auto px-6 py-3 text-lg font-medium text-white rounded-full transform hover:scale-105 btn-primary">
+                    ข้อต่อไป &rarr;
+                </button>
+                <button id="submitButton" class="hidden w-full md:w-auto px-6 py-3 text-lg font-medium text-white btn-submit rounded-full hover:from-[#22c55e] hover:to-[#4ade80] transition duration-300 transform hover:scale-105">
+                    ส่งคำตอบ
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Container -->
+    <div id="results-container" class="hidden min-h-screen flex items-center justify-center w-full">
+        <div class="bg-card p-8 md:p-12 w-full max-w-4xl">
+            <h2 class="text-3xl md:text-4xl font-bold text-center text-gradient mb-4">ผลการทดสอบ</h2>
+            <p class="text-center text-xl md:text-2xl text-gray-700 mb-6">
+                คะแนนของคุณคือ: <span id="score" class="font-bold text-2xl md:text-3xl text-[#9333ea]"></span>
+            </p>
+            
+            <div id="guidance-section" class="mb-8">
+                <h3 class="text-2xl md:text-3xl font-bold mb-4 border-b-2 border-[#9333ea] pb-2">แนวทางการศึกษาและอาชีพ</h3>
+                <p id="guidance-text" class="text-xl md:text-xl text-gray-700 leading-relaxed"></p>
+            </div>
+
+            <div id="recommended-majors" class="mt-8 text-center bg-purple-50 p-6 rounded-3xl shadow-lg">
+                <h3 class="text-2xl md:text-3xl font-bold text-gray-800 mb-4">สาขาที่แนะนำ</h3>
+                <p id="recommended-majors-text" class="mt-4 text-base md:text-lg text-gray-700">
+                </p>
+            </div>
+            
+            <div id="review-section">
+                <h3 class="text-2xl md:text-3xl font-bold mb-4 border-b-2 border-[#9333ea] pb-2">สรุปคำตอบ</h3>
+                <div id="review-list" class="space-y-4">
+                    <!-- Review items will be dynamically inserted here -->
+                </div>
+            </div>
+
+            <div class="mt-8 flex justify-center space-x-4">
+                <button id="retakeButton" class="px-6 py-3 text-lg font-medium rounded-full transform hover:scale-105 btn-primary text-white">
+                    ทำแบบทดสอบอีกครั้ง
+                </button>
+                <button id="exitButton" class="px-6 py-3 text-lg font-medium rounded-full transform hover:scale-105 btn-exit text-white">
+                    ออกจากแบบทดสอบ
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for displaying messages -->
+    <div id="modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center">
+        <div class="bg-white p-8 rounded-lg shadow-2xl text-center w-full max-w-md transform scale-95 transition-transform duration-300">
+            <p id="modal-message" class="text-xl mb-4"></p>
+            <button id="modal-close-button" class="px-4 py-2 bg-gray-800 text-white rounded-md">ปิด</button>
+        </div>
+    </div>
+    
+    <script>
+        const questions = [
+            {
+                question: "ข้อใดคือชื่อเรียกของแบบร่างที่มีรายละเอียดของโครงสร้างและส่วนประกอบต่างๆ ของอาคาร?",
+                options: ["แบบแปลนก่อสร้าง (Blueprint)", "แบบผังเมือง", "แบบร่างศิลปะ", "แบบแผนการตลาด"],
+                answer: "แบบแปลนก่อสร้าง (Blueprint)",
+                explanation: "แบบแปลนก่อสร้าง หรือ Blueprint เป็นแบบที่ใช้เป็นหลักฐานในการก่อสร้างอาคารและโครงสร้างต่างๆ"
+            },
+            {
+                question: "หากต้องการคำนวณปริมาณปูนซีเมนต์สำหรับเทพื้นคอนกรีต สิ่งใดที่ต้องทราบ?",
+                options: ["ความสูงของอาคาร", "ความกว้างและความยาวของพื้นที่", "ประเภทของหน้าต่าง", "สีของวัสดุ"],
+                answer: "ความกว้างและความยาวของพื้นที่",
+                explanation: "การคำนวณปริมาตรของคอนกรีตต้องใช้ข้อมูลความกว้าง, ความยาว และความหนาของพื้นที่"
+            },
+            {
+                question: "เครื่องมือใดที่ใช้ในการขีดเส้นแนวนอนในงานเขียนแบบ?",
+                options: ["วงเวียน (Compass)", "สามเหลี่ยม (Set Square)", "ดินสอ (Pencil)", "ที-สแควร์ (T-square)"],
+                answer: "ที-สแควร์ (T-square)",
+                explanation: "ที-สแควร์เป็นเครื่องมือที่ใช้ในการขีดเส้นตรงแนวนอนและเป็นฐานรองสำหรับเครื่องมืออื่นๆ"
+            },
+            {
+                question: "สัญลักษณ์ 'Φ' (Phi) ในแบบแปลนทางวิศวกรรมมักใช้แทนอะไร?",
+                options: ["เส้นรอบวง", "เส้นผ่านศูนย์กลาง", "รัศมี", "มุม"],
+                answer: "เส้นผ่านศูนย์กลาง",
+                explanation: "สัญลักษณ์ Phi (Φ) ใช้แทนเส้นผ่านศูนย์กลางของวงกลมหรือท่อ"
+            },
+            {
+                question: "ในงานก่อสร้าง การทำ 'ฟุตติ้ง' (Footing) มีวัตถุประสงค์หลักเพื่ออะไร?",
+                options: ["เป็นฐานรองรับโครงสร้าง", "เป็นส่วนตกแต่ง", "เป็นส่วนกันน้ำ", "เป็นส่วนระบายอากาศ"],
+                answer: "เป็นฐานรองรับโครงสร้าง",
+                explanation: "ฟุตติ้ง หรือฐานราก มีหน้าที่รับน้ำหนักของโครงสร้างแล้วกระจายลงสู่พื้นดิน"
+            },
+            {
+                question: "วัสดุใดที่นิยมใช้เป็นโครงสร้างหลักในการสร้างอาคารสูง?",
+                options: ["ไม้", "เหล็กและคอนกรีตเสริมเหล็ก", "อิฐ", "พลาสติก"],
+                answer: "เหล็กและคอนกรีตเสริมเหล็ก",
+                explanation: "เหล็กและคอนกรีตเสริมเหล็กมีคุณสมบัติที่แข็งแรงและทนทาน เหมาะสำหรับโครงสร้างอาคารขนาดใหญ่"
+            },
+            {
+                question: "ข้อใดคือหน้าที่ของ 'คาน' (Beam) ในโครงสร้างอาคาร?",
+                options: ["รับน้ำหนักที่ตั้งฉากกับแกนคาน", "เป็นส่วนรับน้ำหนักจากพื้น", "เป็นส่วนตกแต่ง", "เป็นส่วนระบายน้ำ"],
+                answer: "รับน้ำหนักที่ตั้งฉากกับแกนคาน",
+                explanation: "คานทำหน้าที่รับน้ำหนักที่ตั้งฉากกับแนวแกนของคาน เช่น น้ำหนักจากพื้นหรือผนัง"
+            },
+            {
+                question: "ในแบบแปลน 'มาตราส่วน' (Scale) มีความหมายว่าอย่างไร?",
+                options: ["การกำหนดขนาดจริงของวัตถุ", "อัตราส่วนระหว่างขนาดในแบบกับขนาดจริง", "ความหนาของเส้น", "ชนิดของวัสดุ"],
+                answer: "อัตราส่วนระหว่างขนาดในแบบกับขนาดจริง",
+                explanation: "มาตราส่วนแสดงอัตราส่วนที่ใช้ในการย่อหรือขยายภาพบนแบบแปลน"
+            },
+            {
+                question: "หากแบบแปลนระบุมาตราส่วน 1:100 หมายความว่าอย่างไร?",
+                options: ["1 ซม. ในแบบเท่ากับ 10 ซม. ของจริง", "1 ซม. ในแบบเท่ากับ 100 ซม. ของจริง", "10 ซม. ในแบบเท่ากับ 1 ซม. ของจริง", "100 ซม. ในแบบเท่ากับ 1 ซม. ของจริง"],
+                answer: "1 ซม. ในแบบเท่ากับ 100 ซม. ของจริง",
+                explanation: "มาตราส่วน 1:100 หมายถึง 1 หน่วยในแบบแปลนเท่ากับ 100 หน่วยในชีวิตจริง"
+            },
+            {
+                question: "ข้อใดเป็นชื่อเรียกของแบบแปลนที่แสดงการจัดวางห้องต่างๆ ในอาคาร?",
+                options: ["แบบผังพื้น (Floor Plan)", "แบบรูปด้าน (Elevation)", "แบบรูปตัด (Section)", "แบบแปลนไฟฟ้า"],
+                answer: "แบบผังพื้น (Floor Plan)",
+                explanation: "แบบผังพื้นแสดงรายละเอียดการจัดวางห้อง, ผนัง, ประตู, และหน้าต่างในแต่ละชั้นของอาคาร"
+            },
+            {
+                question: "การเขียนแบบ 'สามมิติแบบไอโซเมตริก' (Isometric Drawing) มีลักษณะอย่างไร?",
+                options: ["แสดงภาพสองมิติ", "แสดงภาพสามมิติโดยใช้มุมเอียง 30 องศา", "แสดงภาพเฉพาะด้านหน้า", "แสดงภาพจากด้านบน"],
+                answer: "แสดงภาพสามมิติโดยใช้มุมเอียง 30 องศา",
+                explanation: "ไอโซเมตริกเป็นวิธีหนึ่งในการวาดภาพสามมิติที่เส้นแกนจะทำมุม 30 องศากับเส้นแนวนอน"
+            },
+            {
+                question: "สัญลักษณ์ที่ใช้แทน 'อิฐ' ในแบบแปลนมักจะใช้รูปแบบใด?",
+                options: ["เส้นทึบ", "เส้นประ", "เส้นไข่ปลา", "เส้นที่แสดงลายตาราง"],
+                answer: "เส้นที่แสดงลายตาราง",
+                explanation: "ในงานเขียนแบบ ลายตารางหรือลายเส้นขีดทแยงมักใช้แทนอิฐ"
+            },
+            {
+                question: "โปรแกรม 'AutoCAD' นิยมใช้ในงานด้านใด?",
+                options: ["การออกแบบเว็บไซต์", "การสร้างแอนิเมชัน", "การเขียนแบบทางวิศวกรรมและสถาปัตยกรรม", "การตัดต่อวิดีโอ"],
+                answer: "การเขียนแบบทางวิศวกรรมและสถาปัตยกรรม",
+                explanation: "AutoCAD เป็นซอฟต์แวร์ที่ใช้ในการออกแบบและเขียนแบบด้วยคอมพิวเตอร์ (CAD) ที่ได้รับความนิยมสูง"
+            },
+            {
+                question: "หากต้องการวัดความกว้างของประตูอย่างแม่นยำ เครื่องมือใดที่เหมาะสมที่สุด?",
+                options: ["ไม้บรรทัด", "ตลับเมตร", "วงเวียน", "เวอร์เนียร์คาลิปเปอร์"],
+                answer: "ตลับเมตร",
+                explanation: "ตลับเมตรเหมาะสำหรับการวัดระยะทางหรือขนาดของวัตถุที่มีขนาดใหญ่"
+            },
+            {
+                question: "ในงานก่อสร้าง 'เสาเข็ม' (Piles) มีหน้าที่อะไร?",
+                options: ["รองรับน้ำหนักของอาคารและถ่ายเทลงสู่ชั้นดินที่แข็งแรง", "เป็นส่วนตกแต่ง", "เป็นส่วนป้องกันน้ำท่วม", "เป็นส่วนของหลังคา"],
+                answer: "รองรับน้ำหนักของอาคารและถ่ายเทลงสู่ชั้นดินที่แข็งแรง",
+                explanation: "เสาเข็มเป็นส่วนสำคัญของฐานรากที่ใช้ในการรับน้ำหนักและถ่ายเทสู่พื้นดินที่มีความสามารถในการรับน้ำหนักได้"
+            },
+            {
+                question: "คำว่า 'Section' ในแบบแปลนหมายถึงอะไร?",
+                options: ["รูปด้านของอาคาร", "ภาพตัดของอาคารที่แสดงส่วนภายใน", "ผังของพื้นที่", "มุมมองจากด้านบน"],
+                answer: "ภาพตัดของอาคารที่แสดงส่วนภายใน",
+                explanation: "แบบรูปตัด (Section) เป็นแบบที่แสดงภาพเมื่ออาคารถูกตัดออกเพื่อให้เห็นรายละเอียดภายใน"
+            },
+            {
+                question: "ข้อใดคือหน้าที่ของ 'นั่งร้าน' (Scaffolding) ในงานก่อสร้าง?",
+                options: ["เป็นโครงสร้างหลักของอาคาร", "เป็นโครงสร้างชั่วคราวสำหรับช่างทำงานในที่สูง", "ใช้สำหรับติดตั้งไฟฟ้า", "ใช้สำหรับเก็บเครื่องมือ"],
+                answer: "เป็นโครงสร้างชั่วคราวสำหรับช่างทำงานในที่สูง",
+                explanation: "นั่งร้านเป็นโครงสร้างชั่วคราวที่ให้ช่างก่อสร้างสามารถยืนทำงานได้อย่างปลอดภัยในที่สูง"
+            },
+            {
+                question: "การคำนวณ 'ปริมาณวัสดุ' (Bill of Quantities) มีประโยชน์อย่างไร?",
+                options: ["ใช้ในการกำหนดสีทาผนัง", "ใช้ในการคำนวณค่าใช้จ่ายและประมาณงบประมาณ", "ใช้ในการออกแบบตกแต่งภายใน", "ใช้ในการคำนวณจำนวนช่างที่ต้องใช้"],
+                answer: "ใช้ในการคำนวณค่าใช้จ่ายและประมาณงบประมาณ",
+                explanation: "Bill of Quantities (BOQ) เป็นเอกสารที่รวบรวมรายการวัสดุและปริมาณที่ต้องใช้ในการก่อสร้างทั้งหมด"
+            },
+            {
+                question: "ในแบบแปลนไฟฟ้า 'วงจรไฟฟ้า' (Wiring Diagram) มีหน้าที่อะไร?",
+                options: ["แสดงตำแหน่งของสวิตช์และปลั๊กไฟ", "แสดงการติดตั้งเครื่องปรับอากาศ", "แสดงเส้นทางการเดินสายไฟทั้งหมด", "แสดงตำแหน่งของท่อประปา"],
+                answer: "แสดงเส้นทางการเดินสายไฟทั้งหมด",
+                explanation: "วงจรไฟฟ้าแสดงรายละเอียดการเดินสายไฟ, ขนาดสายไฟ, และการเชื่อมต่ออุปกรณ์ต่างๆ"
+            },
+            {
+                question: "ข้อใดคือหน้าที่ของ 'เสา' (Column) ในโครงสร้างอาคาร?",
+                options: ["รับน้ำหนักจากคานและถ่ายเทลงสู่ฐานราก", "เป็นส่วนตกแต่ง", "เป็นส่วนป้องกันน้ำ", "ใช้ในการระบายอากาศ"],
+                answer: "รับน้ำหนักจากคานและถ่ายเทลงสู่ฐานราก",
+                explanation: "เสาทำหน้าที่รับน้ำหนักจากคานและพื้น แล้วส่งผ่านน้ำหนักลงสู่ฐานราก"
+            },
+            {
+                question: "วัสดุใดที่ใช้ในการยึดเหล็กเส้นกับโครงสร้างคอนกรีต?",
+                options: ["สกรู", "ตะปู", "ลวดผูกเหล็ก", "กาว"],
+                answer: "ลวดผูกเหล็ก",
+                explanation: "ลวดผูกเหล็กใช้ในการยึดเหล็กเส้นเข้าด้วยกันเพื่อให้เป็นโครงสร้างที่แข็งแรงก่อนการเทคอนกรีต"
+            },
+            {
+                question: "ในแบบแปลน สัญลักษณ์เส้นทึบหนา (Thick Solid Line) มักใช้แทนอะไร?",
+                options: ["เส้นแสดงขอบเขตที่มองไม่เห็น", "เส้นแสดงการก่อสร้างใหม่", "เส้นขอบของวัตถุที่มองเห็นได้", "เส้นแสดงระยะทาง"],
+                answer: "เส้นขอบของวัตถุที่มองเห็นได้",
+                explanation: "เส้นทึบหนาใช้แสดงขอบเขตของวัตถุหรือโครงสร้างที่มองเห็นได้"
+            },
+            {
+                question: "หน้าที่ของ 'สถาปนิก' (Architect) คือข้อใด?",
+                options: ["คำนวณโครงสร้างอาคาร", "ออกแบบและวางแผนการใช้งานของอาคาร", "ควบคุมการก่อสร้าง", "ติดตั้งระบบไฟฟ้า"],
+                answer: "ออกแบบและวางแผนการใช้งานของอาคาร",
+                explanation: "สถาปนิกมีหน้าที่ออกแบบอาคารทั้งในด้านความสวยงามและการใช้งาน"
+            },
+            {
+                question: "คำว่า 'Elevations' ในแบบแปลนหมายถึงอะไร?",
+                options: ["ผังของพื้น", "ภาพตัด", "รูปด้านของอาคารจากภายนอก", "รายละเอียดการตกแต่ง"],
+                answer: "รูปด้านของอาคารจากภายนอก",
+                explanation: "แบบรูปด้าน (Elevation) แสดงมุมมองภายนอกของอาคาร"
+            },
+            {
+                question: "ข้อใดเป็นเครื่องมือสำหรับวัดมุมที่นิยมใช้ในงานเขียนแบบ?",
+                options: ["ที-สแควร์", "สามเหลี่ยม (Set Square)", "ตลับเมตร", "วงเวียน"],
+                answer: "สามเหลี่ยม (Set Square)",
+                explanation: "สามเหลี่ยมฉาก (Set Square) ใช้สำหรับสร้างมุมต่างๆ ในงานเขียนแบบ เช่น มุม 30, 45, 60 และ 90 องศา"
+            },
+            {
+                question: "ในการคำนวณปริมาณสีทาผนัง สิ่งใดที่ต้องทราบ?",
+                options: ["ความสูงและความกว้างของผนัง", "ราคาของสี", "ชนิดของแปรงทาสี", "จำนวนช่างที่ต้องการ"],
+                answer: "ความสูงและความกว้างของผนัง",
+                explanation: "การคำนวณปริมาณสีต้องรู้พื้นที่ที่ต้องทา ซึ่งคำนวณจากความสูงและความกว้างของผนัง"
+            },
+            {
+                question: "วัสดุใดที่ใช้ในการฉาบผนังและเป็นส่วนประกอบหลักในการผลิตปูนซีเมนต์?",
+                options: ["ทราย", "หิน", "ปูนขาว", "ปูนฉาบ"],
+                answer: "ปูนฉาบ",
+                explanation: "ปูนฉาบ (Mortar) คือวัสดุที่ใช้ในการฉาบผนัง"
+            },
+            {
+                question: "ข้อใดคือหน้าที่ของ 'แบบก่อสร้าง' (Working Drawing)?",
+                options: ["แสดงภาพจำลอง 3 มิติ", "แสดงภาพรวมของโครงการ", "เป็นแบบรายละเอียดที่ใช้สำหรับก่อสร้างจริง", "เป็นแบบเพื่อการตลาด"],
+                answer: "เป็นแบบรายละเอียดที่ใช้สำหรับก่อสร้างจริง",
+                explanation: "แบบก่อสร้าง (Working Drawing) หรือแบบรายละเอียด เป็นแบบที่ใช้เป็นคู่มือสำหรับช่างในหน้างาน"
+            },
+            {
+                question: "แบบแปลน 'ผังบริเวณ' (Site Plan) แสดงข้อมูลใด?",
+                options: ["รายละเอียดภายในอาคาร", "ตำแหน่งของอาคารบนที่ดินและสภาพแวดล้อม", "แบบรูปด้านของอาคาร", "ระบบไฟฟ้าของอาคาร"],
+                answer: "ตำแหน่งของอาคารบนที่ดินและสภาพแวดล้อม",
+                explanation: "ผังบริเวณแสดงตำแหน่งที่ตั้งของอาคารบนที่ดินและรายละเอียดอื่นๆ เช่น ขอบเขตที่ดิน, ถนน, และต้นไม้"
+            },
+            {
+                question: "การคำนวณพื้นที่ (Area) ของรูปสี่เหลี่ยมจัตุรัสมีสูตรว่าอย่างไร?",
+                options: ["ด้าน x 4", "ด้าน x ด้าน", "2 x (กว้าง + ยาว)", "กว้าง + ยาว"],
+                answer: "ด้าน x ด้าน",
+                explanation: "สูตรคำนวณพื้นที่ของรูปสี่เหลี่ยมจัตุรัสคือ ด้าน x ด้าน"
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let userAnswers = [];
+        let timerInterval;
+        let timeRemaining = 60;
+        const totalTime = questions.length * 60;
+        let isModalOpen = false;
+
+        const startButton = document.getElementById('startButton');
+        const leaveButtonSplash = document.getElementById('leaveButton');
+        const splashScreen = document.getElementById('splash-screen');
+        const testContainer = document.getElementById('test-container');
+        const resultsContainer = document.getElementById('results-container');
+        const questionTextElement = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const nextButton = document.getElementById('nextButton');
+        const prevButton = document.getElementById('prevButton');
+        const submitButton = document.getElementById('submitButton');
+        const questionNumberElement = document.getElementById('question-number');
+        const progressBar = document.getElementById('progress-bar');
+        const scoreElement = document.getElementById('score');
+        const guidanceTextElement = document.getElementById('guidance-text');
+        const recommendedMajorsTextElement = document.getElementById('recommended-majors-text');
+        const reviewList = document.getElementById('review-list');
+        const retakeButton = document.getElementById('retakeButton');
+        const exitButton = document.getElementById('exitButton');
+        const timerElement = document.getElementById('timer');
+        const modal = document.getElementById('modal');
+        const modalMessage = document.getElementById('modal-message');
+        const modalCloseButton = document.getElementById('modal-close-button');
+
+        function showModal(message) {
+            if (isModalOpen) return;
+            modalMessage.textContent = message;
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            isModalOpen = true;
+        }
+
+        function hideModal() {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            isModalOpen = false;
+        }
+
+        modalCloseButton.addEventListener('click', hideModal);
+
+        function startTimer() {
+            timerElement.textContent = timeRemaining;
+            timerElement.classList.remove('timer-glow');
+            
+            clearInterval(timerInterval);
+
+            timerInterval = setInterval(() => {
+                timeRemaining--;
+                timerElement.textContent = timeRemaining;
+
+                if (timeRemaining <= 10) {
+                    timerElement.classList.add('timer-glow');
+                } else {
+                    timerElement.classList.remove('timer-glow');
+                }
+
+                if (timeRemaining <= 0) {
+                    clearInterval(timerInterval);
+                    handleTimeUp();
+                }
+            }, 1000);
+        }
+
+        function handleTimeUp() {
+            if (currentQuestionIndex < questions.length - 1) {
+                userAnswers[currentQuestionIndex] = "ไม่ได้ตอบ";
+                currentQuestionIndex++;
+                showQuestion(currentQuestionIndex);
+                resetTimer();
+                showModal("หมดเวลาแล้ว! คำตอบของคุณสำหรับข้อนี้ถูกข้ามไป");
+            } else {
+                calculateScore();
+            }
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            timeRemaining = 60;
+            startTimer();
+        }
+
+        function showQuestion(index) {
+            const question = questions[index];
+            questionTextElement.textContent = question.question;
+            optionsContainer.innerHTML = '';
+            
+            questionNumberElement.textContent = `ข้อที่ ${index + 1} จาก ${questions.length}`;
+
+            question.options.forEach(option => {
+                const optionWrapper = document.createElement('div');
+                const radioInput = document.createElement('input');
+                radioInput.type = 'radio';
+                radioInput.name = 'answer';
+                radioInput.value = option;
+                radioInput.id = `option-${option.replace(/\s/g, '-')}`;
+                radioInput.className = 'hidden';
+
+                const label = document.createElement('label');
+                label.htmlFor = `option-${option.replace(/\s/g, '-')}`;
+                label.textContent = option;
+                label.className = `block cursor-pointer px-6 py-4 text-lg md:text-xl rounded-full border-2 border-gray-300 transition-colors duration-300 text-gray-800 hover:bg-gray-100 hover:border-gray-400`;
+
+                if (userAnswers[index] === option) {
+                    radioInput.checked = true;
+                }
+
+                radioInput.addEventListener('change', (e) => {
+                    userAnswers[index] = e.target.value;
+                });
+
+                optionWrapper.appendChild(radioInput);
+                optionWrapper.appendChild(label);
+                optionsContainer.appendChild(optionWrapper);
+            });
+
+            prevButton.disabled = index === 0;
+            if (index === questions.length - 1) {
+                nextButton.classList.add('hidden');
+                submitButton.classList.remove('hidden');
+            } else {
+                nextButton.classList.remove('hidden');
+                submitButton.classList.add('hidden');
+            }
+            
+            const progress = ((index + 1) / questions.length) * 100;
+            progressBar.style.width = `${progress}%`;
+        }
+        
+        nextButton.addEventListener('click', () => {
+            if (currentQuestionIndex < questions.length - 1) {
+                const selectedOption = optionsContainer.querySelector('input[name="answer"]:checked');
+                userAnswers[currentQuestionIndex] = selectedOption ? selectedOption.value : null;
+                currentQuestionIndex++;
+                showQuestion(currentQuestionIndex);
+                resetTimer();
+            }
+        });
+
+        prevButton.addEventListener('click', () => {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                showQuestion(currentQuestionIndex);
+                resetTimer();
+            }
+        });
+
+        function calculateScore() {
+            let correctAnswers = 0;
+            questions.forEach((question, index) => {
+                const userAnswer = userAnswers[index];
+                if (userAnswer === question.answer) {
+                    correctAnswers++;
+                }
+            });
+            score = correctAnswers;
+            showResults();
+        }
+
+        submitButton.addEventListener('click', () => {
+            const selectedOption = optionsContainer.querySelector('input[name="answer"]:checked');
+            userAnswers[currentQuestionIndex] = selectedOption ? selectedOption.value : null;
+            clearInterval(timerInterval);
+            calculateScore();
+        });
+
+        function showResults() {
+            testContainer.classList.add('hidden');
+            resultsContainer.classList.remove('hidden');
+            scoreElement.textContent = `${score} / ${questions.length}`;
+
+            const percentage = (score / questions.length) * 100;
+            let guidanceMessage = "";
+            let recommendedMajorsMessage = "";
+
+            if (percentage >= 80) {
+                guidanceMessage = "เยี่ยมมาก! คุณมีความเข้าใจในหลักการของงานก่อสร้างและสถาปัตยกรรมอย่างยอดเยี่ยม คุณมีแนวโน้มที่จะประสบความสำเร็จในสาขาที่ต้องใช้ความรู้เชิงบูรณาการเช่นนี้";
+                recommendedMajorsMessage = `จากคะแนนของคุณ (${score}/${questions.length}) คุณเหมาะสมอย่างยิ่งสำหรับสาขา <span class="font-bold text-purple-600">ช่างก่อสร้าง</span> และ <span class="font-bold text-purple-600">ช่างเขียนแบบเครื่องกล</span>`;
+                confetti({
+                    particleCount: 150,
+                    spread: 180,
+                    origin: { y: 0.6 }
+                });
+            } else if (percentage >= 50) {
+                guidanceMessage = "ดีมาก! คุณมีความเข้าใจพื้นฐานที่ดีในสาขางานก่อสร้างและสถาปัตยกรรม แต่ยังสามารถพัฒนาความรู้เชิงลึกและทักษะการแก้ปัญหาให้ดียิ่งขึ้นได้";
+                recommendedMajorsMessage = `คะแนนของคุณ (${score}/${questions.length}) แสดงว่าคุณมีความสนใจในสายงานนี้ ลองพิจารณาสาขา <span class="font-bold text-purple-600">ช่างก่อสร้าง</span> และ <span class="font-bold text-purple-600">ช่างเขียนแบบเครื่องกล</span> และฝึกฝนทักษะให้มากขึ้นนะครับ`;
+            } else {
+                guidanceMessage = "ไม่ต้องกังวลไปครับ! แบบทดสอบนี้เป็นเพียงส่วนหนึ่งในการสำรวจตัวเอง หากคุณมีความสนใจในสาขานี้จริง คุณสามารถพัฒนาความถนัดด้านนี้ได้ด้วยการศึกษาและฝึกฝนอย่างต่อเนื่อง";
+                recommendedMajorsMessage = `คะแนนของคุณ (${score}/${questions.length}) แสดงว่านี่อาจไม่ใช่ความถนัดหลักของคุณในตอนนี้ แต่ถ้าคุณยังสนใจในสายงานนี้ ควรเน้นการศึกษาและฝึกฝนทักษะด้าน <span class="font-bold text-purple-600">การอ่านแบบแปลน, การคำนวณวัสดุ, และการใช้เครื่องมือวัด</span> เพื่อเพิ่มศักยภาพของตัวเองครับ`;
+            }
+
+            guidanceTextElement.innerHTML = guidanceMessage;
+            recommendedMajorsTextElement.innerHTML = recommendedMajorsMessage;
+
+            reviewList.innerHTML = '';
+            questions.forEach((question, index) => {
+                const userAnswer = userAnswers[index];
+                const isCorrect = userAnswer === question.answer;
+                const reviewItem = document.createElement('div');
+                reviewItem.className = `p-4 rounded-xl border ${isCorrect ? 'border-green-400 bg-green-50' : 'border-red-400 bg-red-50'}`;
+                reviewItem.innerHTML = `
+                    <div class="flex items-center space-x-2 mb-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 ${isCorrect ? 'text-green-600' : 'text-red-600'}">
+                            ${isCorrect
+                                ? `<path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd" />`
+                                : `<path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm-1.72 6.97a.75.75 0 10-1.06 1.06L10.94 12l-1.72 1.72a.75.75 0 101.06 1.06L12 13.06l1.72 1.72a.75.75 0 101.06-1.06L13.06 12l1.72-1.72a.75.75 0 10-1.06-1.06L12 10.94l-1.72-1.72z" clip-rule="evenodd" />`}
+                        </svg>
+                        <p class="font-semibold text-lg md:text-xl">ข้อที่ ${index + 1}: ${question.question}</p>
+                    </div>
+                    <p class="mb-1 text-base md:text-lg">
+                        <span class="font-medium">คำตอบของคุณ:</span> <span class="${isCorrect ? 'text-green-600' : 'text-red-600'} font-bold">${userAnswer || 'ไม่ได้ตอบ'}</span>
+                    </p>
+                    <p class="text-base md:text-lg">
+                        <span class="font-medium">คำตอบที่ถูกต้อง:</span> <span class="text-gray-800 font-bold">${question.answer}</span>
+                    </p>
+                    ${question.explanation ? `<p class="mt-2 text-sm md:text-base text-gray-600"><strong>เหตุผล:</strong> ${question.explanation}</p>` : ''}
+                `;
+                reviewList.appendChild(reviewItem);
+            });
+        }
+
+        startButton.addEventListener('click', () => {
+            splashScreen.classList.add('hidden');
+            testContainer.classList.remove('hidden');
+            userAnswers = Array(questions.length).fill(null);
+            currentQuestionIndex = 0;
+            showQuestion(currentQuestionIndex);
+            resetTimer();
+        });
+
+        retakeButton.addEventListener('click', () => {
+            resultsContainer.classList.add('hidden');
+            splashScreen.classList.remove('hidden');
+        });
+
+        leaveButtonSplash.addEventListener('click', () => {
+            window.location.href = 'index.html';
+        });
+
+        exitButton.addEventListener('click', () => {
+            window.location.href = 'index.html';
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cabin Crew Reality Training - Professional Edition</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap');
+        
+        * {
+            font-family: 'Sarabun', sans-serif;
+        }
+        
+        .airplane-bg {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #334155 50%, #475569 75%, #64748b 100%);
+            position: relative;
+        }
+        
+        .airplane-bg::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="%23ffffff" stroke-width="0.1" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            animation: float 20s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .cabin-interior {
+            background: linear-gradient(145deg, #f8fafc 0%, #e2e8f0 50%, #cbd5e1 100%);
+            border-radius: 24px;
+            box-shadow: 
+                inset 0 8px 32px rgba(0,0,0,0.1),
+                0 16px 64px rgba(0,0,0,0.2),
+                0 0 0 1px rgba(255,255,255,0.1);
+            position: relative;
+            backdrop-filter: blur(20px);
+        }
+        
+        .choice-btn {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        
+        .choice-btn:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 16px 48px rgba(0,0,0,0.2);
+            border-color: #3b82f6;
+        }
+        
+        .choice-btn.correct {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            animation: success-pulse 0.6s ease-out;
+        }
+        
+        .choice-btn.incorrect {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            animation: error-shake 0.6s ease-out;
+        }
+        
+        @keyframes success-pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes error-shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        
+        .progress-bar {
+            background: linear-gradient(90deg, #10b981 0%, #34d399 50%, #6ee7b7 100%);
+            border-radius: 12px;
+            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .scenario-card {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            box-shadow: 0 16px 64px rgba(0,0,0,0.1);
+        }
+        
+        .passenger-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+            border: 4px solid #e2e8f0;
+        }
+        
+        .timer-critical {
+            animation: critical-blink 1s infinite;
+            color: #ef4444 !important;
+            font-weight: 800;
+        }
+        
+        @keyframes critical-blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.3; }
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            padding: 16px 24px;
+            box-shadow: 0 16px 48px rgba(0,0,0,0.2);
+            border-left: 6px solid #3b82f6;
+            transform: translateX(400px);
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .cabin-layout {
+            display: grid;
+            grid-template-columns: 1fr 60px 1fr;
+            gap: 20px;
+            padding: 20px;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border-radius: 20px;
+        }
+        
+        .passenger-seat {
+            background: linear-gradient(145deg, #3b82f6 0%, #1d4ed8 100%);
+            border-radius: 12px;
+            padding: 12px;
+            box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            color: white;
+            text-align: center;
+        }
+        
+        .passenger-seat:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(59, 130, 246, 0.4);
+        }
+        
+        .passenger-seat.served {
+            background: linear-gradient(145deg, #10b981 0%, #059669 100%);
+        }
+        
+        .passenger-seat.needs-attention {
+            background: linear-gradient(145deg, #ef4444 0%, #dc2626 100%);
+            animation: attention-pulse 2s infinite;
+        }
+        
+        @keyframes attention-pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .service-item {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border-radius: 16px;
+            padding: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .service-item:hover {
+            border-color: #3b82f6;
+            transform: translateY(-4px);
+            box-shadow: 0 16px 48px rgba(0,0,0,0.12);
+        }
+        
+        .service-item.selected {
+            border-color: #10b981;
+            background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+        }
+        
+        .score-meter {
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            border-radius: 12px;
+            padding: 4px;
+            box-shadow: inset 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .score-fill {
+            border-radius: 8px;
+            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .score-fill.excellent {
+            background: linear-gradient(90deg, #10b981, #34d399);
+        }
+        
+        .score-fill.good {
+            background: linear-gradient(90deg, #3b82f6, #60a5fa);
+        }
+        
+        .score-fill.average {
+            background: linear-gradient(90deg, #f59e0b, #fbbf24);
+        }
+        
+        .score-fill.poor {
+            background: linear-gradient(90deg, #ef4444, #f87171);
+        }
+        
+        .glass-morphism {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        
+        .achievement-badge {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            box-shadow: 0 4px 16px rgba(245, 158, 11, 0.3);
+            animation: badge-glow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes badge-glow {
+            from { box-shadow: 0 4px 16px rgba(245, 158, 11, 0.3); }
+            to { box-shadow: 0 8px 32px rgba(245, 158, 11, 0.6); }
+        }
+    </style>
+</head>
+<body class="airplane-bg min-h-screen overflow-auto">
+    <!-- Notification System -->
+    <div class="notification" id="notification">
+        <div class="flex items-center gap-3">
+            <span class="text-2xl" id="notificationIcon">ℹ️</span>
+            <div>
+                <div class="font-semibold" id="notificationTitle">แจ้งเตือน</div>
+                <div class="text-sm text-gray-600" id="notificationMessage">ข้อความแจ้งเตือน</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Game Container -->
+    <div class="container mx-auto px-4 py-6 relative z-10">
+        <!-- Header -->
+        <div class="text-center mb-6">
+            <h1 class="text-5xl font-bold text-white mb-2">✈️ Cabin Crew Reality Training</h1>
+            <p class="text-blue-100 text-xl">ระบบฝึกอบรมแอร์โฮสเตสระดับมืออาชีพ</p>
+        </div>
+
+        <!-- Stats Dashboard -->
+        <div class="glass-morphism rounded-3xl p-6 mb-6">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="text-center">
+                    <div class="score-meter mb-2">
+                        <div class="score-fill excellent h-4" id="scoreFill" style="width: 100%"></div>
+                    </div>
+                    <div class="text-2xl font-bold text-white" id="totalScore">100</div>
+                    <div class="text-blue-100 text-sm">คะแนนรวม</div>
+                </div>
+                <div class="text-center">
+                    <div class="score-meter mb-2">
+                        <div class="score-fill excellent h-4" id="professionalismFill" style="width: 100%"></div>
+                    </div>
+                    <div class="text-2xl font-bold text-white" id="professionalismScore">100</div>
+                    <div class="text-blue-100 text-sm">ความเป็นมืออาชีพ</div>
+                </div>
+                <div class="text-center">
+                    <div class="score-meter mb-2">
+                        <div class="score-fill excellent h-4" id="safetyFill" style="width: 100%"></div>
+                    </div>
+                    <div class="text-2xl font-bold text-white" id="safetyScore">100</div>
+                    <div class="text-blue-100 text-sm">ความปลอดภัย</div>
+                </div>
+                <div class="text-center">
+                    <div class="score-meter mb-2">
+                        <div class="score-fill excellent h-4" id="serviceFill" style="width: 100%"></div>
+                    </div>
+                    <div class="text-2xl font-bold text-white" id="serviceScore">100</div>
+                    <div class="text-blue-100 text-sm">การบริการ</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Flight Progress -->
+        <div class="glass-morphism rounded-3xl p-6 mb-6">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                <div class="flex items-center gap-4">
+                    <div class="bg-green-600 text-white px-6 py-3 rounded-full font-bold" id="currentPhase">
+                        Boarding & Safety
+                    </div>
+                    <div class="bg-red-600 text-white px-4 py-2 rounded-lg font-bold" id="seatbeltSign">
+                        🔴 FASTEN SEATBELT
+                    </div>
+                </div>
+                <div class="text-white font-bold text-xl" id="flightTimer">00:00:00</div>
+            </div>
+            <div class="mt-4">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-white font-semibold">ความคืบหน้าเที่ยวบิน</span>
+                    <span class="text-white text-sm" id="progressPercentage">0%</span>
+                </div>
+                <div class="bg-white/20 rounded-full h-4">
+                    <div class="progress-bar h-4" id="flightProgressBar" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Game Screen -->
+        <div id="gameScreen" class="cabin-interior p-8 min-h-96 relative">
+            <!-- Welcome Screen -->
+            <div id="welcomeScreen" class="text-center">
+                <div class="text-8xl mb-6 animate-bounce">🛫</div>
+                <h2 class="text-4xl font-bold text-gray-800 mb-6">ยินดีต้อนรับสู่การฝึกอบรมระดับมืออาชีพ</h2>
+                <p class="text-gray-600 mb-8 text-xl leading-relaxed max-w-4xl mx-auto">
+                    คุณจะได้สัมผัสประสบการณ์การทำงานเป็นแอร์โฮสเตสในสถานการณ์จริง พร้อมระบบประเมินผลแบบ AI 
+                    และสถานการณ์ที่ซับซ้อนเหมือนการบินจริง
+                </p>
+                
+                <div class="grid md:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-blue-600 text-white p-6 rounded-2xl">
+                        <h3 class="font-bold text-lg mb-2">🎯 เป้าหมายการฝึกอบรม</h3>
+                        <ul class="text-left space-y-2 text-sm">
+                            <li>• การบริการระดับมืออาชีพ</li>
+                            <li>• การจัดการสถานการณ์ฉุกเฉิน</li>
+                            <li>• ทักษะการสื่อสารข้ามวัฒนธรรม</li>
+                            <li>• การทำงานภายใต้ความกดดัน</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="bg-green-600 text-white p-6 rounded-2xl">
+                        <h3 class="font-bold text-lg mb-2">⏱️ ระบบการประเมิน</h3>
+                        <ul class="text-left space-y-2 text-sm">
+                            <li>• การตัดสินใจภายใต้เวลาจำกัด</li>
+                            <li>• ความแม่นยำในการปฏิบัติงาน</li>
+                            <li>• การจัดการความเครียด</li>
+                            <li>• ทักษะการแก้ปัญหาเฉพาะหน้า</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="bg-purple-600 text-white p-6 rounded-2xl">
+                        <h3 class="font-bold text-lg mb-2">🏆 เกณฑ์การผ่าน</h3>
+                        <ul class="text-left space-y-2 text-sm">
+                            <li>• 90-100: Cabin Crew มาตรฐานสากล</li>
+                            <li>• 75-89: Cabin Crew ฝึกหัด</li>
+                            <li>• 60-74: งานบริการภาคพื้น</li>
+                            <li>• <60: ต้องเสริมทักษะเพิ่มเติม</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <button onclick="startGame()" class="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-12 py-4 rounded-full text-xl font-bold transition-all duration-500 transform hover:scale-110 hover:shadow-2xl">
+                    🚀 เริ่มการฝึกอบรม
+                </button>
+            </div>
+
+            <!-- Cabin Layout Screen -->
+            <div id="cabinLayoutScreen" class="hidden">
+                <h3 class="text-3xl font-bold text-gray-800 mb-6 text-center">🛩️ ผังห้องโดยสารเที่ยวบิน TG-001</h3>
+                
+                <div class="cabin-layout mb-6">
+                    <!-- Left Side Seats -->
+                    <div class="space-y-4">
+                        <div class="text-center font-semibold text-gray-700 mb-2">ที่นั่งฝั่งซ้าย (A-C)</div>
+                        <div id="leftSeats" class="space-y-3">
+                            <!-- Seats will be populated here -->
+                        </div>
+                    </div>
+                    
+                    <!-- Aisle -->
+                    <div class="bg-gray-300 rounded-lg flex flex-col items-center justify-center">
+                        <div class="text-gray-600 font-semibold text-sm transform -rotate-90">ทางเดิน</div>
+                        <div class="bg-blue-200 p-2 rounded mt-4 text-center text-xs">
+                            🛒 รถเสิร์ฟอาหาร
+                        </div>
+                    </div>
+                    
+                    <!-- Right Side Seats -->
+                    <div class="space-y-4">
+                        <div class="text-center font-semibold text-gray-700 mb-2">ที่นั่งฝั่งขวา (D-F)</div>
+                        <div id="rightSeats" class="space-y-3">
+                            <!-- Seats will be populated here -->
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center">
+                    <button onclick="proceedToScenarios()" class="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-full text-lg font-semibold transition-all duration-300 transform hover:scale-105">
+                        ▶️ เริ่มสถานการณ์จำลอง
+                    </button>
+                </div>
+            </div>
+
+            <!-- Scenario Screen -->
+            <div id="scenarioScreen" class="hidden">
+                <div class="scenario-card p-8 mb-6">
+                    <div class="flex items-start gap-6 mb-6">
+                        <div class="passenger-avatar" id="scenarioPassengerAvatar">
+                            👤
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-bold text-xl text-gray-800 mb-2" id="scenarioPassengerName">ผู้โดยสาร</h3>
+                            <p class="text-gray-600 mb-4" id="scenarioPassengerType">ประเภทผู้โดยสาร</p>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-3xl font-bold text-blue-600 mb-2" id="scenarioTimer">05:00</div>
+                            <div class="text-sm text-gray-600">เวลาในการตัดสินใจ</div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-red-50 border-l-4 border-red-400 p-4 mb-6">
+                        <h4 class="font-bold text-red-800 mb-2">🚨 สถานการณ์</h4>
+                        <p class="text-gray-800" id="scenarioDescription">รายละเอียดสถานการณ์จะแสดงที่นี่</p>
+                    </div>
+                    
+                    <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
+                        <div class="flex items-center gap-3">
+                            <span class="text-2xl">💬</span>
+                            <div>
+                                <div class="font-semibold mb-1">ผู้โดยสารพูดว่า:</div>
+                                <div class="text-gray-700" id="scenarioDialog">"ข้อความจากผู้โดยสาร"</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Choice System -->
+                <div class="grid gap-4" id="choicesContainer">
+                    <!-- Choices will be populated here -->
+                </div>
+            </div>
+
+            <!-- Service Screen -->
+            <div id="serviceScreen" class="hidden">
+                <div class="text-center mb-6">
+                    <h3 class="text-3xl font-bold text-gray-800 mb-2">🍽️ ระบบบริการอาหารและเครื่องดื่ม</h3>
+                    <p class="text-gray-600 mb-4">เลือกอาหารและเครื่องดื่มสำหรับผู้โดยสาร</p>
+                    <div class="text-2xl font-bold text-blue-600" id="serviceTimer">เวลาคงเหลือ: 180 วินาที</div>
+                </div>
+
+                <!-- Menu System -->
+                <div class="grid md:grid-cols-2 gap-6 mb-6">
+                    <!-- Main Courses -->
+                    <div class="bg-white p-6 rounded-2xl shadow-lg">
+                        <h4 class="font-bold text-lg mb-4">🥘 อาหารจานหลัก</h4>
+                        <div class="space-y-3" id="mainCourseMenu">
+                            <div class="service-item" data-item="chicken-teriyaki" onclick="selectMenuItem('chicken-teriyaki', 'main')">
+                                <div class="font-semibold">🍗 ไก่เทอริยากิ</div>
+                                <div class="text-sm text-gray-600">ไก่ย่างซอสเทอริยากิ พร้อมข้าวญี่ปุ่น</div>
+                            </div>
+                            
+                            <div class="service-item" data-item="salmon-grill" onclick="selectMenuItem('salmon-grill', 'main')">
+                                <div class="font-semibold">🐟 แซลมอนย่าง</div>
+                                <div class="text-sm text-gray-600">ปลาแซลมอนย่าง พร้อมผักโรสต์</div>
+                            </div>
+                            
+                            <div class="service-item" data-item="vegetarian-curry" onclick="selectMenuItem('vegetarian-curry', 'main')">
+                                <div class="font-semibold">🥗 แกงเจ</div>
+                                <div class="text-sm text-gray-600">แกงเจใส่ผักรวม พร้อมข้าวกล้อง</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Beverages -->
+                    <div class="bg-white p-6 rounded-2xl shadow-lg">
+                        <h4 class="font-bold text-lg mb-4">🥤 เครื่องดื่ม</h4>
+                        <div class="grid grid-cols-2 gap-2" id="beverageMenu">
+                            <div class="service-item text-center p-3" onclick="selectMenuItem('water', 'beverage')">
+                                <div class="font-semibold">💧 น้ำเปล่า</div>
+                            </div>
+                            <div class="service-item text-center p-3" onclick="selectMenuItem('juice', 'beverage')">
+                                <div class="font-semibold">🧃 น้ำผลไม้</div>
+                            </div>
+                            <div class="service-item text-center p-3" onclick="selectMenuItem('coffee', 'beverage')">
+                                <div class="font-semibold">☕ กาแฟ</div>
+                            </div>
+                            <div class="service-item text-center p-3" onclick="selectMenuItem('tea', 'beverage')">
+                                <div class="font-semibold">🍵 ชา</div>
+                            </div>
+                            <div class="service-item text-center p-3" onclick="selectMenuItem('soda', 'beverage')">
+                                <div class="font-semibold">🥤 น้ำอัดลม</div>
+                            </div>
+                            <div class="service-item text-center p-3" onclick="selectMenuItem('wine', 'beverage')">
+                                <div class="font-semibold">🍷 ไวน์</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Passenger Queue -->
+                <div class="bg-white p-6 rounded-2xl shadow-lg mb-6">
+                    <h4 class="font-bold text-xl mb-4">👥 รายชื่อผู้โดยสารที่รอบริการ</h4>
+                    <div id="passengerQueue" class="space-y-4">
+                        <!-- Passenger queue will be populated here -->
+                    </div>
+                </div>
+
+                <!-- Service Actions -->
+                <div class="grid md:grid-cols-2 gap-4">
+                    <button onclick="serveSelectedPassenger()" class="bg-green-600 hover:bg-green-700 text-white p-4 rounded-lg text-center font-semibold">
+                        <div class="text-2xl mb-2">🍽️</div>
+                        <div>เสิร์ฟอาหาร</div>
+                    </button>
+                    
+                    <button onclick="proceedToResults()" class="bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-lg text-center font-semibold">
+                        <div class="text-2xl mb-2">✅</div>
+                        <div>เสร็จสิ้นการบริการ</div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Results Screen -->
+            <div id="resultsScreen" class="hidden text-center">
+                <div class="text-8xl mb-6" id="resultEmoji">🎉</div>
+                <h2 class="text-4xl font-bold text-gray-800 mb-6" id="resultTitle">ผลการประเมิน</h2>
+                
+                <!-- Detailed Scores -->
+                <div class="grid md:grid-cols-2 gap-6 mb-8">
+                    <div class="bg-white p-6 rounded-2xl shadow-lg">
+                        <h3 class="text-xl font-bold mb-4">📊 คะแนนรายละเอียด</h3>
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center">
+                                <span>ความเป็นมืออาชีพ</span>
+                                <span class="font-bold text-2xl" id="finalProfessionalismScore">95</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span>ความปลอดภัย</span>
+                                <span class="font-bold text-2xl" id="finalSafetyScore">92</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span>การบริการ</span>
+                                <span class="font-bold text-2xl" id="finalServiceScore">88</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white p-6 rounded-2xl shadow-lg">
+                        <h3 class="text-xl font-bold mb-4">🏆 ความสำเร็จ</h3>
+                        <div class="space-y-3" id="achievementsList">
+                            <div class="achievement-badge">🌟 Perfect Safety Record</div>
+                            <div class="achievement-badge">💎 Customer Delight Expert</div>
+                            <div class="achievement-badge">⚡ Crisis Management Pro</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Certification -->
+                <div class="bg-gradient-to-r from-green-600 to-teal-600 text-white p-8 rounded-2xl mb-8">
+                    <h3 class="text-2xl font-bold mb-4" id="certificationTitle">🎓 ใบรับรองความสำเร็จ</h3>
+                    <div class="text-4xl font-bold mb-2" id="finalTotalScore">92</div>
+                    <div class="text-lg" id="certificationLevel">Cabin Crew มาตรฐานสากล</div>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="flex justify-center gap-4">
+                    <button onclick="restartGame()" class="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-3 rounded-full text-lg font-semibold transition-all duration-300 transform hover:scale-105">
+                        🔄 ฝึกอบรมใหม่
+                    </button>
+                    <button onclick="shareResults()" class="bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 text-white px-8 py-3 rounded-full text-lg font-semibold transition-all duration-300 transform hover:scale-105">
+                        📤 แชร์ผลลัพธ์
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Game State Management
+        let gameState = {
+            currentPhase: 0,
+            currentScenario: 0,
+            flightTime: 0,
+            scores: {
+                total: 100,
+                professionalism: 100,
+                safety: 100,
+                service: 100
+            },
+            selectedFood: null,
+            selectedDrink: null,
+            serviceTimer: 180,
+            scenarioTimer: 300,
+            serviceInterval: null,
+            scenarioInterval: null,
+            flightInterval: null,
+            passengers: [],
+            currentPassenger: null,
+            completedScenarios: 0,
+            totalScenarios: 5
+        };
+
+        // Scenario Database
+        const scenarios = [
+            {
+                id: 'boarding_001',
+                passenger: { 
+                    name: 'คุณสมชาย วิทยากร', 
+                    type: 'นักธุรกิจระดับสูง', 
+                    avatar: '👨‍💼'
+                },
+                description: 'ผู้โดยสารชั้นธุรกิจหอบกระเป๋าขนาดใหญ่เกินมาตรฐาน พร้อมกับแสดงความไม่พอใจเรื่องเที่ยวบินล่าช้า',
+                speech: 'นี่มันยังไงกัน! เที่ยวบินล่าช้า กระเป๋าก็ใส่ไม่ได้ ผมมีประชุมสำคัญที่ต้องไปด่วน คุณจะช่วยแก้ปัญหานี้ได้ไหม?',
+                timeLimit: 45,
+                choices: [
+                    { 
+                        text: '😊 "เข้าใจความรู้สึกของคุณค่ะ ขออภัยในความไม่สะดวก ให้ดิฉันช่วยจัดการกระเป๋าให้ และจะประสานกับทีมภาคพื้นเรื่องการเชื่อมต่อเที่ยวบินต่อไปด้วยนะคะ"', 
+                        score: { professionalism: 8, service: 10 },
+                        outcome: 'excellent'
+                    },
+                    { 
+                        text: '😐 "กระเป๋าใหญ่เกินกฎหมาย ต้องเก็บใต้เบาะ ส่วนเที่ยวบินล่าช้าเป็นเรื่องของสภาพอากาศครับ"', 
+                        score: { professionalism: -5, service: -8 },
+                        outcome: 'poor'
+                    },
+                    { 
+                        text: '😊 "ขออนุญาตช่วยดูกระเป๋าให้นะคะ หากใส่ช่องเก็บของไม่ได้ เราสามารถฝากกับลูกเรือได้ค่ะ และจะให้ข้อมูลเที่ยวบินต่อไปด้วย"', 
+                        score: { professionalism: 6, service: 7, safety: 5 },
+                        outcome: 'good'
+                    },
+                    { 
+                        text: '🤝 "เข้าใจค่ะ ให้ดิฉันเรียกหัวหน้าแอร์มาช่วยจัดการเรื่องนี้เป็นพิเศษ และจะดูแลให้คุณได้รับการบริการที่ดีที่สุดตลอดเที่ยวบิน"', 
+                        score: { professionalism: 7, service: 8 },
+                        outcome: 'very_good'
+                    }
+                ]
+            },
+            {
+                id: 'boarding_002',
+                passenger: { 
+                    name: 'Mrs. Sarah Johnson', 
+                    type: 'นักท่องเที่ยวต่างชาติ', 
+                    avatar: '👩‍🦱'
+                },
+                description: 'ผู้โดยสารชาวอเมริกันพาลูกสาววัย 3 ขวบมาด้วย เด็กกำลังร้องไห้และไม่ยอมนั่งที่นั่ง',
+                speech: 'Excuse me, my daughter is crying and I cannot find our seats. The seat numbers are confusing. Can you help us please? She is scared of flying.',
+                timeLimit: 60,
+                choices: [
+                    { 
+                        text: '😊 "Of course! Let me help you find your seats. Don\'t worry, I have some stickers for your daughter. Flying can be fun!"', 
+                        score: { professionalism: 9, service: 10 },
+                        outcome: 'excellent'
+                    },
+                    { 
+                        text: '😐 "Please check your boarding pass and find seat number. Child must sit down for safety."', 
+                        score: { professionalism: -3, service: -5 },
+                        outcome: 'poor'
+                    },
+                    { 
+                        text: '😊 "Let me show you to your seats and help with your daughter. I have some coloring books that might help her feel better during the flight."', 
+                        score: { professionalism: 8, service: 9 },
+                        outcome: 'very_good'
+                    }
+                ]
+            },
+            {
+                id: 'service_001',
+                passenger: { 
+                    name: 'คุณยายสุดา', 
+                    type: 'ผู้สูงอายุใช้รถเข็น', 
+                    avatar: '👵'
+                },
+                description: 'ผู้โดยสารสูงอายุมีปัญหาเรื่องอาหาร เนื่องจากมีข้อจำกัดทางสุขภาพและไม่สามารถทานอาหารที่เสิร์ฟได้',
+                speech: 'หลานสาว ยายทานอาหารเค็มไม่ได้ค่ะ มีเบาหวานด้วย อาหารที่เอามาให้ดูเค็มเกินไป มีอะไรที่เหมาะกับยายไหมคะ',
+                timeLimit: 90,
+                choices: [
+                    { 
+                        text: '😊 "เข้าใจค่ะคุณยาย ให้หลานไปเอาอาหารพิเศษสำหรับผู้ป่วยเบาหวานมาให้นะคะ และจะจัดเครื่องดื่มที่ไม่มีน้ำตาลด้วย"', 
+                        score: { professionalism: 9, service: 10, safety: 8 },
+                        outcome: 'excellent'
+                    },
+                    { 
+                        text: '😐 "ขออภัยค่ะ อาหารในเครื่องมีแค่นี้ ลองกินดูนะคะ หรือจะงดอาหารมื้อนี้ไปก่อน"', 
+                        score: { professionalism: -2, service: -6 },
+                        outcome: 'poor'
+                    },
+                    { 
+                        text: '😊 "ให้หลานดูในครัวบินว่ามีผลไม้สดหรืออาหารที่เหมาะสมไหมค่ะ และจะปรึกษาหัวหน้าแอร์เรื่องอาหารพิเศษด้วย"', 
+                        score: { professionalism: 7, service: 8, safety: 6 },
+                        outcome: 'good'
+                    }
+                ]
+            },
+            {
+                id: 'emergency_001',
+                passenger: { 
+                    name: 'คุณประยุทธ์', 
+                    type: 'ผู้โดยสารมีอาการไม่สบาย', 
+                    avatar: '😷'
+                },
+                description: 'ผู้โดยสารชายวัย 45 ปี มีอาการหน้าอกเจ็บและหายใจลำบาก ขณะที่เครื่องบินกำลังบินอยู่ในอากาศ',
+                speech: 'ช่วยด้วย! หน้าอกเจ็บมาก หายใจไม่ออก รู้สึกเหมือนจะเป็นลม!',
+                timeLimit: 120,
+                choices: [
+                    { 
+                        text: '🚨 "ให้คุณนั่งพักก่อนนะครับ ผมจะเรียกแพทย์ในเที่ยวบินมาดูให้ทันที และเตรียมอุปกรณ์ปฐมพยาบาลด้วย"', 
+                        score: { professionalism: 10, safety: 15, service: 8 },
+                        outcome: 'life_saved'
+                    },
+                    { 
+                        text: '😐 "คุณรู้สึกไม่สบายใช่ไหมครับ ลองหายใจเข้าลึกๆ ดูนะครับ"', 
+                        score: { professionalism: -5, safety: -10 },
+                        outcome: 'dangerous'
+                    },
+                    { 
+                        text: '🩺 "ผมจะให้ออกซิเจนและแจ้งกัปตันทันที หากจำเป็นอาจต้องลงจอดฉุกเฉิน"', 
+                        score: { professionalism: 9, safety: 12, service: 7 },
+                        outcome: 'emergency_handled'
+                    }
+                ]
+            },
+            {
+                id: 'landing_001',
+                passenger: { 
+                    name: 'คุณสมหวัง', 
+                    type: 'ผู้โดยสารที่กลัวการบิน', 
+                    avatar: '😰'
+                },
+                description: 'ผู้โดยสารแสดงอาการตื่นตระหนกเมื่อเครื่องบินเข้าสู่ขั้นตอนการลงจอด เนื่องจากมีกระแสลมปั่นป่วน',
+                speech: 'ช่วยด้วย! เครื่องสั่นมาก ผมกลัวจะตกครับ! ทำไมต้องลงในสภาพอากาศแบบนี้ด้วย!',
+                timeLimit: 120,
+                choices: [
+                    { 
+                        text: '😊 "ไม่ต้องกังวลครับ นี่เป็นเรื่องปกติ นักบินมีประสบการณ์มาก ให้ผมสอนท่าหายใจเพื่อผ่อนคลายนะครับ"', 
+                        score: { professionalism: 9, service: 10, safety: 8 },
+                        outcome: 'excellent'
+                    },
+                    { 
+                        text: '😐 "กรุณานั่งให้เรียบร้อยและคาดเข็มขัดครับ เครื่องบินปลอดภัย"', 
+                        score: { professionalism: 2, service: -3 },
+                        outcome: 'poor'
+                    },
+                    { 
+                        text: '😊 "เข้าใจความรู้สึกครับ ให้ผมนั่งข้างๆ และอธิบายขั้นตอนการลงจอดให้ฟัง จะทำให้รู้สึกดีขึ้น"', 
+                        score: { professionalism: 8, service: 9, safety: 7 },
+                        outcome: 'very_good'
+                    }
+                ]
+            }
+        ];
+
+        // Passenger data for service phase
+        const passengers = [
+            { 
+                name: 'คุณประยุทธ์', 
+                avatar: '👨‍💼', 
+                preference: 'chicken-teriyaki', 
+                drink: 'coffee', 
+                special: 'ไม่ทานเผ็ด',
+                served: false,
+                needsAttention: false
+            },
+            { 
+                name: 'Ms. Emily', 
+                avatar: '👩‍🦰', 
+                preference: 'vegetarian-curry', 
+                drink: 'wine', 
+                special: 'Vegan',
+                served: false,
+                needsAttention: false
+            },
+            { 
+                name: 'คุณแม่นิดา', 
+                avatar: '👩‍👧', 
+                preference: 'salmon-grill', 
+                drink: 'juice', 
+                special: 'แพ้นม',
+                served: false,
+                needsAttention: true
+            },
+            { 
+                name: 'คุณปู่สมศักดิ์', 
+                avatar: '👴', 
+                preference: 'chicken-teriyaki', 
+                drink: 'tea', 
+                special: 'เบาหวาน',
+                served: false,
+                needsAttention: false
+            },
+            { 
+                name: 'น้องมิกกี้', 
+                avatar: '👧', 
+                preference: 'chicken-teriyaki', 
+                drink: 'juice', 
+                special: 'เด็ก 8 ขวบ',
+                served: false,
+                needsAttention: true
+            },
+            { 
+                name: 'Mr. David', 
+                avatar: '👨‍🦲', 
+                preference: 'salmon-grill', 
+                drink: 'wine', 
+                special: 'Business Class',
+                served: false,
+                needsAttention: false
+            }
+        ];
+
+        // Initialize game
+        function startGame() {
+            document.getElementById('welcomeScreen').classList.add('hidden');
+            document.getElementById('cabinLayoutScreen').classList.remove('hidden');
+            
+            gameState.passengers = [...passengers];
+            
+            // Start flight timer
+            startFlightTimer();
+            
+            // Generate cabin layout
+            generateCabinLayout();
+            
+            showNotification('🛫', 'เริ่มการฝึกอบรม', 'ยินดีต้อนรับสู่เที่ยวบิน TG-001');
+        }
+
+        function generateCabinLayout() {
+            const leftSeats = document.getElementById('leftSeats');
+            const rightSeats = document.getElementById('rightSeats');
+            
+            leftSeats.innerHTML = '';
+            rightSeats.innerHTML = '';
+            
+            // Generate 10 rows of seats
+            for (let row = 1; row <= 10; row++) {
+                // Left side (A, B, C)
+                const leftRow = document.createElement('div');
+                leftRow.className = 'flex gap-2';
+                
+                for (let seat of ['A', 'B', 'C']) {
+                    const seatElement = document.createElement('div');
+                    seatElement.className = 'passenger-seat';
+                    seatElement.innerHTML = `
+                        <div class="text-xs font-bold">${row}${seat}</div>
+                        <div class="text-lg">👤</div>
+                    `;
+                    leftRow.appendChild(seatElement);
+                }
+                
+                leftSeats.appendChild(leftRow);
+                
+                // Right side (D, E, F)
+                const rightRow = document.createElement('div');
+                rightRow.className = 'flex gap-2';
+                
+                for (let seat of ['D', 'E', 'F']) {
+                    const seatElement = document.createElement('div');
+                    seatElement.className = 'passenger-seat';
+                    seatElement.innerHTML = `
+                        <div class="text-xs font-bold">${row}${seat}</div>
+                        <div class="text-lg">👤</div>
+                    `;
+                    rightRow.appendChild(seatElement);
+                }
+                
+                rightSeats.appendChild(rightRow);
+            }
+        }
+
+        function proceedToScenarios() {
+            document.getElementById('cabinLayoutScreen').classList.add('hidden');
+            document.getElementById('scenarioScreen').classList.remove('hidden');
+            
+            updatePhase('Scenario Training');
+            loadNextScenario();
+        }
+
+        function loadNextScenario() {
+            if (gameState.currentScenario >= scenarios.length) {
+                proceedToService();
+                return;
+            }
+            
+            const scenario = scenarios[gameState.currentScenario];
+            
+            // Update UI
+            document.getElementById('scenarioPassengerAvatar').textContent = scenario.passenger.avatar;
+            document.getElementById('scenarioPassengerName').textContent = scenario.passenger.name;
+            document.getElementById('scenarioPassengerType').textContent = scenario.passenger.type;
+            document.getElementById('scenarioDescription').textContent = scenario.description;
+            document.getElementById('scenarioDialog').textContent = scenario.speech;
+            
+            // Start scenario timer
+            gameState.scenarioTimer = scenario.timeLimit;
+            startScenarioTimer();
+            
+            // Generate choices
+            generateChoices(scenario.choices);
+        }
+
+        function generateChoices(choices) {
+            const container = document.getElementById('choicesContainer');
+            container.innerHTML = '';
+            
+            choices.forEach((choice, index) => {
+                const choiceElement = document.createElement('button');
+                choiceElement.className = 'choice-btn bg-white hover:bg-blue-50 p-6 rounded-xl text-left border-2 border-gray-200';
+                choiceElement.innerHTML = `
+                    <div class="font-semibold text-gray-800 mb-2">ตัวเลือก ${index + 1}</div>
+                    <div class="text-gray-600">${choice.text}</div>
+                `;
+                
+                choiceElement.onclick = () => selectChoice(choice, choiceElement);
+                container.appendChild(choiceElement);
+            });
+        }
+
+        function selectChoice(choice, element) {
+            // Stop timer
+            clearInterval(gameState.scenarioInterval);
+            
+            // Update scores
+            updateScores(choice.score);
+            
+            // Visual feedback
+            if (choice.outcome === 'excellent' || choice.outcome === 'very_good' || choice.outcome === 'life_saved') {
+                element.classList.add('correct');
+                showNotification('✅', 'ตัวเลือกที่ดีเยี่ยม!', 'คุณได้แสดงความเป็นมืออาชีพ');
+            } else if (choice.outcome === 'poor' || choice.outcome === 'dangerous') {
+                element.classList.add('incorrect');
+                showNotification('❌', 'ควรปรับปรุง', 'ลองพิจารณาตัวเลือกอื่นในครั้งต่อไป');
+            } else {
+                element.classList.add('correct');
+                showNotification('👍', 'ตัวเลือกที่ดี', 'การตอบสนองที่เหมาะสม');
+            }
+            
+            // Disable all choices
+            const allChoices = document.querySelectorAll('.choice-btn');
+            allChoices.forEach(btn => {
+                btn.style.pointerEvents = 'none';
+            });
+            
+            // Move to next scenario after delay
+            setTimeout(() => {
+                gameState.currentScenario++;
+                gameState.completedScenarios++;
+                updateProgress();
+                loadNextScenario();
+            }, 2000);
+        }
+
+        function proceedToService() {
+            document.getElementById('scenarioScreen').classList.add('hidden');
+            document.getElementById('serviceScreen').classList.remove('hidden');
+            
+            updatePhase('Meal Service');
+            
+            // Start service timer
+            gameState.serviceTimer = 180;
+            startServiceTimer();
+            
+            // Generate passenger queue
+            generatePassengerQueue();
+        }
+
+        function generatePassengerQueue() {
+            const container = document.getElementById('passengerQueue');
+            container.innerHTML = '';
+            
+            gameState.passengers.forEach((passenger, index) => {
+                const passengerElement = document.createElement('div');
+                passengerElement.className = `bg-white p-4 rounded-lg border-2 ${passenger.needsAttention ? 'border-red-300 bg-red-50' : 'border-gray-200'} ${passenger.served ? 'opacity-50' : ''}`;
+                passengerElement.innerHTML = `
+                    <div class="flex items-center gap-4">
+                        <div class="text-3xl">${passenger.avatar}</div>
+                        <div class="flex-1">
+                            <div class="font-semibold">${passenger.name}</div>
+                            <div class="text-sm text-gray-600">ต้องการ: ${passenger.preference} + ${passenger.drink}</div>
+                            <div class="text-xs text-blue-600">${passenger.special}</div>
+                        </div>
+                        <div class="text-right">
+                            ${passenger.served ? 
+                                '<span class="text-green-600 font-semibold">✅ เสิร์ฟแล้ว</span>' : 
+                                `<button onclick="selectPassenger(${index})" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm">เลือก</button>`
+                            }
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(passengerElement);
+            });
+        }
+
+        function selectPassenger(index) {
+            gameState.currentPassenger = index;
+            
+            // Highlight selected passenger
+            const passengerElements = document.querySelectorAll('#passengerQueue > div');
+            passengerElements.forEach((el, i) => {
+                if (i === index) {
+                    el.classList.add('ring-4', 'ring-blue-400');
+                } else {
+                    el.classList.remove('ring-4', 'ring-blue-400');
+                }
+            });
+            
+            showNotification('👤', 'เลือกผู้โดยสาร', `เลือก ${gameState.passengers[index].name} แล้ว`);
+        }
+
+        function selectMenuItem(item, type) {
+            if (type === 'main') {
+                gameState.selectedFood = item;
+                
+                // Update visual selection
+                document.querySelectorAll('#mainCourseMenu .service-item').forEach(el => {
+                    el.classList.remove('selected');
+                });
+                document.querySelector(`[data-item="${item}"]`).classList.add('selected');
+                
+            } else if (type === 'beverage') {
+                gameState.selectedDrink = item;
+                
+                // Update visual selection
+                document.querySelectorAll('#beverageMenu .service-item').forEach(el => {
+                    el.classList.remove('selected');
+                });
+                event.target.closest('.service-item').classList.add('selected');
+            }
+            
+            showNotification('🍽️', 'เลือกรายการ', `เลือก ${type === 'main' ? 'อาหาร' : 'เครื่องดื่ม'} แล้ว`);
+        }
+
+        function serveSelectedPassenger() {
+            if (gameState.currentPassenger === null) {
+                showNotification('⚠️', 'กรุณาเลือกผู้โดยสาร', 'เลือกผู้โดยสารที่ต้องการเสิร์ฟก่อน');
+                return;
+            }
+            
+            if (!gameState.selectedFood || !gameState.selectedDrink) {
+                showNotification('⚠️', 'กรุณาเลือกอาหารและเครื่องดื่ม', 'เลือกทั้งอาหารและเครื่องดื่มก่อนเสิร์ฟ');
+                return;
+            }
+            
+            const passenger = gameState.passengers[gameState.currentPassenger];
+            
+            // Check if selection matches preference
+            let serviceScore = 5;
+            if (gameState.selectedFood === passenger.preference) {
+                serviceScore += 3;
+            }
+            if (gameState.selectedDrink === passenger.drink) {
+                serviceScore += 2;
+            }
+            
+            // Mark as served
+            passenger.served = true;
+            
+            // Update scores
+            updateScores({ service: serviceScore });
+            
+            // Reset selections
+            gameState.selectedFood = null;
+            gameState.selectedDrink = null;
+            gameState.currentPassenger = null;
+            
+            // Update UI
+            document.querySelectorAll('.service-item').forEach(el => {
+                el.classList.remove('selected');
+            });
+            
+            generatePassengerQueue();
+            
+            showNotification('✅', 'เสิร์ฟสำเร็จ', `เสิร์ฟ ${passenger.name} เรียบร้อยแล้ว`);
+        }
+
+        function proceedToResults() {
+            document.getElementById('serviceScreen').classList.add('hidden');
+            document.getElementById('resultsScreen').classList.remove('hidden');
+            
+            clearInterval(gameState.serviceInterval);
+            clearInterval(gameState.flightInterval);
+            
+            updatePhase('Flight Complete');
+            
+            // Calculate final results
+            calculateFinalResults();
+        }
+
+        function calculateFinalResults() {
+            const totalScore = Math.round((gameState.scores.professionalism + gameState.scores.safety + gameState.scores.service) / 3);
+            
+            // Update final scores
+            document.getElementById('finalTotalScore').textContent = totalScore;
+            document.getElementById('finalProfessionalismScore').textContent = gameState.scores.professionalism;
+            document.getElementById('finalSafetyScore').textContent = gameState.scores.safety;
+            document.getElementById('finalServiceScore').textContent = gameState.scores.service;
+            
+            // Determine certification level
+            let certificationLevel, resultEmoji, resultTitle;
+            
+            if (totalScore >= 90) {
+                certificationLevel = 'Cabin Crew มาตรฐานสากล';
+                resultEmoji = '🏆';
+                resultTitle = 'ยอดเยี่ยม! คุณผ่านการประเมิน';
+            } else if (totalScore >= 75) {
+                certificationLevel = 'Cabin Crew ฝึกหัด';
+                resultEmoji = '🎉';
+                resultTitle = 'ดีมาก! คุณผ่านการประเมิน';
+            } else if (totalScore >= 60) {
+                certificationLevel = 'งานบริการภาคพื้น';
+                resultEmoji = '👍';
+                resultTitle = 'ผ่าน แต่ควรพัฒนาเพิ่มเติม';
+            } else {
+                certificationLevel = 'ต้องเสริมทักษะเพิ่มเติม';
+                resultEmoji = '📚';
+                resultTitle = 'ควรฝึกฝนเพิ่มเติม';
+            }
+            
+            document.getElementById('certificationLevel').textContent = certificationLevel;
+            document.getElementById('resultEmoji').textContent = resultEmoji;
+            document.getElementById('resultTitle').textContent = resultTitle;
+        }
+
+        function updateScores(scoreChanges) {
+            Object.keys(scoreChanges).forEach(key => {
+                if (gameState.scores.hasOwnProperty(key)) {
+                    gameState.scores[key] = Math.max(0, Math.min(100, gameState.scores[key] + scoreChanges[key]));
+                }
+            });
+            
+            // Update total score
+            gameState.scores.total = Math.round((gameState.scores.professionalism + gameState.scores.safety + gameState.scores.service) / 3);
+            
+            // Update UI
+            updateScoreDisplay();
+        }
+
+        function updateScoreDisplay() {
+            document.getElementById('totalScore').textContent = gameState.scores.total;
+            document.getElementById('professionalismScore').textContent = gameState.scores.professionalism;
+            document.getElementById('safetyScore').textContent = gameState.scores.safety;
+            document.getElementById('serviceScore').textContent = gameState.scores.service;
+            
+            // Update progress bars
+            document.getElementById('scoreFill').style.width = `${gameState.scores.total}%`;
+            document.getElementById('professionalismFill').style.width = `${gameState.scores.professionalism}%`;
+            document.getElementById('safetyFill').style.width = `${gameState.scores.safety}%`;
+            document.getElementById('serviceFill').style.width = `${gameState.scores.service}%`;
+            
+            // Update fill colors based on score
+            updateFillColor('scoreFill', gameState.scores.total);
+            updateFillColor('professionalismFill', gameState.scores.professionalism);
+            updateFillColor('safetyFill', gameState.scores.safety);
+            updateFillColor('serviceFill', gameState.scores.service);
+        }
+
+        function updateFillColor(elementId, score) {
+            const element = document.getElementById(elementId);
+            element.className = element.className.replace(/\b(excellent|good|average|poor)\b/g, '');
+            
+            if (score >= 90) {
+                element.classList.add('excellent');
+            } else if (score >= 75) {
+                element.classList.add('good');
+            } else if (score >= 60) {
+                element.classList.add('average');
+            } else {
+                element.classList.add('poor');
+            }
+        }
+
+        function updatePhase(phase) {
+            document.getElementById('currentPhase').textContent = phase;
+        }
+
+        function updateProgress() {
+            const progress = (gameState.completedScenarios / gameState.totalScenarios) * 100;
+            document.getElementById('flightProgressBar').style.width = `${progress}%`;
+            document.getElementById('progressPercentage').textContent = `${Math.round(progress)}%`;
+        }
+
+        function startFlightTimer() {
+            gameState.flightInterval = setInterval(() => {
+                gameState.flightTime++;
+                const hours = Math.floor(gameState.flightTime / 3600);
+                const minutes = Math.floor((gameState.flightTime % 3600) / 60);
+                const seconds = gameState.flightTime % 60;
+                
+                document.getElementById('flightTimer').textContent = 
+                    `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }, 1000);
+        }
+
+        function startScenarioTimer() {
+            gameState.scenarioInterval = setInterval(() => {
+                gameState.scenarioTimer--;
+                
+                const minutes = Math.floor(gameState.scenarioTimer / 60);
+                const seconds = gameState.scenarioTimer % 60;
+                
+                const timerElement = document.getElementById('scenarioTimer');
+                timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                if (gameState.scenarioTimer <= 10) {
+                    timerElement.classList.add('timer-critical');
+                }
+                
+                if (gameState.scenarioTimer <= 0) {
+                    clearInterval(gameState.scenarioInterval);
+                    // Auto-select worst choice if time runs out
+                    const worstChoice = scenarios[gameState.currentScenario].choices[scenarios[gameState.currentScenario].choices.length - 1];
+                    selectChoice(worstChoice, document.querySelector('.choice-btn'));
+                }
+            }, 1000);
+        }
+
+        function startServiceTimer() {
+            gameState.serviceInterval = setInterval(() => {
+                gameState.serviceTimer--;
+                
+                document.getElementById('serviceTimer').textContent = `เวลาคงเหลือ: ${gameState.serviceTimer} วินาที`;
+                
+                if (gameState.serviceTimer <= 30) {
+                    document.getElementById('serviceTimer').classList.add('timer-critical');
+                }
+                
+                if (gameState.serviceTimer <= 0) {
+                    clearInterval(gameState.serviceInterval);
+                    proceedToResults();
+                }
+            }, 1000);
+        }
+
+        function showNotification(icon, title, message) {
+            document.getElementById('notificationIcon').textContent = icon;
+            document.getElementById('notificationTitle').textContent = title;
+            document.getElementById('notificationMessage').textContent = message;
+            
+            const notification = document.getElementById('notification');
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        function restartGame() {
+            // Reset game state
+            gameState = {
+                currentPhase: 0,
+                currentScenario: 0,
+                flightTime: 0,
+                scores: {
+                    total: 100,
+                    professionalism: 100,
+                    safety: 100,
+                    service: 100
+                },
+                selectedFood: null,
+                selectedDrink: null,
+                serviceTimer: 180,
+                scenarioTimer: 300,
+                serviceInterval: null,
+                scenarioInterval: null,
+                flightInterval: null,
+                passengers: [],
+                currentPassenger: null,
+                completedScenarios: 0,
+                totalScenarios: 5
+            };
+            
+            // Clear intervals
+            clearInterval(gameState.serviceInterval);
+            clearInterval(gameState.scenarioInterval);
+            clearInterval(gameState.flightInterval);
+            
+            // Reset UI
+            document.getElementById('resultsScreen').classList.add('hidden');
+            document.getElementById('welcomeScreen').classList.remove('hidden');
+            
+            // Reset scores display
+            updateScoreDisplay();
+            updateProgress();
+            
+            showNotification('🔄', 'เริ่มใหม่', 'เริ่มการฝึกอบรมใหม่');
+        }
+
+        function shareResults() {
+            const totalScore = gameState.scores.total;
+            const text = `🛫 ผมเพิ่งผ่านการฝึกอบรม Cabin Crew Reality Training ได้คะแนน ${totalScore}/100! 
+            
+ความเป็นมืออาชีพ: ${gameState.scores.professionalism}/100
+ความปลอดภัย: ${gameState.scores.safety}/100  
+การบริการ: ${gameState.scores.service}/100
+
+มาลองฝึกอบรมกันเถอะ! ✈️`;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Cabin Crew Reality Training Results',
+                    text: text
+                });
+            } else {
+                navigator.clipboard.writeText(text).then(() => {
+                    showNotification('📋', 'คัดลอกแล้ว', 'คัดลอกผลลัพธ์ไปยังคลิปบอร์ดแล้ว');
+                });
+            }
+        }
+
+        // Initialize score display
+        updateScoreDisplay();
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'978ddd8fa6f97b50',t:'MTc1NjgyNTEwNi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

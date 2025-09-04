@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎮 เกมทักษะช่างก่อสร้าง</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Kanit', sans-serif;
+        }
+        
+        .brick {
+            transition: all 0.3s ease;
+            cursor: grab;
+        }
+        
+        .brick:active {
+            cursor: grabbing;
+            transform: scale(1.1);
+        }
+        
+        .drop-zone {
+            transition: all 0.2s ease;
+        }
+        
+        .drop-zone.drag-over {
+            background-color: #fef3c7;
+            border-color: #f59e0b;
+            transform: scale(1.05);
+        }
+        
+        .success-animation {
+            animation: bounce 0.6s ease-in-out;
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+        
+        .material-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .material-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        
+        .material-card.selected {
+            border: 3px solid #10b981;
+            background-color: #d1fae5;
+        }
+        
+        .safety-option {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .safety-option:hover {
+            transform: scale(1.05);
+            background-color: #fef3c7;
+        }
+        
+        .safety-option.correct {
+            background-color: #d1fae5;
+            border-color: #10b981;
+        }
+        
+        .safety-option.incorrect {
+            background-color: #fee2e2;
+            border-color: #ef4444;
+        }
+        
+        .custom-btn-blue:hover {
+            background-color: #4a5a8f !important;
+        }
+        
+        .custom-btn-red:hover {
+            background-color: #d43f42 !important;
+        }
+        
+        .custom-btn-yellow:hover {
+            background-color: #d4a03a !important;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-orange-100 to-blue-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-gray-800 mb-2">🎮 เกมทักษะช่างก่อสร้าง</h1>
+            <p class="text-lg text-gray-600">ทดสอบความสามารถในการก่อสร้างผ่าน 3 ภารกิจหลัก</p>
+            <div class="mt-4 bg-white rounded-lg p-4 inline-block shadow-lg">
+                <div class="flex items-center space-x-6">
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-blue-600" id="totalScore">0</div>
+                        <div class="text-sm text-gray-500">คะแนนรวม</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-green-600" id="currentLevel">1</div>
+                        <div class="text-sm text-gray-500">ภารกิจ</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-orange-600" id="timer">90</div>
+                        <div class="text-sm text-gray-500">วินาที</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Start Game Screen -->
+        <div id="startScreen" class="max-w-2xl mx-auto bg-white rounded-xl shadow-xl p-8 text-center">
+            <div class="mb-6">
+                <div class="text-8xl mb-4">🏗️</div>
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">พร้อมทดสอบทักษะแล้วหรือยัง?</h2>
+                <p class="text-lg text-gray-600 mb-6">เกมนี้จะทดสอบความสามารถของคุณใน 3 ด้าน:</p>
+                
+                <div class="grid md:grid-cols-3 gap-4 mb-8">
+                    <div class="bg-red-50 rounded-lg p-4">
+                        <div class="text-3xl mb-2">🧱</div>
+                        <h3 class="font-semibold text-red-600">การสร้างโครงสร้าง</h3>
+                        <p class="text-sm text-gray-600">วางอิฐตามแปลน</p>
+                    </div>
+                    <div class="bg-blue-50 rounded-lg p-4">
+                        <div class="text-3xl mb-2">🔧</div>
+                        <h3 class="font-semibold text-blue-600">การเลือกวัสดุ</h3>
+                        <p class="text-sm text-gray-600">เลือกวัสดุที่เหมาะสม</p>
+                    </div>
+                    <div class="bg-orange-50 rounded-lg p-4">
+                        <div class="text-3xl mb-2">⚠️</div>
+                        <h3 class="font-semibold text-orange-600">ความปลอดภัย</h3>
+                        <p class="text-sm text-gray-600">แก้ไขสถานการณ์อันตราย</p>
+                    </div>
+                </div>
+                
+                <div class="bg-yellow-50 rounded-lg p-4 mb-6">
+                    <p class="text-sm text-gray-700">
+                        <strong>⏰ เวลา:</strong> 90 วินาทีต่อภารกิจ<br>
+                        <strong>🎯 เป้าหมาย:</strong> ทำให้ได้คะแนนสูงสุดในแต่ละภารกิจ<br>
+                        <strong>🏆 รางวัล:</strong> ค้นพบทักษะเด่นของคุณ
+                    </p>
+                </div>
+            </div>
+            
+            <button id="startGame" class="custom-btn-blue text-white px-12 py-4 rounded-lg font-bold text-xl transition-all transform hover:scale-105 shadow-lg" style="background-color: #5568a0;">
+                🚀 เริ่มเล่นเกม
+            </button>
+        </div>
+
+        <!-- Game Container -->
+        <div id="gameContainer" class="max-w-4xl mx-auto">
+            
+            <!-- Mission 1: Building Simulation -->
+            <div id="mission1" class="game-mission bg-white rounded-xl shadow-xl p-8 mb-8 hidden">
+                <div class="text-center mb-6">
+                    <h2 class="text-3xl font-bold text-red-600 mb-2">🧱 ภารกิจที่ 1: สร้างบ้านจำลอง</h2>
+                    <p class="text-gray-600">ลากอิฐมาวางตามแปลนให้ถูกต้อง</p>
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-8">
+                    <!-- Blueprint -->
+                    <div class="bg-blue-50 rounded-lg p-6">
+                        <h3 class="text-xl font-semibold mb-4 text-center">📋 แปลนก่อสร้าง</h3>
+                        <div class="grid grid-cols-5 gap-2" id="blueprint">
+                            <!-- Blueprint will be generated by JS -->
+                        </div>
+                    </div>
+                    
+                    <!-- Building Area -->
+                    <div class="bg-gray-50 rounded-lg p-6">
+                        <h3 class="text-xl font-semibold mb-4 text-center">🏗️ พื้นที่ก่อสร้าง</h3>
+                        <div class="grid grid-cols-5 gap-2 mb-6" id="buildingArea">
+                            <!-- Building area will be generated by JS -->
+                        </div>
+                        
+                        <!-- Available Bricks -->
+                        <div class="mt-6">
+                            <h4 class="font-semibold mb-3">อิฐที่มีให้ใช้:</h4>
+                            <div class="flex flex-wrap gap-2" id="availableBricks">
+                                <!-- Bricks will be generated by JS -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-6">
+                    <button id="checkBuilding" class="custom-btn-red text-white px-8 py-3 rounded-lg font-semibold text-lg transition-colors" style="background-color: #e54c4e;">
+                        ✅ ตรวจสอบผลงาน
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mission 2: Material Matching -->
+            <div id="mission2" class="game-mission bg-white rounded-xl shadow-xl p-8 mb-8 hidden">
+                <div class="text-center mb-6">
+                    <h2 class="text-3xl font-bold text-blue-600 mb-2">🔧 ภารกิจที่ 2: เลือกวัสดุ</h2>
+                    <p class="text-gray-600">เลือกวัสดุที่เหมาะสมสำหรับงานแต่ละประเภท</p>
+                </div>
+                
+                <div class="bg-yellow-50 rounded-lg p-6 mb-6">
+                    <h3 class="text-xl font-semibold mb-4 text-center">📝 โจทย์</h3>
+                    <div class="text-center">
+                        <div class="text-2xl mb-2" id="materialQuestion">🏢 สร้างเสาอาคารสูง 10 ชั้น</div>
+                        <p class="text-gray-600">เลือกวัสดุที่เหมาะสมที่สุด</p>
+                    </div>
+                </div>
+                
+                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4" id="materialOptions">
+                    <!-- Material options will be generated by JS -->
+                </div>
+                
+                <div class="text-center mt-6">
+                    <button id="checkMaterial" class="custom-btn-yellow text-white px-8 py-3 rounded-lg font-semibold text-lg transition-colors" style="background-color: #ecb445;">
+                        ✅ ยืนยันการเลือก
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mission 3: Safety Challenge -->
+            <div id="mission3" class="game-mission bg-white rounded-xl shadow-xl p-8 mb-8 hidden">
+                <div class="text-center mb-6">
+                    <h2 class="text-3xl font-bold text-orange-600 mb-2">⚠️ ภารกิจที่ 3: ความปลอดภัย</h2>
+                    <p class="text-gray-600">เลือกวิธีแก้ไขสถานการณ์อันตรายให้ถูกต้อง</p>
+                </div>
+                
+                <div class="bg-red-50 rounded-lg p-6 mb-6">
+                    <h3 class="text-xl font-semibold mb-4 text-center">🚨 สถานการณ์</h3>
+                    <div class="text-center">
+                        <div class="text-6xl mb-4" id="safetyScenarioIcon">🔨</div>
+                        <div class="text-xl mb-2" id="safetyScenario">มีค้อนตกจากที่สูงขณะคุณกำลังเดินผ่าน</div>
+                        <p class="text-gray-600">คุณควรทำอย่างไร?</p>
+                    </div>
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-4" id="safetyOptions">
+                    <!-- Safety options will be generated by JS -->
+                </div>
+            </div>
+
+            <!-- Results -->
+            <div id="results" class="game-mission bg-white rounded-xl shadow-xl p-8 hidden">
+                <div class="text-center mb-6">
+                    <h2 class="text-3xl font-bold text-purple-600 mb-2">🏆 ผลการทดสอบ</h2>
+                    <p class="text-gray-600">สรุปทักษะและความสามารถของคุณ</p>
+                </div>
+                
+                <div class="grid md:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-red-50 rounded-lg p-6 text-center">
+                        <div class="text-4xl mb-2">🧱</div>
+                        <h3 class="font-semibold mb-2">การสร้างโครงสร้าง</h3>
+                        <div class="text-2xl font-bold text-red-600" id="buildingScore">0</div>
+                        <div class="text-sm text-gray-500">คะแนน</div>
+                    </div>
+                    <div class="bg-blue-50 rounded-lg p-6 text-center">
+                        <div class="text-4xl mb-2">🔧</div>
+                        <h3 class="font-semibold mb-2">การเลือกวัสดุ</h3>
+                        <div class="text-2xl font-bold text-blue-600" id="materialScore">0</div>
+                        <div class="text-sm text-gray-500">คะแนน</div>
+                    </div>
+                    <div class="bg-orange-50 rounded-lg p-6 text-center">
+                        <div class="text-4xl mb-2">⚠️</div>
+                        <h3 class="font-semibold mb-2">ความปลอดภัย</h3>
+                        <div class="text-2xl font-bold text-orange-600" id="safetyScore">0</div>
+                        <div class="text-sm text-gray-500">คะแนน</div>
+                    </div>
+                </div>
+                
+                <div class="bg-gradient-to-r from-purple-100 to-pink-100 rounded-lg p-6 text-center">
+                    <h3 class="text-2xl font-bold mb-4">🌟 ทักษะเด่นของคุณ</h3>
+                    <div class="text-xl" id="skillResult">กำลังวิเคราะห์...</div>
+                    <div class="mt-4">
+                        <button id="playAgain" class="custom-btn-blue text-white px-8 py-3 rounded-lg font-bold text-lg transition-colors" style="background-color: #5568a0;">
+                            🔄 เล่นใหม่
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class ConstructionGame {
+            constructor() {
+                this.currentMission = 1;
+                this.scores = { building: 0, material: 0, safety: 0 };
+                this.timeLeft = 90;
+                this.timer = null;
+                this.blueprint = [];
+                this.buildingState = [];
+                this.selectedMaterial = null;
+                this.gameStarted = false;
+                
+                this.bindEvents();
+            }
+            
+            init() {
+                this.setupMission1();
+                this.setupMission2();
+                this.setupMission3();
+                this.startTimer();
+            }
+            
+            startTimer() {
+                this.timer = setInterval(() => {
+                    this.timeLeft--;
+                    document.getElementById('timer').textContent = this.timeLeft;
+                    
+                    if (this.timeLeft <= 0) {
+                        this.endGame();
+                    }
+                }, 1000);
+            }
+            
+            setupMission1() {
+                // Generate random blueprint pattern
+                this.blueprintPatterns = [
+                    // Pattern 1: Simple house
+                    [
+                        [1, 1, 1, 1, 1],
+                        [1, 0, 1, 0, 1],
+                        [1, 0, 0, 0, 1],
+                        [1, 1, 0, 1, 1],
+                        [1, 1, 1, 1, 1]
+                    ],
+                    // Pattern 2: Tower
+                    [
+                        [0, 1, 1, 1, 0],
+                        [0, 1, 0, 1, 0],
+                        [1, 1, 0, 1, 1],
+                        [1, 0, 0, 0, 1],
+                        [1, 1, 1, 1, 1]
+                    ],
+                    // Pattern 3: Complex structure
+                    [
+                        [1, 0, 1, 0, 1],
+                        [1, 1, 1, 1, 1],
+                        [0, 1, 0, 1, 0],
+                        [1, 1, 1, 1, 1],
+                        [1, 0, 1, 0, 1]
+                    ],
+                    // Pattern 4: Bridge
+                    [
+                        [1, 0, 0, 0, 1],
+                        [1, 0, 0, 0, 1],
+                        [1, 1, 1, 1, 1],
+                        [1, 0, 0, 0, 1],
+                        [1, 0, 0, 0, 1]
+                    ],
+                    // Pattern 5: Castle
+                    [
+                        [1, 0, 1, 0, 1],
+                        [1, 1, 1, 1, 1],
+                        [1, 0, 1, 0, 1],
+                        [1, 0, 1, 0, 1],
+                        [1, 1, 1, 1, 1]
+                    ]
+                ];
+                
+                // Select random pattern
+                this.blueprint = this.blueprintPatterns[Math.floor(Math.random() * this.blueprintPatterns.length)];
+                
+                this.buildingState = [
+                    [0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0],
+                    [0, 0, 0, 0, 0]
+                ];
+                
+                this.renderBlueprint();
+                this.renderBuildingArea();
+                this.renderAvailableBricks();
+            }
+            
+            renderBlueprint() {
+                const container = document.getElementById('blueprint');
+                container.innerHTML = '';
+                
+                this.blueprint.forEach((row, i) => {
+                    row.forEach((cell, j) => {
+                        const div = document.createElement('div');
+                        div.className = `w-12 h-12 border-2 ${cell ? 'bg-red-400 border-red-600' : 'bg-gray-200 border-gray-400'} rounded`;
+                        if (cell) {
+                            div.innerHTML = '🧱';
+                            div.className += ' flex items-center justify-center text-lg';
+                        }
+                        container.appendChild(div);
+                    });
+                });
+            }
+            
+            renderBuildingArea() {
+                const container = document.getElementById('buildingArea');
+                container.innerHTML = '';
+                
+                this.buildingState.forEach((row, i) => {
+                    row.forEach((cell, j) => {
+                        const div = document.createElement('div');
+                        div.className = `w-12 h-12 border-2 border-dashed border-gray-400 rounded drop-zone flex items-center justify-center text-lg`;
+                        div.dataset.row = i;
+                        div.dataset.col = j;
+                        
+                        if (cell) {
+                            div.innerHTML = '🧱';
+                            div.className = div.className.replace('border-dashed border-gray-400', 'border-solid border-red-600 bg-red-400');
+                        }
+                        
+                        this.addDropListeners(div);
+                        container.appendChild(div);
+                    });
+                });
+            }
+            
+            renderAvailableBricks() {
+                const container = document.getElementById('availableBricks');
+                container.innerHTML = '';
+                
+                // Count needed bricks
+                const neededBricks = this.blueprint.flat().filter(cell => cell === 1).length;
+                
+                for (let i = 0; i < neededBricks + 2; i++) {
+                    const brick = document.createElement('div');
+                    brick.className = 'w-12 h-12 bg-red-400 border-2 border-red-600 rounded brick flex items-center justify-center text-lg';
+                    brick.innerHTML = '🧱';
+                    brick.draggable = true;
+                    brick.dataset.brickId = i;
+                    
+                    brick.addEventListener('dragstart', (e) => {
+                        e.dataTransfer.setData('text/plain', e.target.dataset.brickId);
+                    });
+                    
+                    container.appendChild(brick);
+                }
+            }
+            
+            addDropListeners(dropZone) {
+                dropZone.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    dropZone.classList.add('drag-over');
+                });
+                
+                dropZone.addEventListener('dragleave', () => {
+                    dropZone.classList.remove('drag-over');
+                });
+                
+                dropZone.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    dropZone.classList.remove('drag-over');
+                    
+                    const row = parseInt(dropZone.dataset.row);
+                    const col = parseInt(dropZone.dataset.col);
+                    
+                    if (this.buildingState[row][col] === 0) {
+                        this.buildingState[row][col] = 1;
+                        dropZone.innerHTML = '🧱';
+                        dropZone.className = dropZone.className.replace('border-dashed border-gray-400', 'border-solid border-red-600 bg-red-400');
+                        dropZone.classList.add('success-animation');
+                        
+                        // Remove the dragged brick
+                        const brickId = e.dataTransfer.getData('text/plain');
+                        const brick = document.querySelector(`[data-brick-id="${brickId}"]`);
+                        if (brick) brick.remove();
+                    }
+                });
+            }
+            
+            setupMission2() {
+                this.allMaterialQuestions = [
+                    {
+                        question: "🏢 สร้างเสาอาคารสูง 20 ชั้น ต้องรับน้ำหนักมาก",
+                        options: [
+                            { name: "คอนกรีตเสริมเหล็ก", icon: "🏗️", correct: true },
+                            { name: "ไม้สน", icon: "🪵", correct: false },
+                            { name: "อิฐแดง", icon: "🧱", correct: false },
+                            { name: "อลูมิเนียม", icon: "🔧", correct: false }
+                        ]
+                    },
+                    {
+                        question: "🏠 ปูพื้นห้องครัวที่มีน้ำมันกระเด็น",
+                        options: [
+                            { name: "กระเบื้องเซรามิก", icon: "⬜", correct: true },
+                            { name: "พรมขนสัตว์", icon: "🧶", correct: false },
+                            { name: "ไม้ไผ่", icon: "🎋", correct: false },
+                            { name: "กระดาษทราย", icon: "📄", correct: false }
+                        ]
+                    },
+                    {
+                        question: "🌊 สร้างเขื่อนกั้นน้ำขนาดใหญ่",
+                        options: [
+                            { name: "คอนกรีตมวลเบา", icon: "🏗️", correct: true },
+                            { name: "ไม้ไผ่", icon: "🎋", correct: false },
+                            { name: "พลาสติก", icon: "♻️", correct: false },
+                            { name: "กระดาษแข็ง", icon: "📦", correct: false }
+                        ]
+                    },
+                    {
+                        question: "🔥 สร้างเตาเผาอุณหภูมิสูง 1000°C",
+                        options: [
+                            { name: "อิฐทนไฟ", icon: "🧱", correct: true },
+                            { name: "ไม้แข็ง", icon: "🪵", correct: false },
+                            { name: "พลาสติก", icon: "♻️", correct: false },
+                            { name: "กระดาษ", icon: "📄", correct: false }
+                        ]
+                    },
+                    {
+                        question: "❄️ สร้างห้องเย็นแช่แข็งอาหาร",
+                        options: [
+                            { name: "โฟมกันความร้อน", icon: "🧊", correct: true },
+                            { name: "เหล็กบาง", icon: "🔩", correct: false },
+                            { name: "ไม้ธรรมดา", icon: "🪵", correct: false },
+                            { name: "กระจกใส", icon: "🪟", correct: false }
+                        ]
+                    },
+                    {
+                        question: "🏊 สร้างสระว่ายน้ำกลางแจ้ง",
+                        options: [
+                            { name: "คอนกรีตกันซึม", icon: "🏗️", correct: true },
+                            { name: "ไม้ไผ่", icon: "🎋", correct: false },
+                            { name: "กระดาษกันน้ำ", icon: "📄", correct: false },
+                            { name: "ผ้าใบ", icon: "🎪", correct: false }
+                        ]
+                    }
+                ];
+                
+                // Randomly select 4 questions for this round
+                this.materialQuestions = this.shuffleArray([...this.allMaterialQuestions]).slice(0, 4);
+                this.currentQuestion = 0;
+                this.renderMaterialQuestion();
+            }
+            
+            renderMaterialQuestion() {
+                const question = this.materialQuestions[this.currentQuestion];
+                document.getElementById('materialQuestion').textContent = question.question;
+                
+                const container = document.getElementById('materialOptions');
+                container.innerHTML = '';
+                
+                question.options.forEach((option, index) => {
+                    const card = document.createElement('div');
+                    card.className = 'material-card bg-white border-2 border-gray-300 rounded-lg p-6 text-center';
+                    card.innerHTML = `
+                        <div class="text-4xl mb-3">${option.icon}</div>
+                        <div class="font-semibold">${option.name}</div>
+                    `;
+                    card.dataset.correct = option.correct;
+                    card.dataset.index = index;
+                    
+                    card.addEventListener('click', () => {
+                        document.querySelectorAll('.material-card').forEach(c => c.classList.remove('selected'));
+                        card.classList.add('selected');
+                        this.selectedMaterial = option.correct;
+                    });
+                    
+                    container.appendChild(card);
+                });
+            }
+            
+            setupMission3() {
+                this.allSafetyScenarios = [
+                    {
+                        icon: "🔨",
+                        scenario: "มีค้อนตกจากที่สูง 5 เมตร ขณะคุณไม่ได้สวมหมวก",
+                        options: [
+                            { text: "หลบไปใต้โครงสร้างที่แข็งแรง", icon: "🏗️", correct: true },
+                            { text: "วิ่งหนีแบบสุ่มทิศทาง", icon: "🏃", correct: false },
+                            { text: "ยืนนิ่งมองดู", icon: "👀", correct: false },
+                            { text: "ใช้มือปกป้องหัว", icon: "🤲", correct: false }
+                        ]
+                    },
+                    {
+                        icon: "⚡",
+                        scenario: "สายไฟฟ้าแรงสูงขาดตกลงมาใกล้พื้นที่ทำงาน",
+                        options: [
+                            { text: "ปิดไฟหลักและเรียกช่างไฟฟ้า", icon: "🔌", correct: true },
+                            { text: "ใช้ไม้ผลักสายไฟออก", icon: "🪵", correct: false },
+                            { text: "รดน้ำดับไฟ", icon: "💧", correct: false },
+                            { text: "เดินผ่านไปเร็วๆ", icon: "🚶", correct: false }
+                        ]
+                    },
+                    {
+                        icon: "🏗️",
+                        scenario: "ต้องทำงานบนเครนสูง 15 เมตร ลมแรง 40 กม./ชม.",
+                        options: [
+                            { text: "หยุดงานรอลมสงบ", icon: "⏸️", correct: true },
+                            { text: "ทำงานต่อแต่ระวังตัว", icon: "⚠️", correct: false },
+                            { text: "ใช้เชือกผูกตัวเพิ่ม", icon: "🪢", correct: false },
+                            { text: "ทำงานเร็วให้เสร็จ", icon: "⚡", correct: false }
+                        ]
+                    },
+                    {
+                        icon: "🔥",
+                        scenario: "เกิดไฟไหม้จากการเชื่อม ในพื้นที่ปิด",
+                        options: [
+                            { text: "ใช้ถังดับเพลิงและอพยพ", icon: "🧯", correct: true },
+                            { text: "รดน้ำดับไฟ", icon: "💧", correct: false },
+                            { text: "ใช้ผ้าปิดไฟ", icon: "🧽", correct: false },
+                            { text: "เปิดพัดลมระบายอากาศ", icon: "💨", correct: false }
+                        ]
+                    },
+                    {
+                        icon: "☠️",
+                        scenario: "พบแก๊สรั่วในบ่อลึก ก่อนลงไปทำงาน",
+                        options: [
+                            { text: "ใช้เครื่องวัดแก๊สและระบายอากาศ", icon: "📊", correct: true },
+                            { text: "จุดไฟทดสอบแก๊ส", icon: "🔥", correct: false },
+                            { text: "ลงไปเร็วๆ ก่อนแก๊สเพิ่ม", icon: "⬇️", correct: false },
+                            { text: "สวมหน้ากากผ้าธรรมดา", icon: "😷", correct: false }
+                        ]
+                    },
+                    {
+                        icon: "🌧️",
+                        scenario: "ฝนตกหนัก ต้องใช้เครื่องมือไฟฟ้าภายนอกอาคาร",
+                        options: [
+                            { text: "หยุดงานรอฝนหยุด", icon: "⏸️", correct: true },
+                            { text: "ใช้ร่มกันฝน", icon: "☂️", correct: false },
+                            { text: "ทำงานเร็วให้เสร็จ", icon: "⚡", correct: false },
+                            { text: "ใช้ถุงพลาสติกคลุม", icon: "🛍️", correct: false }
+                        ]
+                    }
+                ];
+                
+                // Randomly select 3 scenarios for this round
+                this.safetyScenarios = this.shuffleArray([...this.allSafetyScenarios]).slice(0, 3);
+                this.currentSafety = 0;
+                this.renderSafetyScenario();
+            }
+            
+            renderSafetyScenario() {
+                const scenario = this.safetyScenarios[this.currentSafety];
+                document.getElementById('safetyScenarioIcon').textContent = scenario.icon;
+                document.getElementById('safetyScenario').textContent = scenario.scenario;
+                
+                const container = document.getElementById('safetyOptions');
+                container.innerHTML = '';
+                
+                scenario.options.forEach((option, index) => {
+                    const card = document.createElement('div');
+                    card.className = 'safety-option bg-white border-2 border-gray-300 rounded-lg p-6 text-center';
+                    card.innerHTML = `
+                        <div class="text-4xl mb-3">${option.icon}</div>
+                        <div class="font-semibold">${option.text}</div>
+                    `;
+                    card.dataset.correct = option.correct;
+                    
+                    card.addEventListener('click', () => {
+                        this.checkSafetyAnswer(card, option.correct);
+                    });
+                    
+                    container.appendChild(card);
+                });
+            }
+            
+            bindEvents() {
+                document.getElementById('startGame').addEventListener('click', () => {
+                    this.startGame();
+                });
+                
+                document.getElementById('checkBuilding').addEventListener('click', () => {
+                    this.checkBuilding();
+                });
+                
+                document.getElementById('checkMaterial').addEventListener('click', () => {
+                    this.checkMaterial();
+                });
+                
+                document.getElementById('playAgain').addEventListener('click', () => {
+                    this.resetGame();
+                });
+            }
+            
+            startGame() {
+                this.gameStarted = true;
+                document.getElementById('startScreen').classList.add('hidden');
+                document.getElementById('mission1').classList.remove('hidden');
+                this.init();
+            }
+            
+            shuffleArray(array) {
+                const shuffled = [...array];
+                for (let i = shuffled.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+                }
+                return shuffled;
+            }
+            
+            checkBuilding() {
+                let correct = 0;
+                let total = 0;
+                
+                for (let i = 0; i < 5; i++) {
+                    for (let j = 0; j < 5; j++) {
+                        if (this.blueprint[i][j] === 1) {
+                            total++;
+                            if (this.buildingState[i][j] === 1) {
+                                correct++;
+                            }
+                        }
+                    }
+                }
+                
+                const score = Math.round((correct / total) * 100);
+                this.scores.building = score;
+                
+                this.showMissionResult(`ภารกิจที่ 1 เสร็จสิ้น!\nคะแนน: ${score}/100\nวางอิฐถูกต้อง ${correct}/${total} ตำแหน่ง`, () => {
+                    this.nextMission();
+                });
+            }
+            
+            checkMaterial() {
+                if (this.selectedMaterial === null) {
+                    alert('กรุณาเลือกวัสดุก่อน');
+                    return;
+                }
+                
+                const score = this.selectedMaterial ? 100 : 0;
+                this.scores.material += score;
+                
+                this.currentQuestion++;
+                if (this.currentQuestion < this.materialQuestions.length) {
+                    this.selectedMaterial = null;
+                    this.renderMaterialQuestion();
+                } else {
+                    this.scores.material = Math.round(this.scores.material / this.materialQuestions.length);
+                    this.showMissionResult(`ภารกิจที่ 2 เสร็จสิ้น!\nคะแนน: ${this.scores.material}/100`, () => {
+                        this.nextMission();
+                    });
+                }
+            }
+            
+            checkSafetyAnswer(card, isCorrect) {
+                document.querySelectorAll('.safety-option').forEach(option => {
+                    option.style.pointerEvents = 'none';
+                    if (option.dataset.correct === 'true') {
+                        option.classList.add('correct');
+                    } else {
+                        option.classList.add('incorrect');
+                    }
+                });
+                
+                const score = isCorrect ? 100 : 0;
+                this.scores.safety += score;
+                
+                setTimeout(() => {
+                    this.currentSafety++;
+                    if (this.currentSafety < this.safetyScenarios.length) {
+                        this.renderSafetyScenario();
+                    } else {
+                        this.scores.safety = Math.round(this.scores.safety / this.safetyScenarios.length);
+                        this.showMissionResult(`ภารกิจที่ 3 เสร็จสิ้น!\nคะแนน: ${this.scores.safety}/100`, () => {
+                            this.showResults();
+                        });
+                    }
+                }, 2000);
+            }
+            
+            nextMission() {
+                document.getElementById(`mission${this.currentMission}`).classList.add('hidden');
+                this.currentMission++;
+                document.getElementById('currentLevel').textContent = this.currentMission;
+                document.getElementById(`mission${this.currentMission}`).classList.remove('hidden');
+                
+                // Reset timer for new mission
+                this.timeLeft = 90;
+            }
+            
+            showMissionResult(message, callback) {
+                alert(message);
+                setTimeout(callback, 500);
+            }
+            
+            showResults() {
+                clearInterval(this.timer);
+                document.getElementById(`mission${this.currentMission}`).classList.add('hidden');
+                document.getElementById('results').classList.remove('hidden');
+                
+                // Update scores
+                document.getElementById('buildingScore').textContent = this.scores.building;
+                document.getElementById('materialScore').textContent = this.scores.material;
+                document.getElementById('safetyScore').textContent = this.scores.safety;
+                
+                const totalScore = this.scores.building + this.scores.material + this.scores.safety;
+                document.getElementById('totalScore').textContent = totalScore;
+                
+                // Evaluate performance and suggest position
+                const evaluation = this.evaluatePerformance();
+                document.getElementById('skillResult').innerHTML = evaluation;
+            }
+            
+            evaluatePerformance() {
+                const totalScore = this.scores.building + this.scores.material + this.scores.safety;
+                const avgScore = Math.round(totalScore / 3);
+                
+                // Find strongest skill
+                const skills = [
+                    { name: 'building', score: this.scores.building, label: 'การสร้างโครงสร้าง' },
+                    { name: 'material', score: this.scores.material, label: 'การเลือกวัสดุ' },
+                    { name: 'safety', score: this.scores.safety, label: 'ความปลอดภัย' }
+                ];
+                
+                skills.sort((a, b) => b.score - a.score);
+                const strongestSkill = skills[0];
+                const secondSkill = skills[1];
+                
+                // Determine performance level and position
+                let level, position, description, icon;
+                
+                if (avgScore >= 90) {
+                    level = "ระดับเชี่ยวชาญ";
+                    if (strongestSkill.name === 'building') {
+                        position = "หัวหน้าโครงการก่อสร้าง";
+                        icon = "👷‍♂️";
+                        description = "คุณสามารถวางแผนและควบคุมโครงการขนาดใหญ่ได้อย่างมืออาชีพ";
+                    } else if (strongestSkill.name === 'material') {
+                        position = "วิศวกรวัสดุอาวุโส";
+                        icon = "🔬";
+                        description = "คุณมีความเชี่ยวชาญในการเลือกและพัฒนาวัสดุก่อสร้าง";
+                    } else {
+                        position = "ผู้จัดการความปลอดภัย";
+                        icon = "🛡️";
+                        description = "คุณสามารถดูแลความปลอดภัยในโครงการขนาดใหญ่ได้";
+                    }
+                } else if (avgScore >= 75) {
+                    level = "ระดับชำนาญ";
+                    if (strongestSkill.name === 'building') {
+                        position = "หัวหน้าช่างก่อสร้าง";
+                        icon = "👨‍🔧";
+                        description = "คุณสามารถนำทีมช่างและควบคุมงานก่อสร้างได้ดี";
+                    } else if (strongestSkill.name === 'material') {
+                        position = "ผู้เชี่ยวชาญวัสดุ";
+                        icon = "🧪";
+                        description = "คุณมีความรู้เรื่องวัสดุและสามารถให้คำแนะนำได้";
+                    } else {
+                        position = "เจ้าหน้าที่ความปลอดภัย";
+                        icon = "⚠️";
+                        description = "คุณสามารถดูแลและตรวจสอบความปลอดภัยได้อย่างมีประสิทธิภาพ";
+                    }
+                } else if (avgScore >= 60) {
+                    level = "ระดับปฏิบัติการ";
+                    if (strongestSkill.name === 'building') {
+                        position = "ช่างก่อสร้างอาวุโส";
+                        icon = "🔨";
+                        description = "คุณมีทักษะการก่อสร้างที่ดีและสามารถทำงานได้อย่างมั่นใจ";
+                    } else if (strongestSkill.name === 'material') {
+                        position = "ผู้ช่วยวิศวกรวัสดุ";
+                        icon = "📋";
+                        description = "คุณมีความรู้พื้นฐานเรื่องวัสดุและสามารถช่วยงานได้ดี";
+                    } else {
+                        position = "ผู้ช่วยเจ้าหน้าที่ความปลอดภัย";
+                        icon = "🦺";
+                        description = "คุณมีความรอบคอบและสามารถช่วยดูแลความปลอดภัยได้";
+                    }
+                } else if (avgScore >= 40) {
+                    level = "ระดับเริ่มต้น";
+                    if (strongestSkill.name === 'building') {
+                        position = "ช่างก่อสร้างฝึกหัด";
+                        icon = "🎓";
+                        description = "คุณมีพื้นฐานที่ดีและควรฝึกฝนเพิ่มเติม";
+                    } else if (strongestSkill.name === 'material') {
+                        position = "ผู้ช่วยคลังวัสดุ";
+                        icon = "📦";
+                        description = "คุณมีความรู้เบื้องต้นและควรศึกษาเพิ่มเติม";
+                    } else {
+                        position = "ผู้ช่วยงานทั่วไป";
+                        icon = "👷";
+                        description = "คุณมีความระมัดระวังและควรเรียนรู้เรื่องความปลอดภัยเพิ่ม";
+                    }
+                } else {
+                    level = "ต้องพัฒนา";
+                    position = "ควรฝึกอบรมเพิ่มเติม";
+                    icon = "📚";
+                    description = "แนะนำให้เข้าอบรมพื้นฐานก่อนเริ่มงานจริง";
+                }
+                
+                // Create detailed result
+                let result = `
+                    <div class="space-y-4">
+                        <div class="text-center">
+                            <div class="text-6xl mb-2">${icon}</div>
+                            <div class="text-2xl font-bold text-purple-600">${level}</div>
+                            <div class="text-xl font-semibold text-gray-800">${position}</div>
+                        </div>
+                        
+                        <div class="bg-white rounded-lg p-4 border-2 border-purple-200">
+                            <p class="text-gray-700 text-center">${description}</p>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                            <div class="bg-green-50 rounded-lg p-3">
+                                <div class="font-semibold text-green-700">🎯 จุดแข็ง</div>
+                                <div class="text-green-600">${strongestSkill.label} (${strongestSkill.score} คะแนน)</div>
+                            </div>
+                `;
+                
+                // Add improvement suggestion if needed
+                const weakestSkill = skills[2];
+                if (weakestSkill.score < 70) {
+                    result += `
+                            <div class="bg-orange-50 rounded-lg p-3">
+                                <div class="font-semibold text-orange-700">📈 ควรพัฒนา</div>
+                                <div class="text-orange-600">${weakestSkill.label} (${weakestSkill.score} คะแนน)</div>
+                            </div>
+                    `;
+                } else {
+                    result += `
+                            <div class="bg-blue-50 rounded-lg p-3">
+                                <div class="font-semibold text-blue-700">⭐ จุดแข็งรอง</div>
+                                <div class="text-blue-600">${secondSkill.label} (${secondSkill.score} คะแนน)</div>
+                            </div>
+                    `;
+                }
+                
+                result += `
+                        </div>
+                        
+                        <div class="bg-gray-50 rounded-lg p-3 text-center">
+                            <div class="text-sm text-gray-600">คะแนนรวม: ${totalScore}/300 | เฉลี่ย: ${avgScore}/100</div>
+                        </div>
+                    </div>
+                `;
+                
+                return result;
+            }
+            
+            resetGame() {
+                clearInterval(this.timer);
+                this.currentMission = 1;
+                this.scores = { building: 0, material: 0, safety: 0 };
+                this.timeLeft = 90;
+                this.currentQuestion = 0;
+                this.currentSafety = 0;
+                this.selectedMaterial = null;
+                this.gameStarted = false;
+                
+                // Hide all screens
+                document.getElementById('results').classList.add('hidden');
+                document.getElementById('mission1').classList.add('hidden');
+                document.getElementById('mission2').classList.add('hidden');
+                document.getElementById('mission3').classList.add('hidden');
+                
+                // Show start screen
+                document.getElementById('startScreen').classList.remove('hidden');
+                
+                // Reset UI
+                document.getElementById('currentLevel').textContent = 1;
+                document.getElementById('totalScore').textContent = 0;
+                document.getElementById('timer').textContent = 90;
+            }
+            
+            endGame() {
+                clearInterval(this.timer);
+                alert('หมดเวลา! เกมจบลง');
+                this.showResults();
+            }
+        }
+        
+        // Start the game when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new ConstructionGame();
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9779fc83954c45bd',t:'MTc1NjYxNjY1OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

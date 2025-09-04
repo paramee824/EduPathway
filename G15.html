@@ -1,0 +1,1521 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เกมจำลองสถานการณ์โลจิสติกส์ - 3 ด่าน</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .delivery-point {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .delivery-point:hover {
+            transform: scale(1.1);
+        }
+        .truck-icon {
+            cursor: grab;
+            transition: all 0.2s ease;
+        }
+        .truck-icon:active {
+            cursor: grabbing;
+        }
+        .route-line {
+            stroke: #3b82f6;
+            stroke-width: 3;
+            fill: none;
+            stroke-dasharray: 5,5;
+            animation: dash 1s linear infinite;
+        }
+        @keyframes dash {
+            to {
+                stroke-dashoffset: -10;
+            }
+        }
+        .completed-route {
+            stroke: #10b981;
+            stroke-dasharray: none;
+            animation: none;
+        }
+        .level-card {
+            transition: all 0.3s ease;
+        }
+        .level-card:hover {
+            transform: translateY(-2px);
+        }
+        .level-completed {
+            opacity: 0.7;
+        }
+        .question-option {
+            transition: all 0.2s ease;
+        }
+        .question-option:hover {
+            transform: translateX(5px);
+        }
+        .question-correct {
+            background-color: #dcfce7;
+            border-color: #16a34a;
+        }
+        .question-incorrect {
+            background-color: #fef2f2;
+            border-color: #dc2626;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <!-- Level Selection Screen -->
+    <div id="level-selection" class="max-w-6xl mx-auto p-6">
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-gray-800 mb-4">🚛 เกมจำลองสถานการณ์โลจิสติกส์</h1>
+            <p class="text-lg text-gray-600">เลือกด่านที่ต้องการเล่น - แต่ละด่านจำลองสถานการณ์จริงในงานโลจิสติกส์</p>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-6">
+            <!-- Level 1 -->
+            <div class="level-card bg-white rounded-xl shadow-lg p-6 cursor-pointer border-2 border-transparent hover:border-green-300" onclick="game.selectLevel(1)">
+                <div class="text-center mb-4">
+                    <div class="text-6xl mb-2">🏪</div>
+                    <h3 class="text-xl font-bold text-green-600">ด่าน 1: ร้านค้าท้องถิ่น</h3>
+                    <div class="text-sm text-gray-500 mt-1">Local Store Delivery</div>
+                </div>
+                <div class="space-y-2 text-sm">
+                    <div class="flex justify-between">
+                        <span>📦 จุดส่ง:</span>
+                        <span class="font-semibold">5 จุด</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>⏱️ เวลา:</span>
+                        <span class="font-semibold">1 นาที</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>❓ คำถาม:</span>
+                        <span class="font-semibold">2 ข้อ</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>⭐ ความยาก:</span>
+                        <span class="text-green-500 font-semibold">ง่าย</span>
+                    </div>
+                </div>
+                <div class="mt-4 p-3 bg-green-50 rounded-lg">
+                    <p class="text-xs text-green-700">จำลองการส่งของให้ร้านค้าในชุมชน + คำถามสถานการณ์จริง</p>
+                </div>
+                <div id="level1-status" class="mt-3 text-center text-sm font-semibold"></div>
+            </div>
+
+            <!-- Level 2 -->
+            <div class="level-card bg-white rounded-xl shadow-lg p-6 cursor-pointer border-2 border-transparent hover:border-yellow-300" onclick="game.selectLevel(2)">
+                <div class="text-center mb-4">
+                    <div class="text-6xl mb-2">🏢</div>
+                    <h3 class="text-xl font-bold text-yellow-600">ด่าน 2: ศูนย์การค้า</h3>
+                    <div class="text-sm text-gray-500 mt-1">Shopping Mall Distribution</div>
+                </div>
+                <div class="space-y-2 text-sm">
+                    <div class="flex justify-between">
+                        <span>📦 จุดส่ง:</span>
+                        <span class="font-semibold">8 จุด</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>⏱️ เวลา:</span>
+                        <span class="font-semibold">1.5 นาที</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>❓ คำถาม:</span>
+                        <span class="font-semibold">3 ข้อ</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>⭐ ความยาก:</span>
+                        <span class="text-yellow-500 font-semibold">ปานกลาง</span>
+                    </div>
+                </div>
+                <div class="mt-4 p-3 bg-yellow-50 rounded-lg">
+                    <p class="text-xs text-yellow-700">จำลองการส่งของให้ศูนย์การค้า + คำถามการจัดการที่ซับซ้อน</p>
+                </div>
+                <div id="level2-status" class="mt-3 text-center text-sm font-semibold"></div>
+            </div>
+
+            <!-- Level 3 -->
+            <div class="level-card bg-white rounded-xl shadow-lg p-6 cursor-pointer border-2 border-transparent hover:border-red-300" onclick="game.selectLevel(3)">
+                <div class="text-center mb-4">
+                    <div class="text-6xl mb-2">🌆</div>
+                    <h3 class="text-xl font-bold text-red-600">ด่าน 3: เมืองใหญ่</h3>
+                    <div class="text-sm text-gray-500 mt-1">City-wide Logistics</div>
+                </div>
+                <div class="space-y-2 text-sm">
+                    <div class="flex justify-between">
+                        <span>📦 จุดส่ง:</span>
+                        <span class="font-semibold">12 จุด</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>⏱️ เวลา:</span>
+                        <span class="font-semibold">2 นาที</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>❓ คำถาม:</span>
+                        <span class="font-semibold">4 ข้อ</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>⭐ ความยาก:</span>
+                        <span class="text-red-500 font-semibold">ยาก</span>
+                    </div>
+                </div>
+                <div class="mt-4 p-3 bg-red-50 rounded-lg">
+                    <p class="text-xs text-red-700">จำลองการส่งของทั่วเมือง + คำถามการวางแผนระดับสูง</p>
+                </div>
+                <div id="level3-status" class="mt-3 text-center text-sm font-semibold"></div>
+            </div>
+        </div>
+
+        <div class="text-center mt-8">
+            <div class="bg-blue-50 p-4 rounded-lg inline-block">
+                <p class="text-blue-800 font-semibold">🎯 เป้าหมาย: ผ่านทั้ง 3 ด่านเพื่อดูการวิเคราะห์ความถนัดแบบสมบูรณ์</p>
+                <p class="text-blue-600 text-sm mt-1">คะแนนจะประเมินจาก: การส่งของ + การตอบคำถาม + ความรวดเร็ว + ประสิทธิภาพ</p>
+            </div>
+        </div>
+
+        <!-- Questions Preview -->
+        <div class="mt-8 max-w-4xl mx-auto">
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h3 class="text-2xl font-bold text-gray-800 mb-6 text-center">📝 ตัวอย่างคำถามในแต่ละด่าน</h3>
+                
+                <!-- Level 1 Questions -->
+                <div class="mb-8">
+                    <h4 class="text-xl font-semibold text-green-600 mb-4 flex items-center">
+                        <span class="text-2xl mr-2">🏪</span>
+                        ด่าน 1: ร้านค้าท้องถิ่น - การบริการลูกค้าพื้นฐาน
+                    </h4>
+                    <div class="space-y-4">
+                        <div class="bg-green-50 p-4 rounded-lg border-l-4 border-green-400">
+                            <p class="font-medium text-green-800 mb-2">❓ คำถามที่ 1:</p>
+                            <p class="text-green-700 mb-3">"ลูกค้าโทรมาบอกว่าต้องการเปลี่ยนที่อยู่จัดส่งกะทันหัน คุณจะทำอย่างไร?"</p>
+                            <div class="text-sm text-green-600">
+                                <p>A) ปฏิเสธเพราะเริ่มส่งแล้ว</p>
+                                <p>B) รับเปลี่ยนทันทีโดยไม่คิดค่าใช้จ่าย</p>
+                                <p class="font-semibold">✅ C) อธิบายขั้นตอนและค่าใช้จ่ายเพิ่มเติม</p>
+                                <p>D) ให้ยกเลิกและสั่งใหม่</p>
+                            </div>
+                        </div>
+                        <div class="bg-green-50 p-4 rounded-lg border-l-4 border-green-400">
+                            <p class="font-medium text-green-800 mb-2">❓ คำถามที่ 2:</p>
+                            <p class="text-green-700 mb-3">"เมื่อพบว่าร้านปลายทางปิดแล้ว คุณควรทำอย่างไร?"</p>
+                            <div class="text-sm text-green-600">
+                                <p>A) วางพัสดุไว้หน้าร้านแล้วถ่ายรูป</p>
+                                <p class="font-semibold">✅ B) โทรหาลูกค้าและประสานงานหาทางออก</p>
+                                <p>C) นำกลับคลังสินค้าทันที</p>
+                                <p>D) รอจนกว่าร้านจะเปิด</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Level 2 Questions -->
+                <div class="mb-8">
+                    <h4 class="text-xl font-semibold text-yellow-600 mb-4 flex items-center">
+                        <span class="text-2xl mr-2">🏢</span>
+                        ด่าน 2: ศูนย์การค้า - การจัดการสถานการณ์ซับซ้อน
+                    </h4>
+                    <div class="space-y-4">
+                        <div class="bg-yellow-50 p-4 rounded-lg border-l-4 border-yellow-400">
+                            <p class="font-medium text-yellow-800 mb-2">❓ คำถามที่ 1:</p>
+                            <p class="text-yellow-700 mb-3">"ในช่วงเทศกาลมีออเดอร์เพิ่มขึ้น 300% คุณจะจัดการอย่างไร?"</p>
+                            <div class="text-sm text-yellow-600">
+                                <p>A) ปฏิเสธออเดอร์ส่วนเกิน</p>
+                                <p>B) จ้างรถเพิ่มชั่วคราวโดยไม่คิดต้นทุน</p>
+                                <p class="font-semibold">✅ C) วางแผนเส้นทางใหม่และจัดลำดับความสำคัญ</p>
+                                <p>D) ส่งช้าแต่รับออเดอร์ทั้งหมด</p>
+                            </div>
+                        </div>
+                        <div class="bg-yellow-50 p-4 rounded-lg border-l-4 border-yellow-400">
+                            <p class="font-medium text-yellow-800 mb-2">❓ คำถามที่ 2:</p>
+                            <p class="text-yellow-700 mb-3">"ร้านค้าร้องเรียนว่าได้รับสินค้าผิดประเภท คุณจะแก้ไขอย่างไร?"</p>
+                            <div class="text-sm text-yellow-600">
+                                <p>A) อ้างว่าเป็นความผิดของร้านค้า</p>
+                                <p class="font-semibold">✅ B) ตรวจสอบและแก้ไขทันที พร้อมชดเชยความเสียหาย</p>
+                                <p>C) ให้ร้านค้าส่งคืนแล้วสั่งใหม่</p>
+                                <p>D) เสนอส่วนลดครั้งถัดไป</p>
+                            </div>
+                        </div>
+                        <div class="bg-yellow-50 p-4 rounded-lg border-l-4 border-yellow-400">
+                            <p class="font-medium text-yellow-800 mb-2">❓ คำถามที่ 3:</p>
+                            <p class="text-yellow-700 mb-3">"เมื่อมีการจราจรติดขัดรุนแรง คุณจะทำอย่างไร?"</p>
+                            <div class="text-sm text-yellow-600">
+                                <p>A) รอจนกว่าจราจรจะคล่องตัว</p>
+                                <p class="font-semibold">✅ B) ใช้เส้นทางสำรองที่เตรียมไว้</p>
+                                <p>C) แจ้งลูกค้าว่าจะส่งช้า</p>
+                                <p>D) ยกเลิกการส่งในวันนั้น</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Level 3 Questions -->
+                <div class="mb-6">
+                    <h4 class="text-xl font-semibold text-red-600 mb-4 flex items-center">
+                        <span class="text-2xl mr-2">🌆</span>
+                        ด่าน 3: เมืองใหญ่ - การวางแผนระดับสูงและเทคโนโลยี
+                    </h4>
+                    <div class="space-y-4">
+                        <div class="bg-red-50 p-4 rounded-lg border-l-4 border-red-400">
+                            <p class="font-medium text-red-800 mb-2">❓ คำถามที่ 1:</p>
+                            <p class="text-red-700 mb-3">"บริษัทต้องการลดต้นทุนการขนส่ง 20% คุณจะเสนออะไร?"</p>
+                            <div class="text-sm text-red-600">
+                                <p>A) ลดจำนวนรถและคนขับ</p>
+                                <p class="font-semibold">✅ B) วิเคราะห์เส้นทางและรวมการส่งให้มีประสิทธิภาพ</p>
+                                <p>C) ลดความถี่ในการส่ง</p>
+                                <p>D) เพิ่มค่าขนส่งให้ลูกค้า</p>
+                            </div>
+                        </div>
+                        <div class="bg-red-50 p-4 rounded-lg border-l-4 border-red-400">
+                            <p class="font-medium text-red-800 mb-2">❓ คำถามที่ 2:</p>
+                            <p class="text-red-700 mb-3">"ลูกค้าใหญ่ต้องการระบบติดตามสินค้าแบบเรียลไทม์ คุณจะทำอย่างไร?"</p>
+                            <div class="text-sm text-red-600">
+                                <p>A) บอกว่าไม่มีระบบนี้</p>
+                                <p class="font-semibold">✅ B) เสนอระบบ GPS tracking และแอปพลิเคชัน</p>
+                                <p>C) ให้โทรสอบถามเอง</p>
+                                <p>D) ส่ง SMS แจ้งสถานะ</p>
+                            </div>
+                        </div>
+                        <div class="bg-red-50 p-4 rounded-lg border-l-4 border-red-400">
+                            <p class="font-medium text-red-800 mb-2">❓ คำถามที่ 3:</p>
+                            <p class="text-red-700 mb-3">"พนักงานขับรถหลายคนลาป่วยพร้อมกัน คุณจะจัดการอย่างไร?"</p>
+                            <div class="text-sm text-red-600">
+                                <p>A) ยกเลิกการส่งในวันนั้น</p>
+                                <p>B) ขอให้พนักงานที่ป่วยมาทำงาน</p>
+                                <p class="font-semibold">✅ C) จัดสรรงานใหม่และใช้พนักงานสำรอง</p>
+                                <p>D) จ้างคนขับจากภายนอกทันที</p>
+                            </div>
+                        </div>
+                        <div class="bg-red-50 p-4 rounded-lg border-l-4 border-red-400">
+                            <p class="font-medium text-red-800 mb-2">❓ คำถามที่ 4:</p>
+                            <p class="text-red-700 mb-3">"ต้องการขยายธุรกิจไปต่างจังหวัด คุณจะวางแผนอย่างไร?"</p>
+                            <div class="text-sm text-red-600">
+                                <p>A) เปิดสาขาในทุกจังหวัดพร้อมกัน</p>
+                                <p class="font-semibold">✅ B) วิเคราะห์ตลาดและเริ่มจากจังหวัดที่มีศักยภาพ</p>
+                                <p>C) ใช้บริษัทขนส่งท้องถิ่นแทน</p>
+                                <p>D) รอจนกว่าจะมีเงินทุนเพียงพอ</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-indigo-50 p-4 rounded-lg text-center">
+                    <p class="text-indigo-800 font-semibold">💡 คำถามเหล่านี้จะปรากฏระหว่างการเล่นเกม</p>
+                    <p class="text-indigo-600 text-sm mt-1">แต่ละคำถามจะมีคำอธิบายหลังตอบเพื่อการเรียนรู้</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Question Modal -->
+    <div id="question-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-xl shadow-2xl p-8 max-w-2xl mx-4">
+            <div class="text-center mb-6">
+                <div class="text-4xl mb-2">🤔</div>
+                <h3 class="text-xl font-bold text-gray-800">คำถามสถานการณ์จริง</h3>
+                <div id="question-counter" class="text-sm text-gray-500 mt-1"></div>
+            </div>
+            
+            <div id="question-content" class="mb-6">
+                <h4 id="question-text" class="text-lg font-semibold text-gray-800 mb-4"></h4>
+                <div id="question-options" class="space-y-3"></div>
+            </div>
+            
+            <div id="question-result" class="hidden mb-6 p-4 rounded-lg">
+                <div id="result-icon" class="text-3xl text-center mb-2"></div>
+                <div id="result-text" class="font-semibold text-center mb-2"></div>
+                <div id="result-explanation" class="text-sm text-gray-600"></div>
+            </div>
+            
+            <div class="text-center">
+                <button id="question-next-btn" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg font-medium transition-colors">
+                    ถัดไป
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Header -->
+    <div id="game-header" class="hidden bg-white shadow-lg p-4">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-4">
+                <button id="back-btn" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                    ← กลับ
+                </button>
+                <h1 id="level-title" class="text-2xl font-bold text-gray-800"></h1>
+            </div>
+            <div class="flex gap-6 text-sm">
+                <div class="bg-blue-100 px-3 py-1 rounded-lg">
+                    <span class="text-blue-800">⏱️ เวลา: <span id="timer">0</span>s</span>
+                </div>
+                <div class="bg-green-100 px-3 py-1 rounded-lg">
+                    <span class="text-green-800">📦 ส่งแล้ว: <span id="delivered">0</span>/<span id="total-points">0</span></span>
+                </div>
+                <div class="bg-yellow-100 px-3 py-1 rounded-lg">
+                    <span class="text-yellow-800">🚛 รถใช้: <span id="trucks-used">0</span></span>
+                </div>
+                <div class="bg-purple-100 px-3 py-1 rounded-lg">
+                    <span class="text-purple-800">❓ คำถาม: <span id="questions-answered">0</span>/<span id="total-questions">0</span></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Screen -->
+    <div id="game-screen" class="hidden max-w-6xl mx-auto p-6">
+        <div class="bg-white rounded-xl shadow-lg p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-semibold text-gray-800">แผนที่การจัดส่ง</h2>
+                <div class="flex gap-4">
+                    <button id="start-btn" class="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-lg font-medium transition-colors">
+                        🚀 เริ่มเกม
+                    </button>
+                    <button id="end-btn" class="hidden bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-lg font-medium transition-colors">
+                        🏁 จบเกม
+                    </button>
+                    <button id="reset-btn" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                        🔄 รีเซ็ต
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Map Area -->
+            <div class="relative bg-gradient-to-br from-green-50 to-blue-50 rounded-lg border-2 border-gray-200" style="height: 500px;">
+                <svg id="route-svg" class="absolute inset-0 w-full h-full pointer-events-none" style="z-index: 1;">
+                </svg>
+                
+                <!-- Depot (Starting Point) -->
+                <div id="depot" class="absolute bg-red-500 text-white p-3 rounded-lg shadow-lg" style="left: 50px; top: 50px; z-index: 2;">
+                    <div class="text-center">
+                        <div class="text-2xl">🏢</div>
+                        <div class="text-xs font-bold">คลังสินค้า</div>
+                    </div>
+                </div>
+
+                <!-- Delivery Points -->
+                <div id="delivery-points"></div>
+
+                <!-- Truck -->
+                <div id="truck" class="truck-icon absolute bg-blue-500 text-white p-2 rounded-full shadow-lg" style="left: 80px; top: 80px; z-index: 3;">
+                    <div class="text-xl">🚛</div>
+                </div>
+            </div>
+
+            <!-- Game Instructions -->
+            <div class="mt-4 bg-blue-50 p-4 rounded-lg">
+                <h3 class="font-semibold text-blue-800 mb-2">วิธีเล่น:</h3>
+                <ul class="text-sm text-blue-700 space-y-1">
+                    <li>• คลิก "เริ่มเกม" เพื่อเริ่มจับเวลา</li>
+                    <li>• ลากรถบรรทุกไปยังจุดส่งพัสดุต่างๆ (ระวังน้ำหนักรวมต่อเที่ยว)</li>
+                    <li>• ตอบคำถามสถานการณ์จริงด้านล่างนี้</li>
+                    <li>• ส่งพัสดุให้ครบทุกจุดและตอบคำถามให้ถูกต้องเพื่อคะแนนสูงสุด</li>
+                </ul>
+            </div>
+
+            <!-- Questions Section - Always Visible -->
+            <div id="questions-section" class="mt-6 bg-white border-2 border-gray-200 rounded-lg p-6">
+                <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
+                    <span class="text-2xl mr-2">❓</span>
+                    คำถามสถานการณ์จริง
+                    <span id="question-progress" class="ml-2 text-sm text-gray-500"></span>
+                </h3>
+                
+                <div id="current-question" class="hidden">
+                    <div class="bg-blue-50 p-4 rounded-lg mb-4">
+                        <h4 id="question-text-display" class="text-lg font-semibold text-blue-800 mb-3"></h4>
+                        <div id="question-options-display" class="space-y-2"></div>
+                    </div>
+                    <div id="question-result-display" class="hidden p-4 rounded-lg mb-4">
+                        <div class="flex items-center mb-2">
+                            <span id="result-icon-display" class="text-2xl mr-2"></span>
+                            <span id="result-text-display" class="font-semibold"></span>
+                        </div>
+                        <div id="result-explanation-display" class="text-sm text-gray-600"></div>
+                    </div>
+                </div>
+                
+                <div id="questions-waiting" class="text-center text-gray-500 py-8">
+                    <div class="text-4xl mb-2">🎮</div>
+                    <p>เริ่มเกมเพื่อดูคำถาม</p>
+                </div>
+                
+                <div id="questions-completed" class="hidden text-center text-green-600 py-8">
+                    <div class="text-4xl mb-2">✅</div>
+                    <p class="font-semibold">ตอบคำถามครบแล้ว!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Level Complete Screen -->
+    <div id="level-complete" class="hidden max-w-4xl mx-auto p-6">
+        <div class="bg-white rounded-xl shadow-lg p-8">
+            <div class="text-center mb-8">
+                <div class="text-6xl mb-4">🎉</div>
+                <h2 class="text-3xl font-bold text-gray-800 mb-2">ผ่านด่านแล้ว!</h2>
+                <div id="level-complete-title" class="text-xl text-blue-600 mb-4"></div>
+                <div id="level-score" class="text-2xl font-semibold text-green-600"></div>
+            </div>
+
+            <div class="grid md:grid-cols-4 gap-4 mb-8">
+                <div class="bg-blue-50 p-4 rounded-lg text-center">
+                    <div class="text-2xl mb-1">⚡</div>
+                    <h3 class="font-semibold text-blue-800 text-sm">ความรวดเร็ว</h3>
+                    <div id="level-speed-score" class="text-xl font-bold text-blue-600 mt-1"></div>
+                </div>
+                <div class="bg-green-50 p-4 rounded-lg text-center">
+                    <div class="text-2xl mb-1">🎯</div>
+                    <h3 class="font-semibold text-green-800 text-sm">ความแม่นยำ</h3>
+                    <div id="level-accuracy-score" class="text-xl font-bold text-green-600 mt-1"></div>
+                </div>
+                <div class="bg-yellow-50 p-4 rounded-lg text-center">
+                    <div class="text-2xl mb-1">⚙️</div>
+                    <h3 class="font-semibold text-yellow-800 text-sm">ประสิทธิภาพ</h3>
+                    <div id="level-efficiency-score" class="text-xl font-bold text-yellow-600 mt-1"></div>
+                </div>
+                <div class="bg-purple-50 p-4 rounded-lg text-center">
+                    <div class="text-2xl mb-1">🧠</div>
+                    <h3 class="font-semibold text-purple-800 text-sm">การตัดสินใจ</h3>
+                    <div id="level-decision-score" class="text-xl font-bold text-purple-600 mt-1"></div>
+                </div>
+            </div>
+
+            <div class="bg-gradient-to-r from-indigo-50 to-purple-50 p-6 rounded-lg mb-6">
+                <h3 class="text-xl font-bold text-indigo-800 mb-3">🌟 สถานการณ์จริงที่คล้ายกัน</h3>
+                <div id="real-scenario" class="text-indigo-700"></div>
+            </div>
+
+            <div class="flex justify-center gap-4">
+                <button id="next-level-btn" class="bg-blue-500 hover:bg-blue-600 text-white px-8 py-3 rounded-lg font-medium transition-colors">
+                    ➡️ ด่านถัดไป
+                </button>
+                <button onclick="game.showLevelSelection()" class="bg-gray-500 hover:bg-gray-600 text-white px-8 py-3 rounded-lg font-medium transition-colors">
+                    📋 เลือกด่าน
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Final Results Screen -->
+    <div id="final-results" class="hidden max-w-4xl mx-auto p-6">
+        <div class="bg-white rounded-xl shadow-lg p-8">
+            <div class="text-center mb-8">
+                <div class="text-6xl mb-4">🏆</div>
+                <h2 class="text-3xl font-bold text-gray-800 mb-2">ผลการเล่นรวมทั้ง 3 ด่าน</h2>
+                <div id="final-total-score" class="text-2xl font-semibold text-blue-600"></div>
+            </div>
+
+            <div class="grid md:grid-cols-4 gap-4 mb-8">
+                <div class="bg-blue-50 p-4 rounded-lg text-center">
+                    <div class="text-2xl mb-1">⚡</div>
+                    <h3 class="font-semibold text-blue-800 text-sm">ความรวดเร็วเฉลี่ย</h3>
+                    <div id="final-speed-score" class="text-xl font-bold text-blue-600 mt-1"></div>
+                </div>
+                <div class="bg-green-50 p-4 rounded-lg text-center">
+                    <div class="text-2xl mb-1">🎯</div>
+                    <h3 class="font-semibold text-green-800 text-sm">ความแม่นยำเฉลี่ย</h3>
+                    <div id="final-accuracy-score" class="text-xl font-bold text-green-600 mt-1"></div>
+                </div>
+                <div class="bg-yellow-50 p-4 rounded-lg text-center">
+                    <div class="text-2xl mb-1">⚙️</div>
+                    <h3 class="font-semibold text-yellow-800 text-sm">ประสิทธิภาพเฉลี่ย</h3>
+                    <div id="final-efficiency-score" class="text-xl font-bold text-yellow-600 mt-1"></div>
+                </div>
+                <div class="bg-purple-50 p-4 rounded-lg text-center">
+                    <div class="text-2xl mb-1">🧠</div>
+                    <h3 class="font-semibold text-purple-800 text-sm">การตัดสินใจเฉลี่ย</h3>
+                    <div id="final-decision-score" class="text-xl font-bold text-purple-600 mt-1"></div>
+                </div>
+            </div>
+
+            <div class="bg-gradient-to-r from-purple-50 to-pink-50 p-6 rounded-lg mb-6">
+                <h3 class="text-xl font-bold text-purple-800 mb-3">🎭 ประเภทความถนัดของคุณ</h3>
+                <div id="final-aptitude-type" class="text-lg font-semibold text-purple-700 mb-2"></div>
+                <div id="final-aptitude-desc" class="text-purple-600"></div>
+            </div>
+
+            <div class="bg-gray-50 p-6 rounded-lg mb-6">
+                <h3 class="text-xl font-bold text-gray-800 mb-3">💡 คำแนะนำสำหรับงานโลจิสติกส์</h3>
+                <div id="final-career-advice" class="text-gray-700"></div>
+            </div>
+
+            <div class="bg-indigo-50 p-6 rounded-lg mb-6">
+                <h3 class="text-xl font-bold text-indigo-800 mb-3">📊 สรุปผลแต่ละด่าน</h3>
+                <div id="level-summary" class="space-y-3"></div>
+            </div>
+
+            <div class="text-center">
+                <button onclick="location.reload()" class="bg-blue-500 hover:bg-blue-600 text-white px-8 py-3 rounded-lg font-medium transition-colors">
+                    🔄 เล่นใหม่
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class LogisticsGame {
+            constructor() {
+                this.currentLevel = 0;
+                this.gameStarted = false;
+                this.gameEnded = false;
+                this.timeLeft = 0;
+                this.deliveredCount = 0;
+                this.trucksUsed = 0;
+                this.currentLoad = 0;
+                this.maxLoad = 0;
+                this.totalDistance = 0;
+                this.routes = [];
+                this.startTime = null;
+                this.levelResults = [];
+                this.completedLevels = new Set();
+                this.currentQuestionIndex = 0;
+                this.questionsAnswered = 0;
+                this.correctAnswers = 0;
+                this.questionStartTime = null;
+                
+                this.levels = {
+                    1: {
+                        name: 'ด่าน 1: ร้านค้าท้องถิ่น',
+                        timeLimit: 60,
+                        maxLoad: 50,
+                        deliveryPoints: [
+                            { id: 1, name: 'ร้านขายของชำ', weight: 15, x: 200, y: 150, delivered: false },
+                            { id: 2, name: 'ร้านกาแฟ', weight: 10, x: 400, y: 200, delivered: false },
+                            { id: 3, name: 'ร้านขนม', weight: 20, x: 300, y: 350, delivered: false },
+                            { id: 4, name: 'ร้านผลไม้', weight: 25, x: 500, y: 120, delivered: false },
+                            { id: 5, name: 'ร้านยา', weight: 8, x: 600, y: 300, delivered: false }
+                        ],
+                        scenario: 'การส่งของให้ร้านค้าในชุมชนท้องถิ่น เหมือนกับงานของ Grab Express หรือ Kerry Express ในการส่งพัสดุให้ร้านค้าย่านใกล้เคียง ต้องการความรวดเร็วและความคุ้นเคยกับพื้นที่',
+                        questions: [
+                            {
+                                id: 1,
+                                question: 'ลูกค้าโทรมาบอกว่าต้องการเปลี่ยนที่อยู่จัดส่งกะทันหัน คุณจะทำอย่างไร?',
+                                options: [
+                                    'ปฏิเสธเพราะเริ่มส่งแล้ว',
+                                    'รับเปลี่ยนทันทีโดยไม่คิดค่าใช้จ่าย',
+                                    'อธิบายขั้นตอนและค่าใช้จ่ายเพิ่มเติม',
+                                    'ให้ยกเลิกและสั่งใหม่'
+                                ],
+                                correct: 2,
+                                explanation: 'การอธิบายขั้นตอนและค่าใช้จ่ายแสดงถึงความเป็นมืออาชีพและความโปร่งใส'
+                            },
+                            {
+                                id: 2,
+                                question: 'เมื่อพบว่าร้านปลายทางปิดแล้ว คุณควรทำอย่างไร?',
+                                options: [
+                                    'วางพัสดุไว้หน้าร้านแล้วถ่ายรูป',
+                                    'โทรหาลูกค้าและประสานงานหาทางออก',
+                                    'นำกลับคลังสินค้าทันที',
+                                    'รอจนกว่าร้านจะเปิด'
+                                ],
+                                correct: 1,
+                                explanation: 'การติดต่อลูกค้าเพื่อหาทางออกร่วมกันแสดงถึงการบริการที่ดี'
+                            }
+                        ]
+                    },
+                    2: {
+                        name: 'ด่าน 2: ศูนย์การค้า',
+                        timeLimit: 90,
+                        maxLoad: 80,
+                        deliveryPoints: [
+                            { id: 1, name: 'ร้านเสื้อผ้า A', weight: 25, x: 150, y: 120, delivered: false },
+                            { id: 2, name: 'ร้านอาหาร B', weight: 35, x: 350, y: 100, delivered: false },
+                            { id: 3, name: 'ร้านหนังสือ', weight: 20, x: 550, y: 150, delivered: false },
+                            { id: 4, name: 'ร้านเครื่องใช้ไฟฟ้า', weight: 40, x: 200, y: 280, delivered: false },
+                            { id: 5, name: 'ร้านเครื่องสำอาง', weight: 15, x: 450, y: 250, delivered: false },
+                            { id: 6, name: 'ร้านของเล่น', weight: 30, x: 650, y: 200, delivered: false },
+                            { id: 7, name: 'ร้านกีฬา', weight: 35, x: 300, y: 400, delivered: false },
+                            { id: 8, name: 'ร้านเบเกอรี่', weight: 25, x: 600, y: 380, delivered: false }
+                        ],
+                        scenario: 'การจัดส่งสินค้าให้ร้านค้าในศูนย์การค้า เหมือนกับงานของ Central Group หรือ Robinson ในการจัดส่งสินค้าให้ร้านค้าในห้างสรรพสินค้า ต้องการการประสานงานที่ดีและการจัดการเวลาที่แม่นยำ',
+                        questions: [
+                            {
+                                id: 1,
+                                question: 'ในช่วงเทศกาลมีออเดอร์เพิ่มขึ้น 300% คุณจะจัดการอย่างไร?',
+                                options: [
+                                    'ปฏิเสธออเดอร์ส่วนเกิน',
+                                    'จ้างรถเพิ่มชั่วคราวโดยไม่คิดต้นทุน',
+                                    'วางแผนเส้นทางใหม่และจัดลำดับความสำคัญ',
+                                    'ส่งช้าแต่รับออเดอร์ทั้งหมด'
+                                ],
+                                correct: 2,
+                                explanation: 'การวางแผนและจัดลำดับความสำคัญแสดงถึงทักษะการจัดการในสถานการณ์วิกฤต'
+                            },
+                            {
+                                id: 2,
+                                question: 'ร้านค้าร้องเรียนว่าได้รับสินค้าผิดประเภท คุณจะแก้ไขอย่างไร?',
+                                options: [
+                                    'อ้างว่าเป็นความผิดของร้านค้า',
+                                    'ตรวจสอบและแก้ไขทันที พร้อมชดเชยความเสียหาย',
+                                    'ให้ร้านค้าส่งคืนแล้วสั่งใหม่',
+                                    'เสนอส่วนลดครั้งถัดไป'
+                                ],
+                                correct: 1,
+                                explanation: 'การรับผิดชอบและแก้ไขทันทีสร้างความน่าเชื่อถือ'
+                            },
+                            {
+                                id: 3,
+                                question: 'เมื่อมีการจราจรติดขัดรุนแรง คุณจะทำอย่างไร?',
+                                options: [
+                                    'รอจนกว่าจราจรจะคล่องตัว',
+                                    'ใช้เส้นทางสำรองที่เตรียมไว้',
+                                    'แจ้งลูกค้าว่าจะส่งช้า',
+                                    'ยกเลิกการส่งในวันนั้น'
+                                ],
+                                correct: 1,
+                                explanation: 'การเตรียมแผนสำรองแสดงถึงการวางแผนที่ดี'
+                            }
+                        ]
+                    },
+                    3: {
+                        name: 'ด่าน 3: เมืองใหญ่',
+                        timeLimit: 120,
+                        maxLoad: 100,
+                        deliveryPoints: [
+                            { id: 1, name: 'โรงพยาบาล', weight: 30, x: 120, y: 100, delivered: false },
+                            { id: 2, name: 'โรงเรียน A', weight: 25, x: 280, y: 80, delivered: false },
+                            { id: 3, name: 'โรงเรียน B', weight: 25, x: 480, y: 120, delivered: false },
+                            { id: 4, name: 'สำนักงานใหญ่', weight: 40, x: 650, y: 100, delivered: false },
+                            { id: 5, name: 'โรงแรม A', weight: 35, x: 100, y: 250, delivered: false },
+                            { id: 6, name: 'โรงแรม B', weight: 35, x: 350, y: 200, delivered: false },
+                            { id: 7, name: 'ร้านอาหาร C', weight: 20, x: 550, y: 280, delivered: false },
+                            { id: 8, name: 'ร้านอาหาร D', weight: 20, x: 700, y: 250, delivered: false },
+                            { id: 9, name: 'คอนโดมิเนียม A', weight: 15, x: 200, y: 380, delivered: false },
+                            { id: 10, name: 'คอนโดมิเนียม B', weight: 15, x: 400, y: 420, delivered: false },
+                            { id: 11, name: 'สำนักงาน B', weight: 30, x: 600, y: 400, delivered: false },
+                            { id: 12, name: 'โรงงาน', weight: 45, x: 500, y: 350, delivered: false }
+                        ],
+                        scenario: 'การจัดส่งสินค้าทั่วเมืองใหญ่ เหมือนกับงานของ CP All (7-Eleven) หรือ Tesco Lotus ในการจัดส่งสินค้าให้สาขาต่างๆ ทั่วกรุงเทพฯ ต้องการการวางแผนเส้นทางที่ซับซ้อนและการจัดการทรัพยากรอย่างมีประสิทธิภาพ',
+                        questions: [
+                            {
+                                id: 1,
+                                question: 'บริษัทต้องการลดต้นทุนการขนส่ง 20% คุณจะเสนออะไร?',
+                                options: [
+                                    'ลดจำนวนรถและคนขับ',
+                                    'วิเคราะห์เส้นทางและรวมการส่งให้มีประสิทธิภาพ',
+                                    'ลดความถี่ในการส่ง',
+                                    'เพิ่มค่าขนส่งให้ลูกค้า'
+                                ],
+                                correct: 1,
+                                explanation: 'การวิเคราะห์และปรับปรุงประสิทธิภาพเป็นวิธีที่ยั่งยืน'
+                            },
+                            {
+                                id: 2,
+                                question: 'ลูกค้าใหญ่ต้องการระบบติดตามสินค้าแบบเรียลไทม์ คุณจะทำอย่างไร?',
+                                options: [
+                                    'บอกว่าไม่มีระบบนี้',
+                                    'เสนอระบบ GPS tracking และแอปพลิเคชัน',
+                                    'ให้โทรสอบถามเอง',
+                                    'ส่ง SMS แจ้งสถานะ'
+                                ],
+                                correct: 1,
+                                explanation: 'การใช้เทคโนโลジีสมัยใหม่เพิ่มความโปร่งใสและความน่าเชื่อถือ'
+                            },
+                            {
+                                id: 3,
+                                question: 'พนักงานขับรถหลายคนลาป่วยพร้อมกัน คุณจะจัดการอย่างไร?',
+                                options: [
+                                    'ยกเลิกการส่งในวันนั้น',
+                                    'ขอให้พนักงานที่ป่วยมาทำงาน',
+                                    'จัดสรรงานใหม่และใช้พนักงานสำรอง',
+                                    'จ้างคนขับจากภายนอกทันที'
+                                ],
+                                correct: 2,
+                                explanation: 'การมีแผนสำรองและการจัดสรรทรัพยากรอย่างยืดหยุ่น'
+                            },
+                            {
+                                id: 4,
+                                question: 'ต้องการขยายธุรกิจไปต่างจังหวัด คุณจะวางแผนอย่างไร?',
+                                options: [
+                                    'เปิดสาขาในทุกจังหวัดพร้อมกัน',
+                                    'วิเคราะห์ตลาดและเริ่มจากจังหวัดที่มีศักยภาพ',
+                                    'ใช้บริษัทขนส่งท้องถิ่นแทน',
+                                    'รอจนกว่าจะมีเงินทุนเพียงพอ'
+                                ],
+                                correct: 1,
+                                explanation: 'การวิเคราะห์ตลาดและขยายตัวอย่างมีกลยุทธ์'
+                            }
+                        ]
+                    }
+                };
+
+                this.truckPosition = { x: 80, y: 80 };
+                this.depotPosition = { x: 50, y: 50 };
+                
+                this.init();
+            }
+
+            init() {
+                this.setupEventListeners();
+                this.updateLevelStatus();
+            }
+
+            setupEventListeners() {
+                document.getElementById('start-btn').addEventListener('click', () => this.startGame());
+                document.getElementById('end-btn').addEventListener('click', () => this.endGame());
+                document.getElementById('reset-btn').addEventListener('click', () => this.resetLevel());
+                document.getElementById('back-btn').addEventListener('click', () => this.showLevelSelection());
+                document.getElementById('next-level-btn').addEventListener('click', () => this.nextLevel());
+                document.getElementById('question-next-btn').addEventListener('click', () => this.nextQuestion());
+            }
+
+            selectLevel(levelNum) {
+                this.currentLevel = levelNum;
+                this.showGameScreen();
+                this.setupLevel();
+            }
+
+            setupLevel() {
+                const level = this.levels[this.currentLevel];
+                this.timeLeft = level.timeLimit;
+                this.maxLoad = level.maxLoad;
+                this.deliveredCount = 0;
+                this.trucksUsed = 0;
+                this.currentLoad = 0;
+                this.gameStarted = false;
+                this.gameEnded = false;
+                this.currentQuestionIndex = 0;
+                this.questionsAnswered = 0;
+                this.correctAnswers = 0;
+
+                const levelTitleEl = document.getElementById('level-title');
+                const timerEl = document.getElementById('timer');
+                const totalPointsEl = document.getElementById('total-points');
+                const totalQuestionsEl = document.getElementById('total-questions');
+                const questionsAnsweredEl = document.getElementById('questions-answered');
+                
+                if (levelTitleEl) levelTitleEl.textContent = level.name;
+                if (timerEl) timerEl.textContent = this.timeLeft;
+                if (totalPointsEl) totalPointsEl.textContent = level.deliveryPoints.length;
+                if (totalQuestionsEl) totalQuestionsEl.textContent = level.questions.length;
+                if (questionsAnsweredEl) questionsAnsweredEl.textContent = this.questionsAnswered;
+                
+                this.createDeliveryPoints();
+                this.setupDragAndDrop();
+                this.updateUI();
+                this.setupQuestions();
+                
+                // Reset truck position
+                const truck = document.getElementById('truck');
+                if (truck) {
+                    truck.style.left = '80px';
+                    truck.style.top = '80px';
+                    this.truckPosition = { x: 80, y: 80 };
+                }
+                
+                // Clear routes
+                document.getElementById('route-svg').innerHTML = '';
+                
+                // Reset button states
+                const startBtn = document.getElementById('start-btn');
+                const endBtn = document.getElementById('end-btn');
+                
+                if (startBtn) {
+                    startBtn.classList.remove('hidden');
+                    startBtn.disabled = false;
+                    startBtn.textContent = '🚀 เริ่มเกม';
+                }
+                if (endBtn) {
+                    endBtn.classList.add('hidden');
+                }
+            }
+
+            createDeliveryPoints() {
+                const container = document.getElementById('delivery-points');
+                container.innerHTML = '';
+                const level = this.levels[this.currentLevel];
+
+                level.deliveryPoints.forEach(point => {
+                    point.delivered = false; // Reset delivery status
+                    const pointEl = document.createElement('div');
+                    pointEl.className = 'delivery-point absolute bg-yellow-400 text-gray-800 p-2 rounded-lg shadow-md text-xs';
+                    pointEl.style.left = point.x + 'px';
+                    pointEl.style.top = point.y + 'px';
+                    pointEl.style.zIndex = '2';
+                    pointEl.innerHTML = `
+                        <div class="text-center">
+                            <div class="text-lg">📦</div>
+                            <div class="font-bold">${point.name}</div>
+                            <div class="text-xs">${point.weight}kg</div>
+                        </div>
+                    `;
+                    pointEl.dataset.pointId = point.id;
+                    container.appendChild(pointEl);
+                });
+            }
+
+            setupDragAndDrop() {
+                const truck = document.getElementById('truck');
+                if (!truck) return;
+                
+                let isDragging = false;
+                let offsetX, offsetY;
+
+                // Remove existing listeners
+                const newTruck = truck.cloneNode(true);
+                truck.parentNode.replaceChild(newTruck, truck);
+
+                newTruck.addEventListener('mousedown', (e) => {
+                    if (!this.gameStarted || this.gameEnded) return;
+                    e.preventDefault();
+                    isDragging = true;
+                    
+                    const rect = newTruck.getBoundingClientRect();
+                    offsetX = e.clientX - rect.left;
+                    offsetY = e.clientY - rect.top;
+                    
+                    newTruck.style.cursor = 'grabbing';
+                    newTruck.style.zIndex = '10';
+                });
+
+                document.addEventListener('mousemove', (e) => {
+                    if (!isDragging) return;
+                    e.preventDefault();
+                    
+                    const mapRect = newTruck.parentElement.getBoundingClientRect();
+                    let newX = e.clientX - mapRect.left - offsetX;
+                    let newY = e.clientY - mapRect.top - offsetY;
+                    
+                    // Keep truck within bounds
+                    newX = Math.max(0, Math.min(newX, mapRect.width - newTruck.offsetWidth));
+                    newY = Math.max(0, Math.min(newY, mapRect.height - newTruck.offsetHeight));
+                    
+                    newTruck.style.left = newX + 'px';
+                    newTruck.style.top = newY + 'px';
+                    this.truckPosition = { x: newX, y: newY };
+                });
+
+                document.addEventListener('mouseup', (e) => {
+                    if (!isDragging) return;
+                    e.preventDefault();
+                    isDragging = false;
+                    newTruck.style.cursor = 'grab';
+                    newTruck.style.zIndex = '3';
+                    this.checkDelivery();
+                });
+
+                // Touch events for mobile
+                newTruck.addEventListener('touchstart', (e) => {
+                    if (!this.gameStarted || this.gameEnded) return;
+                    e.preventDefault();
+                    isDragging = true;
+                    
+                    const touch = e.touches[0];
+                    const rect = newTruck.getBoundingClientRect();
+                    offsetX = touch.clientX - rect.left;
+                    offsetY = touch.clientY - rect.top;
+                });
+
+                document.addEventListener('touchmove', (e) => {
+                    if (!isDragging) return;
+                    e.preventDefault();
+                    
+                    const touch = e.touches[0];
+                    const mapRect = newTruck.parentElement.getBoundingClientRect();
+                    let newX = touch.clientX - mapRect.left - offsetX;
+                    let newY = touch.clientY - mapRect.top - offsetY;
+                    
+                    newX = Math.max(0, Math.min(newX, mapRect.width - newTruck.offsetWidth));
+                    newY = Math.max(0, Math.min(newY, mapRect.height - newTruck.offsetHeight));
+                    
+                    newTruck.style.left = newX + 'px';
+                    newTruck.style.top = newY + 'px';
+                    this.truckPosition = { x: newX, y: newY };
+                });
+
+                document.addEventListener('touchend', (e) => {
+                    if (!isDragging) return;
+                    e.preventDefault();
+                    isDragging = false;
+                    this.checkDelivery();
+                });
+            }
+
+            checkDelivery() {
+                const truck = document.getElementById('truck');
+                if (!truck) return;
+                
+                const truckRect = truck.getBoundingClientRect();
+
+                // Check depot
+                const depotEl = document.getElementById('depot');
+                if (depotEl) {
+                    const depotRect = depotEl.getBoundingClientRect();
+                    if (this.isColliding(truckRect, depotRect)) {
+                        if (this.currentLoad > 0) {
+                            this.returnToDepot();
+                        }
+                        return;
+                    }
+                }
+
+                // Check delivery points
+                const level = this.levels[this.currentLevel];
+                if (level && level.deliveryPoints) {
+                    level.deliveryPoints.forEach(point => {
+                        if (point.delivered) return;
+                        
+                        const pointEl = document.querySelector(`[data-point-id="${point.id}"]`);
+                        if (pointEl) {
+                            const pointRect = pointEl.getBoundingClientRect();
+                            
+                            if (this.isColliding(truckRect, pointRect)) {
+                                this.deliverToPoint(point, pointEl);
+                            }
+                        }
+                    });
+                }
+            }
+
+            isColliding(rect1, rect2) {
+                return !(rect1.right < rect2.left || 
+                        rect1.left > rect2.right || 
+                        rect1.bottom < rect2.top || 
+                        rect1.top > rect2.bottom);
+            }
+
+            setupQuestions() {
+                const level = this.levels[this.currentLevel];
+                const progressEl = document.getElementById('question-progress');
+                const waitingEl = document.getElementById('questions-waiting');
+                const currentEl = document.getElementById('current-question');
+                const completedEl = document.getElementById('questions-completed');
+                
+                if (progressEl) {
+                    progressEl.textContent = `(0/${level.questions.length})`;
+                }
+                
+                // Show waiting state
+                if (waitingEl) waitingEl.classList.remove('hidden');
+                if (currentEl) currentEl.classList.add('hidden');
+                if (completedEl) completedEl.classList.add('hidden');
+            }
+
+            showNextQuestion() {
+                const level = this.levels[this.currentLevel];
+                
+                if (this.currentQuestionIndex >= level.questions.length) {
+                    // All questions answered
+                    const waitingEl = document.getElementById('questions-waiting');
+                    const currentEl = document.getElementById('current-question');
+                    const completedEl = document.getElementById('questions-completed');
+                    
+                    if (waitingEl) waitingEl.classList.add('hidden');
+                    if (currentEl) currentEl.classList.add('hidden');
+                    if (completedEl) completedEl.classList.remove('hidden');
+                    
+                    this.checkLevelComplete();
+                    return;
+                }
+                
+                const question = level.questions[this.currentQuestionIndex];
+                const waitingEl = document.getElementById('questions-waiting');
+                const currentEl = document.getElementById('current-question');
+                const progressEl = document.getElementById('question-progress');
+                const questionTextEl = document.getElementById('question-text-display');
+                const optionsEl = document.getElementById('question-options-display');
+                const resultEl = document.getElementById('question-result-display');
+                
+                // Update progress
+                if (progressEl) {
+                    progressEl.textContent = `(${this.currentQuestionIndex + 1}/${level.questions.length})`;
+                }
+                
+                // Show question
+                if (waitingEl) waitingEl.classList.add('hidden');
+                if (currentEl) currentEl.classList.remove('hidden');
+                if (resultEl) resultEl.classList.add('hidden');
+                
+                if (questionTextEl) {
+                    questionTextEl.textContent = question.question;
+                }
+                
+                if (optionsEl) {
+                    optionsEl.innerHTML = '';
+                    question.options.forEach((option, index) => {
+                        const optionEl = document.createElement('button');
+                        optionEl.className = 'w-full text-left p-3 border-2 border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition-all';
+                        optionEl.innerHTML = `
+                            <div class="flex items-center">
+                                <div class="w-6 h-6 rounded-full border-2 border-gray-400 mr-3 flex items-center justify-center text-sm font-bold">
+                                    ${String.fromCharCode(65 + index)}
+                                </div>
+                                <div>${option}</div>
+                            </div>
+                        `;
+                        
+                        optionEl.addEventListener('click', () => this.answerCurrentQuestion(index, question.correct, question.explanation));
+                        optionsEl.appendChild(optionEl);
+                    });
+                }
+            }
+
+            answerCurrentQuestion(selectedIndex, correctIndex, explanation) {
+                const optionsEl = document.getElementById('question-options-display');
+                const resultEl = document.getElementById('question-result-display');
+                const resultIconEl = document.getElementById('result-icon-display');
+                const resultTextEl = document.getElementById('result-text-display');
+                const resultExplanationEl = document.getElementById('result-explanation-display');
+                const progressEl = document.getElementById('question-progress');
+                
+                // Disable all options
+                if (optionsEl) {
+                    Array.from(optionsEl.children).forEach((option, index) => {
+                        option.disabled = true;
+                        option.style.pointerEvents = 'none';
+                        
+                        if (index === correctIndex) {
+                            option.classList.remove('border-gray-200', 'hover:border-blue-300');
+                            option.classList.add('border-green-500', 'bg-green-50');
+                        } else if (index === selectedIndex && selectedIndex !== correctIndex) {
+                            option.classList.remove('border-gray-200', 'hover:border-blue-300');
+                            option.classList.add('border-red-500', 'bg-red-50');
+                        }
+                    });
+                }
+                
+                const isCorrect = selectedIndex === correctIndex;
+                if (isCorrect) {
+                    this.correctAnswers++;
+                    if (resultIconEl) resultIconEl.textContent = '✅';
+                    if (resultTextEl) {
+                        resultTextEl.textContent = 'ถูกต้อง!';
+                        resultTextEl.className = 'font-semibold text-green-600';
+                    }
+                    if (resultEl) {
+                        resultEl.className = 'p-4 rounded-lg mb-4 bg-green-50 border border-green-200';
+                    }
+                } else {
+                    if (resultIconEl) resultIconEl.textContent = '❌';
+                    if (resultTextEl) {
+                        resultTextEl.textContent = 'ไม่ถูกต้อง';
+                        resultTextEl.className = 'font-semibold text-red-600';
+                    }
+                    if (resultEl) {
+                        resultEl.className = 'p-4 rounded-lg mb-4 bg-red-50 border border-red-200';
+                    }
+                }
+                
+                if (resultExplanationEl) {
+                    resultExplanationEl.textContent = explanation;
+                }
+                
+                if (resultEl) {
+                    resultEl.classList.remove('hidden');
+                }
+                
+                this.questionsAnswered++;
+                this.currentQuestionIndex++;
+                
+                // Update progress
+                const level = this.levels[this.currentLevel];
+                if (progressEl) {
+                    progressEl.textContent = `(${this.questionsAnswered}/${level.questions.length})`;
+                }
+                
+                this.updateUI();
+                
+                // Auto show next question after 3 seconds
+                setTimeout(() => {
+                    this.showNextQuestion();
+                }, 3000);
+            }
+
+            checkLevelComplete() {
+                const level = this.levels[this.currentLevel];
+                
+                // Check if both delivery and questions are complete
+                const allDelivered = this.deliveredCount === level.deliveryPoints.length;
+                const allQuestionsAnswered = this.questionsAnswered === level.questions.length;
+                
+                if (allDelivered && allQuestionsAnswered) {
+                    setTimeout(() => {
+                        this.endLevel(true);
+                    }, 2000);
+                }
+            }
+
+            deliverToPoint(point, pointEl) {
+                if (this.currentLoad + point.weight > this.maxLoad) {
+                    this.showMessage(`รถเต็มแล้ว! (${this.currentLoad + point.weight}/${this.maxLoad}kg) กลับไปที่คลังสินค้าก่อน`, 'warning');
+                    return;
+                }
+
+                point.delivered = true;
+                this.currentLoad += point.weight;
+                this.deliveredCount++;
+                
+                pointEl.className = 'delivery-point absolute bg-green-400 text-white p-2 rounded-lg shadow-md text-xs';
+                pointEl.innerHTML = `
+                    <div class="text-center">
+                        <div class="text-lg">✅</div>
+                        <div class="font-bold">${point.name}</div>
+                        <div class="text-xs">ส่งแล้ว</div>
+                    </div>
+                `;
+
+                this.updateUI();
+                this.drawRoute();
+                this.showMessage(`ส่งพัสดุที่ ${point.name} สำเร็จ!`, 'success');
+
+                this.checkLevelComplete();
+            }
+
+
+
+            returnToDepot() {
+                this.trucksUsed++;
+                this.currentLoad = 0;
+                this.updateUI();
+                this.showMessage('กลับถึงคลังสินค้าแล้ว เริ่มเที่ยวใหม่!', 'info');
+            }
+
+            drawRoute() {
+                const svg = document.getElementById('route-svg');
+                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                line.setAttribute('x1', this.depotPosition.x + 25);
+                line.setAttribute('y1', this.depotPosition.y + 25);
+                line.setAttribute('x2', this.truckPosition.x + 15);
+                line.setAttribute('y2', this.truckPosition.y + 15);
+                line.className = 'route-line completed-route';
+                svg.appendChild(line);
+            }
+
+            startGame() {
+                this.gameStarted = true;
+                this.gameEnded = false;
+                this.startTime = Date.now();
+                
+                const startBtn = document.getElementById('start-btn');
+                const endBtn = document.getElementById('end-btn');
+                
+                if (startBtn) {
+                    startBtn.classList.add('hidden');
+                }
+                if (endBtn) {
+                    endBtn.classList.remove('hidden');
+                }
+                
+                this.startTimer();
+                this.showMessage('เกมเริ่มแล้ว! ลากรถไปส่งพัสดุและตอบคำถามด้านล่าง!', 'success');
+                
+                // Show first question immediately
+                setTimeout(() => {
+                    this.showNextQuestion();
+                }, 1000);
+            }
+
+            endGame() {
+                if (!this.gameStarted || this.gameEnded) return;
+                this.endLevel(false);
+            }
+
+            startTimer() {
+                if (this.timer) clearInterval(this.timer);
+                
+                this.timer = setInterval(() => {
+                    this.timeLeft--;
+                    const timerEl = document.getElementById('timer');
+                    if (timerEl) {
+                        timerEl.textContent = this.timeLeft;
+                    }
+                    
+                    if (this.timeLeft <= 0) {
+                        clearInterval(this.timer);
+                        this.endLevel(false);
+                    }
+                }, 1000);
+            }
+
+            resetLevel() {
+                if (this.timer) {
+                    clearInterval(this.timer);
+                    this.timer = null;
+                }
+                
+                // Reset button states
+                const startBtn = document.getElementById('start-btn');
+                const endBtn = document.getElementById('end-btn');
+                
+                if (startBtn) {
+                    startBtn.classList.remove('hidden');
+                    startBtn.disabled = false;
+                    startBtn.textContent = '🚀 เริ่มเกม';
+                }
+                if (endBtn) {
+                    endBtn.classList.add('hidden');
+                }
+                
+                this.setupLevel();
+            }
+
+            updateUI() {
+                const deliveredEl = document.getElementById('delivered');
+                const trucksUsedEl = document.getElementById('trucks-used');
+                const currentLoadEl = document.getElementById('current-load');
+                const questionsAnsweredEl = document.getElementById('questions-answered');
+                
+                if (deliveredEl) deliveredEl.textContent = this.deliveredCount;
+                if (trucksUsedEl) trucksUsedEl.textContent = this.trucksUsed;
+                if (currentLoadEl) currentLoadEl.textContent = this.currentLoad;
+                if (questionsAnsweredEl) questionsAnsweredEl.textContent = this.questionsAnswered;
+            }
+
+            showMessage(message, type) {
+                const colors = {
+                    success: 'bg-green-100 text-green-800 border-green-200',
+                    warning: 'bg-yellow-100 text-yellow-800 border-yellow-200',
+                    info: 'bg-blue-100 text-blue-800 border-blue-200',
+                    error: 'bg-red-100 text-red-800 border-red-200'
+                };
+
+                const messageEl = document.createElement('div');
+                messageEl.className = `fixed top-20 right-4 p-4 rounded-lg border-2 shadow-lg z-50 ${colors[type]}`;
+                messageEl.textContent = message;
+                document.body.appendChild(messageEl);
+
+                setTimeout(() => {
+                    messageEl.remove();
+                }, 3000);
+            }
+
+            endLevel(isComplete = false) {
+                if (this.gameEnded) return; // Prevent multiple calls
+                this.gameEnded = true;
+                this.gameStarted = false;
+                
+                if (this.timer) {
+                    clearInterval(this.timer);
+                    this.timer = null;
+                }
+                
+                const endTime = Date.now();
+                const totalTime = this.startTime ? Math.round((endTime - this.startTime) / 1000) : this.levels[this.currentLevel].timeLimit - this.timeLeft;
+                
+                this.calculateLevelResults(totalTime);
+                this.completedLevels.add(this.currentLevel);
+                this.updateLevelStatus();
+                
+                // Show completion message
+                const level = this.levels[this.currentLevel];
+                const allDelivered = this.deliveredCount === level.deliveryPoints.length;
+                const allQuestionsAnswered = this.questionsAnswered === level.questions.length;
+                
+                if (allDelivered && allQuestionsAnswered) {
+                    this.showMessage(`🎉 ยินดีด้วย! ผ่าน${level.name}แล้ว!`, 'success');
+                } else if (!allDelivered && !allQuestionsAnswered) {
+                    this.showMessage(`⏰ หมดเวลา! ส่งได้ ${this.deliveredCount}/${level.deliveryPoints.length} จุด, ตอบได้ ${this.questionsAnswered}/${level.questions.length} คำถาม`, 'warning');
+                } else if (!allDelivered) {
+                    this.showMessage(`📦 ส่งพัสดุไม่ครบ! ส่งได้ ${this.deliveredCount}/${level.deliveryPoints.length} จุด`, 'warning');
+                } else {
+                    this.showMessage(`❓ ตอบคำถามไม่ครบ! ตอบได้ ${this.questionsAnswered}/${level.questions.length} คำถาม`, 'warning');
+                }
+                
+                // Always show results after a short delay
+                setTimeout(() => {
+                    this.showLevelComplete();
+                }, 2000);
+            }
+
+            calculateLevelResults(totalTime) {
+                const level = this.levels[this.currentLevel];
+                
+                // Speed Score (0-100)
+                const timeScore = Math.max(0, 100 - (totalTime / level.timeLimit * 100));
+                
+                // Accuracy Score (0-100) - delivery accuracy
+                const deliveryAccuracy = (this.deliveredCount / level.deliveryPoints.length) * 100;
+                
+                // Efficiency Score (0-100) - truck usage efficiency
+                const totalWeight = level.deliveryPoints.reduce((sum, p) => sum + p.weight, 0);
+                const optimalTrucks = Math.ceil(totalWeight / this.maxLoad);
+                const efficiencyScore = Math.max(0, 100 - ((this.trucksUsed - optimalTrucks) * 15));
+                
+                // Decision Score (0-100) - question accuracy
+                const decisionScore = level.questions.length > 0 ? (this.correctAnswers / level.questions.length) * 100 : 100;
+                
+                const levelResult = {
+                    level: this.currentLevel,
+                    totalScore: Math.round((timeScore + deliveryAccuracy + efficiencyScore + decisionScore) / 4),
+                    speedScore: Math.round(timeScore),
+                    accuracyScore: Math.round(deliveryAccuracy),
+                    efficiencyScore: Math.round(efficiencyScore),
+                    decisionScore: Math.round(decisionScore),
+                    totalTime,
+                    delivered: this.deliveredCount,
+                    trucksUsed: this.trucksUsed,
+                    questionsAnswered: this.questionsAnswered,
+                    correctAnswers: this.correctAnswers,
+                    scenario: level.scenario
+                };
+                
+                // Update or add level result
+                const existingIndex = this.levelResults.findIndex(r => r.level === this.currentLevel);
+                if (existingIndex >= 0) {
+                    this.levelResults[existingIndex] = levelResult;
+                } else {
+                    this.levelResults.push(levelResult);
+                }
+            }
+
+            showLevelComplete() {
+                const gameScreen = document.getElementById('game-screen');
+                const gameHeader = document.getElementById('game-header');
+                const levelComplete = document.getElementById('level-complete');
+                
+                if (gameScreen) gameScreen.classList.add('hidden');
+                if (gameHeader) gameHeader.classList.add('hidden');
+                if (levelComplete) levelComplete.classList.remove('hidden');
+                
+                const result = this.levelResults.find(r => r.level === this.currentLevel);
+                const level = this.levels[this.currentLevel];
+                
+                if (result && level) {
+                    const titleEl = document.getElementById('level-complete-title');
+                    const scoreEl = document.getElementById('level-score');
+                    const speedEl = document.getElementById('level-speed-score');
+                    const accuracyEl = document.getElementById('level-accuracy-score');
+                    const efficiencyEl = document.getElementById('level-efficiency-score');
+                    const decisionEl = document.getElementById('level-decision-score');
+                    const scenarioEl = document.getElementById('real-scenario');
+                    
+                    if (titleEl) titleEl.textContent = level.name;
+                    if (scoreEl) scoreEl.textContent = `คะแนนรวม: ${result.totalScore}/100`;
+                    if (speedEl) speedEl.textContent = `${result.speedScore}/100`;
+                    if (accuracyEl) accuracyEl.textContent = `${result.accuracyScore}/100`;
+                    if (efficiencyEl) efficiencyEl.textContent = `${result.efficiencyScore}/100`;
+                    if (decisionEl) decisionEl.textContent = `${result.decisionScore}/100`;
+                    if (scenarioEl) scenarioEl.textContent = result.scenario;
+                }
+                
+                // Show/hide next level button
+                const nextBtn = document.getElementById('next-level-btn');
+                if (nextBtn) {
+                    if (this.currentLevel < 3) {
+                        nextBtn.style.display = 'inline-block';
+                        nextBtn.textContent = `➡️ ด่าน ${this.currentLevel + 1}`;
+                    } else {
+                        nextBtn.style.display = 'none';
+                    }
+                }
+            }
+
+            nextLevel() {
+                if (this.currentLevel < 3) {
+                    this.selectLevel(this.currentLevel + 1);
+                    document.getElementById('level-complete').classList.add('hidden');
+                }
+            }
+
+            showLevelSelection() {
+                document.getElementById('game-screen').classList.add('hidden');
+                document.getElementById('game-header').classList.add('hidden');
+                document.getElementById('level-complete').classList.add('hidden');
+                document.getElementById('final-results').classList.add('hidden');
+                document.getElementById('level-selection').classList.remove('hidden');
+                
+                // Show final results if all levels completed
+                if (this.completedLevels.size === 3) {
+                    setTimeout(() => this.showFinalResults(), 500);
+                }
+            }
+
+            showGameScreen() {
+                document.getElementById('level-selection').classList.add('hidden');
+                document.getElementById('level-complete').classList.add('hidden');
+                document.getElementById('final-results').classList.add('hidden');
+                document.getElementById('game-screen').classList.remove('hidden');
+                document.getElementById('game-header').classList.remove('hidden');
+            }
+
+            updateLevelStatus() {
+                for (let i = 1; i <= 3; i++) {
+                    const statusEl = document.getElementById(`level${i}-status`);
+                    if (this.completedLevels.has(i)) {
+                        const result = this.levelResults.find(r => r.level === i);
+                        statusEl.textContent = `✅ ผ่านแล้ว (${result.totalScore}/100)`;
+                        statusEl.className = 'mt-3 text-center text-sm font-semibold text-green-600';
+                    } else {
+                        statusEl.textContent = '';
+                    }
+                }
+            }
+
+            showFinalResults() {
+                document.getElementById('level-selection').classList.add('hidden');
+                document.getElementById('final-results').classList.remove('hidden');
+                
+                // Calculate averages
+                const avgSpeed = Math.round(this.levelResults.reduce((sum, r) => sum + r.speedScore, 0) / 3);
+                const avgAccuracy = Math.round(this.levelResults.reduce((sum, r) => sum + r.accuracyScore, 0) / 3);
+                const avgEfficiency = Math.round(this.levelResults.reduce((sum, r) => sum + r.efficiencyScore, 0) / 3);
+                const avgDecision = Math.round(this.levelResults.reduce((sum, r) => sum + r.decisionScore, 0) / 3);
+                const totalScore = Math.round((avgSpeed + avgAccuracy + avgEfficiency + avgDecision) / 4);
+                
+                document.getElementById('final-total-score').textContent = `คะแนนรวม: ${totalScore}/100`;
+                document.getElementById('final-speed-score').textContent = `${avgSpeed}/100`;
+                document.getElementById('final-accuracy-score').textContent = `${avgAccuracy}/100`;
+                document.getElementById('final-efficiency-score').textContent = `${avgEfficiency}/100`;
+                document.getElementById('final-decision-score').textContent = `${avgDecision}/100`;
+                
+                this.analyzeFinalAptitude(avgSpeed, avgAccuracy, avgEfficiency, avgDecision);
+                this.showLevelSummary();
+            }
+
+            analyzeFinalAptitude(speedScore, accuracyScore, efficiencyScore, decisionScore) {
+                let aptitudeType, aptitudeDesc, careerAdvice;
+                
+                if (decisionScore >= 85 && efficiencyScore >= 80) {
+                    aptitudeType = '🎯 นักวางแผนเชิงกลยุทธ์ระดับสูง';
+                    aptitudeDesc = 'คุณมีความสามารถเยี่ยมในการตัดสินใจและวางแผนอย่างมีประสิทธิภาพ สามารถแก้ไขปัญหาซับซ้อนและมองภาพรวมได้ดี เหมาะกับการเป็นผู้นำในองค์กร';
+                    careerAdvice = 'เหมาะกับตำแหน่งระดับสูง: Supply Chain Director, Chief Operations Officer, Logistics Consultant - ควรพัฒนาทักษะด้านการบริหารจัดการและเทคโนโลยี AI/ML';
+                } else if (speedScore >= 80 && decisionScore >= 75) {
+                    aptitudeType = '⚡ นักแก้ปัญหาเฉพาะหน้าระดับเชี่ยวชาญ';
+                    aptitudeDesc = 'คุณสามารถตัดสินใจได้รวดเร็วและแก้ไขปัญหาเฉพาะหน้าได้ดีมาก เหมาะกับงานที่ต้องการความคล่องตัวและการตอบสนองที่รวดเร็ว';
+                    careerAdvice = 'เหมาะกับตำแหน่ง: Crisis Management Manager, Emergency Logistics Coordinator, Real-time Operations Manager - ควรพัฒนาทักษะด้านการสื่อสารภายใต้ความกดดัน';
+                } else if (accuracyScore >= 85 && decisionScore >= 70) {
+                    aptitudeType = '📋 นักจัดระเบียบระดับผู้เชี่ยวชาญ';
+                    aptitudeDesc = 'คุณมีความละเอียดรอบคอบสูงและตัดสินใจอย่างรอบคอบ เหมาะกับงานที่ต้องการความแม่นยำสูงและการควบคุมคุณภาพ';
+                    careerAdvice = 'เหมาะกับตำแหน่ง: Quality Assurance Manager, Compliance Officer, System Analyst - ควรพัฒนาทักษะด้านการตรวจสอบและระบบ ISO';
+                } else if (efficiencyScore >= 75 && decisionScore >= 65) {
+                    aptitudeType = '⚙️ นักปรับปรุงประสิทธิภาพ';
+                    aptitudeDesc = 'คุณมีความสามารถในการหาวิธีทำงานที่มีประสิทธิภาพและตัดสินใจได้ดี เหมาะกับการปรับปรุงระบบและกระบวนการ';
+                    careerAdvice = 'เหมาะกับตำแหน่ง: Process Improvement Manager, Operations Analyst, Lean Six Sigma Specialist - ควรพัฒนาทักษะด้านการวิเคราะห์ข้อมูล';
+                } else {
+                    aptitudeType = '🌱 นักเรียนรู้ที่มีศักยภาพสูง';
+                    aptitudeDesc = 'คุณมีพื้นฐานที่ดีและมีศักยภาพสูงในการพัฒนา การฝึกฝนเพิ่มเติมจะช่วยให้คุณเก่งขึ้นได้อย่างรวดเร็ว โดยเฉพาะด้านการตัดสินใจ';
+                    careerAdvice = 'แนะนำให้เริ่มจากตำแหน่ง: Logistics Trainee, Operations Assistant, Supply Chain Analyst - ควรเรียนรู้เพิ่มเติมและฝึกทักษะการตัดสินใจ';
+                }
+                
+                document.getElementById('final-aptitude-type').textContent = aptitudeType;
+                document.getElementById('final-aptitude-desc').textContent = aptitudeDesc;
+                document.getElementById('final-career-advice').textContent = careerAdvice;
+            }
+
+            showLevelSummary() {
+                const summaryEl = document.getElementById('level-summary');
+                summaryEl.innerHTML = '';
+                
+                this.levelResults.forEach(result => {
+                    const levelDiv = document.createElement('div');
+                    levelDiv.className = 'flex justify-between items-center bg-white p-3 rounded-lg';
+                    levelDiv.innerHTML = `
+                        <div>
+                            <span class="font-semibold">${this.levels[result.level].name}</span>
+                            <span class="text-sm text-gray-500 ml-2">(${result.delivered}/${this.levels[result.level].deliveryPoints.length} จุด, ${result.correctAnswers}/${result.questionsAnswered} คำถาม)</span>
+                        </div>
+                        <div class="text-right">
+                            <div class="font-bold text-lg">${result.totalScore}/100</div>
+                            <div class="text-xs text-gray-500">⚡${result.speedScore} 🎯${result.accuracyScore} ⚙️${result.efficiencyScore} 🧠${result.decisionScore}</div>
+                        </div>
+                    `;
+                    summaryEl.appendChild(levelDiv);
+                });
+            }
+        }
+
+        // Initialize game when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            window.game = new LogisticsGame();
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9779cadae3a25805',t:'MTc1NjYxNDYyNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

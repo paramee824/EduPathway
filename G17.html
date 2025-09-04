@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎯 Tour Guide Master - เกมจำลองไกด์ทัวร์</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Kanit', sans-serif; }
+        
+        .tourist-card {
+            transition: all 0.3s ease;
+            transform: translateY(0);
+        }
+        
+        .tourist-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        
+        .satisfaction-bar {
+            transition: width 0.5s ease;
+        }
+        
+        .event-popup {
+            animation: slideIn 0.5s ease;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateY(-100px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .pulse-effect {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .card-shadow {
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-purple-50 min-h-screen">
+    <!-- หน้าแรก -->
+    <div id="homeScreen" class="min-h-screen flex items-center justify-center p-4">
+        <div class="text-center max-w-4xl mx-auto">
+            <div class="gradient-bg text-white p-8 rounded-3xl card-shadow mb-8">
+                <h1 class="text-5xl font-bold mb-4">🎯 Tour Guide Master</h1>
+                <p class="text-xl mb-6">เกมจำลองไกด์ทัวร์สำหรับนักเรียน ปวช.3 การท่องเที่ยว</p>
+                <div class="text-lg space-y-2 mb-8">
+                    <p>🌟 จัดการนักท่องเที่ยวหลากหลายประเภท</p>
+                    <p>⚡ แก้ไขปัญหาเฉพาะหน้า</p>
+                    <p>🏆 พัฒนาทักษะการบริการระดับมืออาชีพ</p>
+                </div>
+                <button onclick="showTourSelection()" class="bg-yellow-400 hover:bg-yellow-500 text-gray-800 font-bold py-4 px-8 rounded-full text-xl transition-all duration-300 pulse-effect">
+                    🚀 เริ่มเกม
+                </button>
+            </div>
+            
+            <!-- กติกาการเล่น -->
+            <div class="bg-white rounded-2xl p-6 card-shadow text-left">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">📋 กติกาการเล่น</h2>
+                <div class="grid md:grid-cols-2 gap-6 text-sm">
+                    <div>
+                        <h3 class="font-semibold text-blue-600 mb-2">🎮 การเริ่มเกม</h3>
+                        <ul class="space-y-1 text-gray-600">
+                            <li>• เลือกทริปที่ต้องการ</li>
+                            <li>• รับลูกทัวร์หลากหลายประเภท</li>
+                            <li>• แต่ละคนมีความต้องการต่างกัน</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-green-600 mb-2">⚡ ระหว่างทริป</h3>
+                        <ul class="space-y-1 text-gray-600">
+                            <li>• วางแผนเส้นทางให้เหมาะสม</li>
+                            <li>• จัดการเหตุการณ์ฉุกเฉิน</li>
+                            <li>• ดูแลความพอใจลูกทัวร์</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-purple-600 mb-2">🏆 การให้คะแนน</h3>
+                        <ul class="space-y-1 text-gray-600">
+                            <li>• 80-100: ไกด์มืออาชีพ</li>
+                            <li>• 60-79: ผู้ช่วยไกด์</li>
+                            <li>• ต่ำกว่า 60: งานหลังบ้าน</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-red-600 mb-2">🎯 เป้าหมาย</h3>
+                        <ul class="space-y-1 text-gray-600">
+                            <li>• รักษาความพอใจให้สูง</li>
+                            <li>• แก้ปัญหาได้อย่างรวดเร็ว</li>
+                            <li>• จบทริปด้วยคะแนนดี</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- หน้าเลือกทริป -->
+    <div id="tourSelection" class="hidden min-h-screen p-4">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-8">
+                <h2 class="text-4xl font-bold text-gray-800 mb-4">🌍 เลือกทริปของคุณ</h2>
+                <p class="text-lg text-gray-600">แต่ละทริปมีความท้าทายและลูกทัวร์ที่แตกต่างกัน</p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="bg-white rounded-2xl p-6 card-shadow tourist-card cursor-pointer" onclick="startGame('north')">
+                    <div class="text-6xl mb-4">🏔️</div>
+                    <h3 class="text-xl font-bold mb-2">ทัวร์ภาคเหนือ 5 วัน</h3>
+                    <p class="text-gray-600 mb-4">เชียงใหม่ - เชียงราย - ดอยสุเทพ</p>
+                    <div class="text-sm space-y-1">
+                        <p>👥 ลูกทัวร์: 8 คน</p>
+                        <p>⭐ ความยาก: ⭐⭐⭐</p>
+                        <p>💰 รายได้: 15,000 บาท</p>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-2xl p-6 card-shadow tourist-card cursor-pointer" onclick="startGame('europe')">
+                    <div class="text-6xl mb-4">🏰</div>
+                    <h3 class="text-xl font-bold mb-2">ยุโรป 7 วัน</h3>
+                    <p class="text-gray-600 mb-4">ฝรั่งเศส - เยอรมนี - สวิตเซอร์แลนด์</p>
+                    <div class="text-sm space-y-1">
+                        <p>👥 ลูกทัวร์: 12 คน</p>
+                        <p>⭐ ความยาก: ⭐⭐⭐⭐⭐</p>
+                        <p>💰 รายได้: 45,000 บาท</p>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-2xl p-6 card-shadow tourist-card cursor-pointer" onclick="startGame('bangkok')">
+                    <div class="text-6xl mb-4">🏙️</div>
+                    <h3 class="text-xl font-bold mb-2">กรุงเทพฯ 3 วัน</h3>
+                    <p class="text-gray-600 mb-4">วัดพระแก้ว - จตุจักร - อโศก</p>
+                    <div class="text-sm space-y-1">
+                        <p>👥 ลูกทัวร์: 6 คน</p>
+                        <p>⭐ ความยาก: ⭐⭐</p>
+                        <p>💰 รายได้: 8,000 บาท</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-8">
+                <button onclick="showHomeScreen()" class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-full">
+                    ← กลับหน้าแรก
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- หน้าเกม -->
+    <div id="gameScreen" class="hidden min-h-screen p-4">
+        <!-- แถบสถานะ -->
+        <div class="bg-white rounded-2xl p-4 mb-6 card-shadow">
+            <div class="flex flex-wrap items-center justify-between gap-4">
+                <div class="flex items-center space-x-4">
+                    <h3 class="text-xl font-bold" id="tourTitle">ทัวร์ภาคเหนือ 5 วัน</h3>
+                    <div class="bg-blue-100 px-3 py-1 rounded-full">
+                        <span class="text-sm font-semibold">วันที่ <span id="currentDay">1</span>/<span id="totalDays">5</span></span>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-6">
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-green-600" id="satisfaction">85</div>
+                        <div class="text-xs text-gray-500">ความพอใจ</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-blue-600" id="money">15000</div>
+                        <div class="text-xs text-gray-500">รายได้ (บาท)</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-purple-600" id="energy">100</div>
+                        <div class="text-xs text-gray-500">พลังงาน</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid lg:grid-cols-3 gap-6">
+            <!-- รายชื่อลูกทัวร์ -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-2xl p-6 card-shadow mb-6">
+                    <h3 class="text-xl font-bold mb-4">👥 ลูกทัวร์ของคุณ</h3>
+                    <div class="grid md:grid-cols-2 gap-4" id="touristList">
+                        <!-- จะถูกสร้างด้วย JavaScript -->
+                    </div>
+                </div>
+
+                <!-- เหตุการณ์ปัจจุบัน -->
+                <div class="bg-white rounded-2xl p-6 card-shadow">
+                    <h3 class="text-xl font-bold mb-4">📍 สถานการณ์ปัจจุบัน</h3>
+                    <div id="currentEvent" class="space-y-4">
+                        <div class="bg-blue-50 p-4 rounded-lg">
+                            <p class="font-semibold text-blue-800">🌅 เริ่มต้นวันใหม่</p>
+                            <p class="text-blue-600">ลูกทัวร์กำลังรอคุณวางแผนกิจกรรมวันนี้</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- แผงควบคุม -->
+            <div class="space-y-6">
+                <!-- การกระทำ -->
+                <div class="bg-white rounded-2xl p-6 card-shadow">
+                    <h3 class="text-xl font-bold mb-4">🎯 การกระทำ</h3>
+                    <div class="space-y-3" id="actionButtons">
+                        <button onclick="planRoute()" class="w-full bg-blue-500 hover:bg-blue-600 text-white py-3 px-4 rounded-lg transition-colors">
+                            🗺️ วางแผนเส้นทาง
+                        </button>
+                        <button onclick="checkTourists()" class="w-full bg-green-500 hover:bg-green-600 text-white py-3 px-4 rounded-lg transition-colors">
+                            👀 ตรวจเช็คลูกทัวร์
+                        </button>
+                        <button onclick="handleEmergency()" class="w-full bg-red-500 hover:bg-red-600 text-white py-3 px-4 rounded-lg transition-colors">
+                            🚨 จัดการเหตุฉุกเฉิน
+                        </button>
+                        <button onclick="nextDay()" class="w-full bg-purple-500 hover:bg-purple-600 text-white py-3 px-4 rounded-lg transition-colors">
+                            ⏭️ ไปวันถัดไป
+                        </button>
+                    </div>
+                </div>
+
+                <!-- สถิติ -->
+                <div class="bg-white rounded-2xl p-6 card-shadow">
+                    <h3 class="text-xl font-bold mb-4">📊 สถิติ</h3>
+                    <div class="space-y-3">
+                        <div>
+                            <div class="flex justify-between text-sm mb-1">
+                                <span>ความพอใจรวม</span>
+                                <span id="satisfactionPercent">85%</span>
+                            </div>
+                            <div class="bg-gray-200 rounded-full h-2">
+                                <div class="satisfaction-bar bg-green-500 h-2 rounded-full" style="width: 85%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-sm mb-1">
+                                <span>พลังงาน</span>
+                                <span id="energyPercent">100%</span>
+                            </div>
+                            <div class="bg-gray-200 rounded-full h-2">
+                                <div class="bg-blue-500 h-2 rounded-full" id="energyBar" style="width: 100%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ปุ่มออกจากเกม -->
+                <button onclick="endGame()" class="w-full bg-gray-500 hover:bg-gray-600 text-white py-3 px-4 rounded-lg transition-colors">
+                    🏁 จบเกม
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- หน้าผลลัพธ์ -->
+    <div id="resultScreen" class="hidden min-h-screen flex items-center justify-center p-4">
+        <div class="max-w-2xl mx-auto text-center">
+            <div class="bg-white rounded-3xl p-8 card-shadow">
+                <div class="text-6xl mb-4" id="resultEmoji">🏆</div>
+                <h2 class="text-3xl font-bold mb-4" id="resultTitle">ยินดีด้วย!</h2>
+                <div class="text-xl mb-6" id="resultScore">คะแนนรวม: 85/100</div>
+                <div class="bg-gray-50 rounded-2xl p-6 mb-6">
+                    <h3 class="text-lg font-semibold mb-3">📋 สรุปผลการปฏิบัติงาน</h3>
+                    <div id="resultDetails" class="text-left space-y-2">
+                        <!-- จะถูกสร้างด้วย JavaScript -->
+                    </div>
+                </div>
+                <div class="space-x-4">
+                    <button onclick="showTourSelection()" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-full">
+                        🔄 เล่นใหม่
+                    </button>
+                    <button onclick="showHomeScreen()" class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-full">
+                        🏠 หน้าแรก
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Event Popup -->
+    <div id="eventPopup" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-2xl p-6 max-w-md w-full event-popup">
+            <div class="text-center">
+                <div class="text-4xl mb-4" id="eventEmoji">⚠️</div>
+                <h3 class="text-xl font-bold mb-3" id="eventTitle">เหตุการณ์ฉุกเฉิน!</h3>
+                <p class="text-gray-600 mb-6" id="eventDescription">มีเหตุการณ์เกิดขึ้น</p>
+                <div class="space-y-3" id="eventChoices">
+                    <!-- จะถูกสร้างด้วย JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ข้อมูลเกม
+        let gameState = {
+            currentTour: null,
+            day: 1,
+            totalDays: 5,
+            satisfaction: 85,
+            money: 15000,
+            energy: 100,
+            tourists: [],
+            events: [],
+            completedEvents: []
+        };
+
+        // ข้อมูลทัวร์
+        const tours = {
+            north: {
+                name: "ทัวร์ภาคเหนือ 5 วัน",
+                days: 5,
+                money: 15000,
+                tourists: [
+                    { name: "คุณสมชาย", type: "คนแก่", emoji: "👴", satisfaction: 80, needs: ["พักผ่อน", "อาหารอร่อย"] },
+                    { name: "คุณมาลี", type: "คนแก่", emoji: "👵", satisfaction: 85, needs: ["ความสะดวกสบาย", "ห้องน้ำสะอาด"] },
+                    { name: "น้องมิกกี้", type: "เด็ก", emoji: "👦", satisfaction: 90, needs: ["ของเล่น", "ขนม"] },
+                    { name: "น้องมินนี่", type: "เด็ก", emoji: "👧", satisfaction: 88, needs: ["ไอศกรีม", "ที่เล่น"] },
+                    { name: "พี่จอห์น", type: "Backpacker", emoji: "🎒", satisfaction: 75, needs: ["ผจญภัย", "ราคาถูก"] },
+                    { name: "คุณนิดา", type: "คนชอบช้อป", emoji: "🛍️", satisfaction: 82, needs: ["ช้อปปิ้ง", "ของฝาก"] },
+                    { name: "คุณประยุทธ", type: "นักธุรกิจ", emoji: "💼", satisfaction: 78, needs: ["เวลาตรงเวลา", "Wi-Fi"] },
+                    { name: "คุณสุดา", type: "คนรักธรรมชาติ", emoji: "🌿", satisfaction: 92, needs: ["ธรรมชาติ", "อากาศดี"] }
+                ]
+            },
+            europe: {
+                name: "ยุโรป 7 วัน",
+                days: 7,
+                money: 45000,
+                tourists: [
+                    { name: "คุณวิชัย", type: "คนแก่", emoji: "👴", satisfaction: 75, needs: ["พักผ่อน", "อาหารคุ้นเคย"] },
+                    { name: "คุณสมหญิง", type: "คนแก่", emoji: "👵", satisfaction: 80, needs: ["ความสะดวกสบาย", "ไม่เดินเยอะ"] },
+                    { name: "น้องแจ็ค", type: "เด็ก", emoji: "👦", satisfaction: 85, needs: ["ของเล่น", "McDonald's"] },
+                    { name: "น้องโรส", type: "เด็ก", emoji: "👧", satisfaction: 88, needs: ["เจ้าหญิง Disney", "ช็อกโกแลต"] },
+                    { name: "พี่เดวิด", type: "Backpacker", emoji: "🎒", satisfaction: 70, needs: ["ผจญภัย", "โฮสเทล"] },
+                    { name: "คุณปรียา", type: "คนชอบช้อป", emoji: "🛍️", satisfaction: 90, needs: ["แบรนด์เนม", "เอาท์เล็ต"] },
+                    { name: "คุณสมศักดิ์", type: "นักธุรกิจ", emoji: "💼", satisfaction: 72, needs: ["ตรงเวลา", "ประชุมออนไลน์"] },
+                    { name: "คุณนิภา", type: "คนรักศิลปะ", emoji: "🎨", satisfaction: 95, needs: ["พิพิธภัณฑ์", "สถาปัตยกรรม"] },
+                    { name: "พี่ไมค์", type: "นักกีฬา", emoji: "⚽", satisfaction: 78, needs: ["ออกกำลังกาย", "อาหารเพื่อสุขภาพ"] },
+                    { name: "คุณลิซ่า", type: "อินฟลูเอนเซอร์", emoji: "📸", satisfaction: 85, needs: ["ถ่ายรูป", "Wi-Fi เร็ว"] },
+                    { name: "คุณทอม", type: "คนรักอาหาร", emoji: "🍽️", satisfaction: 88, needs: ["อาหารท้องถิ่น", "ร้านดัง"] },
+                    { name: "คุณเอมมา", type: "คนรักประวัติศาสตร์", emoji: "📚", satisfaction: 92, needs: ["โบราณสถาน", "ไกด์อธิบาย"] }
+                ]
+            },
+            bangkok: {
+                name: "กรุงเทพฯ 3 วัน",
+                days: 3,
+                money: 8000,
+                tourists: [
+                    { name: "คุณสมพงษ์", type: "คนแก่", emoji: "👴", satisfaction: 85, needs: ["วัด", "อาหารไทย"] },
+                    { name: "คุณมณี", type: "คนแก่", emoji: "👵", satisfaction: 88, needs: ["ตลาด", "ของฝาก"] },
+                    { name: "น้องเอ็ม", type: "เด็ก", emoji: "👦", satisfaction: 90, needs: ["สวนสนุก", "ไอติม"] },
+                    { name: "น้องเนย", type: "เด็ก", emoji: "👧", satisfaction: 92, needs: ["ตุ๊กตา", "ขนมหวาน"] },
+                    { name: "พี่บิ๊ก", type: "Backpacker", emoji: "🎒", satisfaction: 80, needs: ["ข้าวผัด", "BTS"] },
+                    { name: "คุณแนน", type: "คนชอบช้อป", emoji: "🛍️", satisfaction: 95, needs: ["MBK", "ตลาดนัด"] }
+                ]
+            }
+        };
+
+        // เหตุการณ์สุ่ม
+        const randomEvents = [
+            {
+                emoji: "🚗",
+                title: "รถติด!",
+                description: "รถติดหนักมาก จะไปถึงจุดหมายช้า 2 ชั่วโมง",
+                choices: [
+                    { text: "เปลี่ยนเส้นทาง", effect: { satisfaction: -5, energy: -10, money: -500 } },
+                    { text: "รอในรถ", effect: { satisfaction: -15, energy: -5 } },
+                    { text: "หาร้านอาหารใกล้ๆ", effect: { satisfaction: +5, money: -800 } }
+                ]
+            },
+            {
+                emoji: "🌧️",
+                title: "ฝนตกหนัก!",
+                description: "ฝนตกหนัก ไม่สามารถเที่ยวกิจกรรมกลางแจ้งได้",
+                choices: [
+                    { text: "หาที่ในร่ม", effect: { satisfaction: -5, money: -300 } },
+                    { text: "ยกเลิกกิจกรรม", effect: { satisfaction: -20, money: +500 } },
+                    { text: "ซื้อร่มให้ทุกคน", effect: { satisfaction: +10, money: -1200 } }
+                ]
+            },
+            {
+                emoji: "🤒",
+                title: "ลูกทัวร์ป่วย!",
+                description: "มีลูกทัวร์ป่วยเป็นไข้ ต้องการความช่วยเหลือ",
+                choices: [
+                    { text: "พาไปหาหมอ", effect: { satisfaction: +15, energy: -20, money: -1000 } },
+                    { text: "ซื้อยาให้", effect: { satisfaction: +5, money: -200 } },
+                    { text: "ให้พักที่โรงแรม", effect: { satisfaction: -5, energy: +10 } }
+                ]
+            },
+            {
+                emoji: "📱",
+                title: "โทรศัพท์หาย!",
+                description: "ลูกทัวร์โทรศัพท์หาย กังวลมาก",
+                choices: [
+                    { text: "ช่วยหาด้วยกัน", effect: { satisfaction: +10, energy: -15 } },
+                    { text: "แจ้งตำรวจ", effect: { satisfaction: +5, energy: -10 } },
+                    { text: "ปลอบใจและไปต่อ", effect: { satisfaction: -10, energy: -5 } }
+                ]
+            },
+            {
+                emoji: "🍽️",
+                title: "ร้านอาหารปิด!",
+                description: "ร้านอาหารที่จองไว้ปิดกะทันหัน ลูกทัวร์หิว",
+                choices: [
+                    { text: "หาร้านใหม่", effect: { satisfaction: +5, energy: -10, money: -300 } },
+                    { text: "ซื้อของกิน 7-11", effect: { satisfaction: -10, money: -150 } },
+                    { text: "ไปฟู้ดคอร์ท", effect: { satisfaction: +8, money: -400 } }
+                ]
+            }
+        ];
+
+        // ฟังก์ชันแสดงหน้าต่างๆ
+        function showHomeScreen() {
+            document.getElementById('homeScreen').classList.remove('hidden');
+            document.getElementById('tourSelection').classList.add('hidden');
+            document.getElementById('gameScreen').classList.add('hidden');
+            document.getElementById('resultScreen').classList.add('hidden');
+        }
+
+        function showTourSelection() {
+            document.getElementById('homeScreen').classList.add('hidden');
+            document.getElementById('tourSelection').classList.remove('hidden');
+            document.getElementById('gameScreen').classList.add('hidden');
+            document.getElementById('resultScreen').classList.add('hidden');
+        }
+
+        function showGameScreen() {
+            document.getElementById('homeScreen').classList.add('hidden');
+            document.getElementById('tourSelection').classList.add('hidden');
+            document.getElementById('gameScreen').classList.remove('hidden');
+            document.getElementById('resultScreen').classList.add('hidden');
+        }
+
+        function showResultScreen() {
+            document.getElementById('homeScreen').classList.add('hidden');
+            document.getElementById('tourSelection').classList.add('hidden');
+            document.getElementById('gameScreen').classList.add('hidden');
+            document.getElementById('resultScreen').classList.remove('hidden');
+        }
+
+        // เริ่มเกม
+        function startGame(tourType) {
+            const tour = tours[tourType];
+            gameState = {
+                currentTour: tourType,
+                day: 1,
+                totalDays: tour.days,
+                satisfaction: 85,
+                money: tour.money,
+                energy: 100,
+                tourists: [...tour.tourists],
+                events: [],
+                completedEvents: []
+            };
+
+            updateGameUI();
+            showGameScreen();
+            
+            // เหตุการณ์เริ่มต้น
+            setTimeout(() => {
+                showEvent({
+                    emoji: "🌅",
+                    title: "เริ่มต้นทริป!",
+                    description: "ลูกทัวร์มาถึงจุดนัดหมายแล้ว พร้อมเริ่มการเดินทาง",
+                    choices: [
+                        { text: "ต้อนรับอย่างอบอุ่น", effect: { satisfaction: +10 } },
+                        { text: "อธิบายโปรแกรม", effect: { satisfaction: +5 } },
+                        { text: "รีบออกเดินทาง", effect: { satisfaction: -5, energy: +5 } }
+                    ]
+                });
+            }, 1000);
+        }
+
+        // อัพเดท UI
+        function updateGameUI() {
+            document.getElementById('tourTitle').textContent = tours[gameState.currentTour].name;
+            document.getElementById('currentDay').textContent = gameState.day;
+            document.getElementById('totalDays').textContent = gameState.totalDays;
+            document.getElementById('satisfaction').textContent = Math.round(gameState.satisfaction);
+            document.getElementById('money').textContent = gameState.money.toLocaleString();
+            document.getElementById('energy').textContent = Math.round(gameState.energy);
+            
+            // อัพเดทแถบสถานะ
+            document.getElementById('satisfactionPercent').textContent = Math.round(gameState.satisfaction) + '%';
+            document.querySelector('.satisfaction-bar').style.width = gameState.satisfaction + '%';
+            document.getElementById('energyPercent').textContent = Math.round(gameState.energy) + '%';
+            document.getElementById('energyBar').style.width = gameState.energy + '%';
+            
+            // เปลี่ยนสีแถบตามค่า
+            const satisfactionBar = document.querySelector('.satisfaction-bar');
+            if (gameState.satisfaction >= 80) satisfactionBar.className = 'satisfaction-bar bg-green-500 h-2 rounded-full';
+            else if (gameState.satisfaction >= 60) satisfactionBar.className = 'satisfaction-bar bg-yellow-500 h-2 rounded-full';
+            else satisfactionBar.className = 'satisfaction-bar bg-red-500 h-2 rounded-full';
+
+            updateTouristList();
+        }
+
+        // อัพเดทรายชื่อลูกทัวร์
+        function updateTouristList() {
+            const container = document.getElementById('touristList');
+            container.innerHTML = '';
+            
+            gameState.tourists.forEach((tourist, index) => {
+                const card = document.createElement('div');
+                card.className = 'bg-gray-50 p-4 rounded-lg tourist-card';
+                
+                let statusColor = 'text-green-600';
+                let statusText = 'พอใจ';
+                if (tourist.satisfaction < 60) {
+                    statusColor = 'text-red-600';
+                    statusText = 'ไม่พอใจ';
+                } else if (tourist.satisfaction < 80) {
+                    statusColor = 'text-yellow-600';
+                    statusText = 'ปานกลาง';
+                }
+                
+                card.innerHTML = `
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center space-x-2">
+                            <span class="text-2xl">${tourist.emoji}</span>
+                            <div>
+                                <div class="font-semibold">${tourist.name}</div>
+                                <div class="text-xs text-gray-500">${tourist.type}</div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="font-bold ${statusColor}">${Math.round(tourist.satisfaction)}%</div>
+                            <div class="text-xs ${statusColor}">${statusText}</div>
+                        </div>
+                    </div>
+                    <div class="text-xs text-gray-600">
+                        ต้องการ: ${tourist.needs.join(', ')}
+                    </div>
+                `;
+                
+                container.appendChild(card);
+            });
+        }
+
+        // การกระทำต่างๆ
+        function planRoute() {
+            const events = [
+                {
+                    emoji: "🗺️",
+                    title: "วางแผนเส้นทาง",
+                    description: "คุณต้องเลือกเส้นทางสำหรับวันนี้",
+                    choices: [
+                        { text: "เส้นทางสั้น (ประหยัดเวลา)", effect: { satisfaction: +5, energy: +10 } },
+                        { text: "เส้นทางยาว (ชมวิว)", effect: { satisfaction: +10, energy: -10 } },
+                        { text: "เส้นทางหลีกเลี่ยงการจราจร", effect: { satisfaction: +8, money: -200 } }
+                    ]
+                }
+            ];
+            showEvent(events[0]);
+        }
+
+        function checkTourists() {
+            // สุ่มเลือกลูกทัวร์ที่มีปัญหา
+            const problematicTourists = gameState.tourists.filter(t => t.satisfaction < 80);
+            if (problematicTourists.length > 0) {
+                const tourist = problematicTourists[Math.floor(Math.random() * problematicTourists.length)];
+                showEvent({
+                    emoji: tourist.emoji,
+                    title: `${tourist.name} มีปัญหา`,
+                    description: `${tourist.name} (${tourist.type}) ดูไม่พอใจ ต้องการ: ${tourist.needs.join(', ')}`,
+                    choices: [
+                        { text: "ดูแลเป็นพิเศษ", effect: { satisfaction: +15, energy: -10 }, target: tourist },
+                        { text: "คุยปลอบใจ", effect: { satisfaction: +8, energy: -5 }, target: tourist },
+                        { text: "ให้เวลาส่วนตัว", effect: { satisfaction: +3 }, target: tourist }
+                    ]
+                });
+            } else {
+                showEvent({
+                    emoji: "😊",
+                    title: "ทุกคนมีความสุข!",
+                    description: "ลูกทัวร์ทุกคนดูมีความสุขดี ไม่มีปัญหาอะไร",
+                    choices: [
+                        { text: "ดีใจด้วย!", effect: { satisfaction: +5, energy: +5 } }
+                    ]
+                });
+            }
+        }
+
+        function handleEmergency() {
+            const event = randomEvents[Math.floor(Math.random() * randomEvents.length)];
+            showEvent(event);
+        }
+
+        function nextDay() {
+            if (gameState.day >= gameState.totalDays) {
+                endGame();
+                return;
+            }
+            
+            gameState.day++;
+            gameState.energy = Math.min(100, gameState.energy + 20); // พักผ่อนกลางคืน
+            
+            // ลดความพอใจเล็กน้อยตามธรรมชาติ
+            gameState.tourists.forEach(tourist => {
+                tourist.satisfaction = Math.max(0, tourist.satisfaction - Math.random() * 5);
+            });
+            
+            updateGameUI();
+            
+            // เหตุการณ์สุ่มในวันใหม่
+            if (Math.random() < 0.7) { // 70% โอกาสเกิดเหตุการณ์
+                setTimeout(() => {
+                    const event = randomEvents[Math.floor(Math.random() * randomEvents.length)];
+                    showEvent(event);
+                }, 1000);
+            }
+        }
+
+        // แสดงเหตุการณ์
+        function showEvent(event) {
+            document.getElementById('eventEmoji').textContent = event.emoji;
+            document.getElementById('eventTitle').textContent = event.title;
+            document.getElementById('eventDescription').textContent = event.description;
+            
+            const choicesContainer = document.getElementById('eventChoices');
+            choicesContainer.innerHTML = '';
+            
+            event.choices.forEach((choice, index) => {
+                const button = document.createElement('button');
+                button.className = 'w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg transition-colors';
+                button.textContent = choice.text;
+                button.onclick = () => handleChoice(choice, event);
+                choicesContainer.appendChild(button);
+            });
+            
+            document.getElementById('eventPopup').classList.remove('hidden');
+        }
+
+        // จัดการตัวเลือก
+        function handleChoice(choice, event) {
+            // ปรับค่าสถานะ
+            if (choice.effect.satisfaction) {
+                if (choice.target) {
+                    choice.target.satisfaction = Math.max(0, Math.min(100, choice.target.satisfaction + choice.effect.satisfaction));
+                } else {
+                    gameState.tourists.forEach(tourist => {
+                        tourist.satisfaction = Math.max(0, Math.min(100, tourist.satisfaction + choice.effect.satisfaction));
+                    });
+                }
+            }
+            
+            if (choice.effect.energy) {
+                gameState.energy = Math.max(0, Math.min(100, gameState.energy + choice.effect.energy));
+            }
+            
+            if (choice.effect.money) {
+                gameState.money += choice.effect.money;
+            }
+            
+            // คำนวณความพอใจรวม
+            gameState.satisfaction = gameState.tourists.reduce((sum, tourist) => sum + tourist.satisfaction, 0) / gameState.tourists.length;
+            
+            document.getElementById('eventPopup').classList.add('hidden');
+            updateGameUI();
+        }
+
+        // จบเกม
+        function endGame() {
+            const finalScore = Math.round(gameState.satisfaction);
+            let rank, emoji, title;
+            
+            if (finalScore >= 80) {
+                rank = "ไกด์ทัวร์มืออาชีพ";
+                emoji = "🏆";
+                title = "ยอดเยี่ยม!";
+            } else if (finalScore >= 60) {
+                rank = "ผู้ช่วยไกด์ทัวร์";
+                emoji = "🥈";
+                title = "ดีมาก!";
+            } else {
+                rank = "เหมาะกับงานหลังบ้าน";
+                emoji = "📋";
+                title = "ต้องฝึกฝนเพิ่ม";
+            }
+            
+            document.getElementById('resultEmoji').textContent = emoji;
+            document.getElementById('resultTitle').textContent = title;
+            document.getElementById('resultScore').textContent = `คะแนนรวม: ${finalScore}/100`;
+            
+            const details = document.getElementById('resultDetails');
+            details.innerHTML = `
+                <div class="flex justify-between"><span>ตำแหน่งที่เหมาะสม:</span><span class="font-semibold">${rank}</span></div>
+                <div class="flex justify-between"><span>ความพอใจเฉลี่ย:</span><span>${finalScore}%</span></div>
+                <div class="flex justify-between"><span>รายได้สุทธิ:</span><span>${gameState.money.toLocaleString()} บาท</span></div>
+                <div class="flex justify-between"><span>วันที่เสร็จสิ้น:</span><span>${gameState.day}/${gameState.totalDays} วัน</span></div>
+                <div class="flex justify-between"><span>พลังงานคงเหลือ:</span><span>${Math.round(gameState.energy)}%</span></div>
+            `;
+            
+            showResultScreen();
+        }
+
+        // เริ่มต้นแสดงหน้าแรก
+        showHomeScreen();
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'978d8781c5af7b50',t:'MTc1NjgyMTU4MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+.

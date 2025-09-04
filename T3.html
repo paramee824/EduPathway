@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>แบบทดสอบความถนัดด้านการบริการและการโรงแรม</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=PK+Maehongson+Round+Demo&display=swap" rel="stylesheet">
+    <style>
+         body {
+            font-family: 'PK Maehongson Round Demo', cursive;
+            background: linear-gradient(135deg, #f3f4f6, #e9ecef);
+            transition: background-color 0.3s ease;
+            background-image: url("P3.png");
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-attachment: fixed;
+            padding: 20px;
+            margin: 0 auto;
+            border-radius: 10px;
+            font-size: 16px;
+            font-family: 'PK Maehongson Round Demo', sans-serif;
+            line-height: 1.6;
+            color: #000000;
+            max-width: 100vw;
+            box-sizing: border-box;
+        }
+        .text-body {
+            font-family: 'PK Maehongson Round Demo', cursive;
+        }
+        .bg-card {
+            background: rgba(255, 255, 255, 0.9); /* ทำให้พื้นหลังโปร่งแสงเล็กน้อย */
+            border-radius: 2rem;
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.15), 0 10px 20px -5px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: fadeIn 1s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .text-gradient {
+            background-image: linear-gradient(to right, #2d9d86, #48bb78);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-fill-color: transparent;
+        }
+        .btn-primary {
+            background: linear-gradient(45deg, #2d9d86, #48bb78);
+            box-shadow: 0 8px 25px -5px rgba(45, 157, 134, 0.5), 0 4px 6px -2px rgba(45, 157, 134, 0.25);
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 12px 30px -8px rgba(45, 157, 134, 0.7), 0 6px 12px -3px rgba(45, 157, 134, 0.4);
+        }
+        .btn-exit {
+            background: linear-gradient(45deg, #ef4444, #b91c1c);
+            box-shadow: 0 8px 25px -5px rgba(239, 68, 68, 0.5), 0 4px 6px -2px rgba(239, 68, 68, 0.25);
+            transition: all 0.3s ease;
+        }
+        .btn-exit:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 12px 30px -8px rgba(239, 68, 68, 0.7), 0 6px 12px -3px rgba(239, 68, 68, 0.4);
+        }
+        .btn-red {
+            background: linear-gradient(45deg, #ef4444, #b91c1c);
+            color: white;
+            box-shadow: 0 8px 25px -5px rgba(239, 68, 68, 0.5), 0 4px 6px -2px rgba(239, 68, 68, 0.25);
+            transition: all 0.3s ease;
+        }
+        .btn-red:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 12px 30px -8px rgba(239, 68, 68, 0.7), 0 6px 12px -3px rgba(239, 68, 68, 0.4);
+        }
+        input[type="radio"]:checked + label {
+            background: linear-gradient(to right, #2d9d86, #48bb78);
+            color: white;
+            border-color: #2d9d86;
+            transform: translateY(-4px);
+            box-shadow: 0 8px 15px -3px rgba(45, 157, 134, 0.5), 0 4px 6px -2px rgba(45, 157, 134, 0.25);
+        }
+        label {
+            transition: all 0.2s ease;
+        }
+        label:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .confetti-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+        }
+        .timer-glow {
+            box-shadow: 0 0 10px 5px #ce0000, 0 0 20px 10px #ce0000;
+            animation: pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse-glow {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8 min-h-screen flex items-center justify-center">
+
+    <!-- Splash Screen -->
+    <div id="splash-screen" class="min-h-screen flex items-center justify-center text-center w-full">
+        <div class="bg-card p-8 md:p-12 w-full max-w-xl animate-fadeIn">
+            <div class="mb-6">
+                <!-- SVG Icon for Hospitality theme -->
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-24 w-24 mx-auto text-[#2d9d86] animate-bounce-slow">
+                    <path d="M7.493 18.067C6.67 16.92 6 15.602 6 14.25a6 6 0 0112 0c0 1.352-.67 2.67-1.493 3.817a.75.75 0 01-1.01-.194c-.955-.992-1.74-2.126-2.227-3.32a4.423 4.423 0 00-.771-1.554.75.75 0 00-1.314.004 4.423 4.423 0 00-.771 1.554c-.487 1.194-1.272 2.328-2.227 3.32a.75.75 0 01-1.01.194z" />
+                    <path d="M12 2.25a.75.75 0 01.75.75v.582a4.5 4.5 0 004.935 4.935h.583a.75.75 0 010 1.5H17.75a.75.75 0 01-.75-.75V8.25a.75.75 0 01-.75-.75h-.582a4.502 4.502 0 00-5.118-4.103v-.357A.75.75 0 0112 2.25zM12 21a.75.75 0 01-.75-.75v-1.125a9 9 0 009-9h.75a.75.75 0 010 1.5h-.75a9 9 0 00-9 9v.75a.75.75 0 01-.75.75z" />
+                </svg>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-bold mb-4 text-gradient">แบบทดสอบความถนัดด้านการบริการและการโรงแรม</h1>
+            <p class="text-xl md:text-2xl text-gray-700 leading-relaxed mb-6">
+                มาค้นหาศักยภาพของคุณในสายงานบริการ
+                เพื่อประเมินความพร้อมสำหรับสาขาวิชาการโรงแรมและการท่องเที่ยว
+            </p>
+            <p class="text-lg md:text-xl text-gray-500 mb-8">ทั้งหมด 30 ข้อ</p>
+            <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 w-full">
+                <button id="startButton" class="flex-1 px-8 py-4 text-xl font-semibold text-white rounded-full transition duration-300 transform hover:scale-105 btn-primary">
+                    เริ่มต้นทำแบบทดสอบ
+                </button>
+                <button id="leaveButton" class="flex-1 px-8 py-4 text-xl font-semibold text-white rounded-full transition duration-300 transform hover:scale-105 btn-exit">
+                    ออกจากแบบทดสอบ
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Test Container -->
+    <div id="test-container" class="hidden min-h-screen flex items-center justify-center w-full">
+        <div class="bg-card p-8 md:p-12 w-full max-w-4xl">
+            <div id="progress-container" class="w-full h-3 bg-gray-200 rounded-full mb-6">
+                <div id="progress-bar" class="h-full bg-gradient-to-r from-[#48bb78] to-[#2d9d86] rounded-full transition-all duration-300" style="width: 0%;"></div>
+            </div>
+            
+            <div class="flex justify-between items-center mb-4 text-lg md:text-xl">
+                <p id="question-number" class="text-gray-500"></p>
+                <div id="timer" class="text-white bg-gradient-to-r from-[#ce0000] to-[#e64d4d] font-bold text-lg md:text-xl p-2 rounded-full border-2 border-transparent transition-all">
+                    60
+                </div>
+            </div>
+            
+            <h2 id="question-text" class="text-2xl md:text-3xl font-semibold mb-6 leading-relaxed"></h2>
+            
+            <div id="options-container" class="space-y-4">
+                <!-- Options will be dynamically inserted here -->
+            </div>
+            
+            <div class="mt-8 flex flex-col md:flex-row justify-between space-y-4 md:space-y-0 md:space-x-4">
+                <button id="prevButton" class="w-full md:w-auto px-6 py-3 text-lg font-medium rounded-full transform hover:scale-105 btn-red" disabled>
+                    &larr; ข้อก่อนหน้า
+                </button>
+                <button id="nextButton" class="w-full md:w-auto px-6 py-3 text-lg font-medium text-white rounded-full transform hover:scale-105 btn-primary">
+                    ข้อต่อไป &rarr;
+                </button>
+                <button id="submitButton" class="hidden w-full md:w-auto px-6 py-3 text-lg font-medium text-white bg-gradient-to-r from-[#2ecc71] to-[#27ae60] rounded-full hover:from-[#27ae60] hover:to-[#1abc9c] transition duration-300 transform hover:scale-105">
+                    ส่งคำตอบ
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Container -->
+    <div id="results-container" class="hidden min-h-screen flex items-center justify-center w-full">
+        <div class="bg-card p-8 md:p-12 w-full max-w-4xl">
+            <h2 class="text-3xl md:text-4xl font-bold text-center text-gradient mb-4">ผลการทดสอบ</h2>
+            <p class="text-center text-xl md:text-2xl text-gray-700 mb-6">
+                คะแนนของคุณคือ: <span id="score" class="font-bold text-2xl md:text-3xl text-[#2d9d86]"></span>
+            </p>
+            
+            <div id="guidance-section" class="mb-8">
+                <h3 class="text-2xl md:text-3xl font-bold mb-4 border-b-2 border-[#2d9d86] pb-2">แนวทางการศึกษาและอาชีพ</h3>
+                <p id="guidance-text" class="text-xl md:text-xl text-gray-700 leading-relaxed"></p>
+            </div>
+
+            <div id="recommended-majors" class="mt-8 text-center bg-gray-100 p-6 rounded-3xl shadow-lg">
+                <h3 class="text-2xl md:text-3xl font-bold text-gray-800 mb-4">สาขาที่แนะนำ</h3>
+                <p id="recommended-majors-text" class="mt-4 text-base md:text-lg text-gray-700">
+                </p>
+            </div>
+            
+            <div id="review-section">
+                <h3 class="text-2xl md:text-3xl font-bold mb-4 border-b-2 border-[#2d9d86] pb-2">สรุปคำตอบ</h3>
+                <div id="review-list" class="space-y-4">
+                    <!-- Review items will be dynamically inserted here -->
+                </div>
+            </div>
+
+            <div class="mt-8 flex justify-center space-x-4">
+                <button id="retakeButton" class="px-6 py-3 text-lg font-medium rounded-full transform hover:scale-105 btn-primary text-white">
+                    ทำแบบทดสอบอีกครั้ง
+                </button>
+                <button id="exitButton" class="px-6 py-3 text-lg font-medium rounded-full transform hover:scale-105 btn-exit text-white">
+                    ออกจากแบบทดสอบ
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for displaying messages -->
+    <div id="modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center">
+        <div class="bg-white p-8 rounded-lg shadow-2xl text-center w-full max-w-md transform scale-95 transition-transform duration-300">
+            <p id="modal-message" class="text-xl mb-4"></p>
+            <button id="modal-close-button" class="px-4 py-2 bg-gray-800 text-white rounded-md">ปิด</button>
+        </div>
+    </div>
+    
+    <script>
+        const questions = [
+            {
+                question: "หากลูกค้ามีปัญหาเรื่องห้องพัก สิ่งแรกที่คุณควรทำคือ?",
+                options: ["ขอโทษและรับฟังปัญหาอย่างตั้งใจ", "รีบเปลี่ยนห้องให้ลูกค้าทันที", "แจ้งให้ลูกค้าไปติดต่อแผนกอื่น", "อธิบายว่าปัญหานั้นไม่ได้เกิดจากโรงแรม"],
+                answer: "ขอโทษและรับฟังปัญหาอย่างตั้งใจ",
+                explanation: "การแสดงความเห็นอกเห็นใจและรับฟังปัญหาอย่างตั้งใจเป็นขั้นตอนแรกที่สำคัญที่สุดในการสร้างความสัมพันธ์ที่ดีกับลูกค้า"
+            },
+            {
+                question: "ข้อใดคือองค์ประกอบสำคัญที่สุดของการบริการที่ดีเยี่ยม?",
+                options: ["ความรวดเร็ว", "ความสุภาพ", "การแก้ปัญหาอย่างตรงจุด", "ความจริงใจและความใส่ใจ"],
+                answer: "ความจริงใจและความใส่ใจ",
+                explanation: "ความจริงใจและความใส่ใจทำให้ลูกค้ารู้สึกว่าได้รับการดูแลอย่างแท้จริง ซึ่งเป็นสิ่งที่ทำให้การบริการนั้นน่าประทับใจและแตกต่าง"
+            },
+            {
+                question: "ในสถานการณ์ที่ลูกค้าโกรธ คุณควรใช้เทคนิคการสื่อสารแบบใด?",
+                options: ["พูดเสียงดังเพื่อแสดงความน่าเชื่อถือ", "เงียบและให้ลูกค้าพูดจนจบ", "ใช้คำพูดที่สงบและเป็นมิตร", "โต้เถียงเพื่อปกป้องตัวเอง"],
+                answer: "ใช้คำพูดที่สงบและเป็นมิตร",
+                explanation: "การใช้คำพูดที่สงบและเป็นมิตรช่วยลดความตึงเครียดและแสดงให้ลูกค้าเห็นว่าเราพร้อมที่จะรับฟังและแก้ไขปัญหาให้"
+            },
+            {
+                question: "ทักษะใดที่จำเป็นที่สุดสำหรับพนักงานต้อนรับในโรงแรม?",
+                options: ["การคำนวณเงิน", "การพูดหลายภาษา", "การจัดการเอกสาร", "การสร้างความประทับใจแรกพบ"],
+                answer: "การสร้างความประทับใจแรกพบ",
+                explanation: "พนักงานต้อนรับคือหน้าตาของโรงแรม การสร้างความประทับใจแรกพบที่ดีจะทำให้ลูกค้ารู้สึกอบอุ่นและประทับใจในบริการตั้งแต่แรกเห็น"
+            },
+            {
+                question: "การจัดทำแพ็คเกจท่องเที่ยวควรคำนึงถึงสิ่งใดเป็นหลัก?",
+                options: ["ค่าใช้จ่ายที่ถูกที่สุด", "สถานที่ท่องเที่ยวที่กำลังเป็นที่นิยม", "ความต้องการและความสนใจของลูกค้ากลุ่มเป้าหมาย", "การเดินทางที่สะดวกสบายที่สุด"],
+                answer: "ความต้องการและความสนใจของลูกค้ากลุ่มเป้าหมาย",
+                explanation: "แพ็คเกจท่องเที่ยวที่ดีควรตอบสนองความต้องการของลูกค้า เพื่อให้ลูกค้ารู้สึกคุ้มค่าและได้รับประสบการณ์ที่ดีที่สุด"
+            },
+            {
+                question: "หากคุณต้องรับมือกับสถานการณ์ฉุกเฉินในโรงแรม คุณควรทำอย่างไรเป็นอันดับแรก?",
+                options: ["วิ่งหนีเพื่อความปลอดภัยของตัวเอง", "แจ้งเหตุให้ผู้บังคับบัญชาทราบทันที", "ช่วยเหลือลูกค้าเท่าที่ทำได้", "ถ่ายรูปและวิดีโอเพื่อรายงานเหตุการณ์"],
+                answer: "แจ้งเหตุให้ผู้บังคับบัญชาทราบทันที",
+                explanation: "การแจ้งผู้บังคับบัญชาหรือผู้มีอำนาจเป็นสิ่งสำคัญที่สุดในสถานการณ์ฉุกเฉิน เพื่อให้สามารถประสานงานและจัดการสถานการณ์ได้อย่างเป็นระบบและรวดเร็ว"
+            },
+            {
+                question: "ข้อใดคือความสำคัญของ 'การสร้างแบรนด์' ในธุรกิจการท่องเที่ยว?",
+                options: ["ทำให้ธุรกิจดูมีราคาแพงขึ้น", "สร้างความแตกต่างและความน่าจดจำ", "เพิ่มจำนวนลูกค้า", "ลดค่าใช้จ่ายในการโฆษณา"],
+                answer: "สร้างความแตกต่างและความน่าจดจำ",
+                explanation: "แบรนด์ที่แข็งแกร่งจะทำให้ธุรกิจของคุณแตกต่างจากคู่แข่งและเป็นที่จดจำในใจลูกค้าได้ง่าย"
+            },
+            {
+                question: "การใช้โซเชียลมีเดียในธุรกิจโรงแรมมีวัตถุประสงค์หลักเพื่ออะไร?",
+                options: ["โปรโมทห้องพัก", "รับจองห้องพัก", "สร้างการมีส่วนร่วมกับลูกค้าและรับฟังความคิดเห็น", "เพื่อสร้างรายได้"],
+                answer: "สร้างการมีส่วนร่วมกับลูกค้าและรับฟังความคิดเห็น",
+                explanation: "โซเชียลมีเดียเป็นเครื่องมือที่ช่วยให้ธุรกิจสามารถพูดคุยกับลูกค้าได้โดยตรงและรับฟังข้อเสนอแนะต่างๆ ซึ่งช่วยในการปรับปรุงบริการให้ดียิ่งขึ้น"
+            },
+            {
+                question: "หากลูกค้าขอสิ่งที่เป็นไปไม่ได้ (เช่น ขอให้ปิดถนนเพื่อจัดงาน) คุณควรปฏิเสธอย่างไรโดยไม่ทำให้ลูกค้าไม่พอใจ?",
+                options: ["ปฏิเสธทันที", "อธิบายเหตุผลอย่างสุภาพและเสนอทางเลือกอื่น", "บอกว่าต้องปรึกษาผู้บริหารก่อน", "ยอมทำตามคำขอของลูกค้า"],
+                answer: "อธิบายเหตุผลอย่างสุภาพและเสนอทางเลือกอื่น",
+                explanation: "การปฏิเสธอย่างสุภาพและให้ทางเลือกอื่นแสดงถึงความใส่ใจและมุ่งมั่นที่จะช่วยเหลือลูกค้าอย่างเต็มที่ แม้ในสิ่งที่ทำไม่ได้"
+            },
+            {
+                question: "ทักษะด้าน 'การแก้ปัญหาเฉพาะหน้า' ในงานบริการหมายถึงอะไร?",
+                options: ["การแก้ปัญหาด้วยตนเองโดยไม่ขอความช่วยเหลือ", "การคิดหาวิธีแก้ไขปัญหาที่รวดเร็วและสร้างสรรค์", "การหลีกเลี่ยงการเผชิญหน้ากับลูกค้า", "การปฏิบัติตามกฎระเบียบอย่างเคร่งครัด"],
+                answer: "การคิดหาวิธีแก้ไขปัญหาที่รวดเร็วและสร้างสรรค์",
+                explanation: "ทักษะนี้คือความสามารถในการตัดสินใจและแก้ไขสถานการณ์ที่ไม่ได้วางแผนไว้ล่วงหน้าได้อย่างมีประสิทธิภาพ"
+            },
+            {
+                question: "คุณสมบัติใดที่เหมาะสมที่สุดสำหรับพนักงานบริการ?",
+                options: ["หน้าตาดี", "พูดเก่ง", "มีความอดทนและใจเย็น", "ถูกทุกข้อ"],
+                answer: "มีความอดทนและใจเย็น",
+                explanation: "ความอดทนและใจเย็นเป็นคุณสมบัติที่สำคัญที่สุด เพราะในงานบริการจะต้องเผชิญหน้ากับลูกค้าที่มีอารมณ์และปัญหาที่หลากหลาย"
+            },
+            {
+                question: "ในการท่องเที่ยวเชิงอนุรักษ์ (Ecotourism) สิ่งใดที่ควรคำนึงถึงมากที่สุด?",
+                options: ["การสร้างรายได้สูงสุด", "การลดผลกระทบต่อสิ่งแวดล้อม", "การโฆษณาให้มีลูกค้ามากที่สุด", "การสร้างสิ่งอำนวยความสะดวกที่หรูหรา"],
+                answer: "การลดผลกระทบต่อสิ่งแวดล้อม",
+                explanation: "การท่องเที่ยวเชิงอนุรักษ์มีเป้าหมายหลักในการอนุรักษ์ธรรมชาติและวัฒนธรรมท้องถิ่น โดยมุ่งเน้นการลดผลกระทบเชิงลบต่อสิ่งแวดล้อมให้มากที่สุด"
+            },
+            {
+                question: "เมื่อลูกค้าถามคำถามที่คุณไม่ทราบคำตอบ คุณควรตอบอย่างไร?",
+                options: ["ตอบไปตามที่คาดเดา", "บอกว่าไม่รู้", "หาคำตอบที่ถูกต้องให้ลูกค้า", "เปลี่ยนเรื่องคุย"],
+                answer: "หาคำตอบที่ถูกต้องให้ลูกค้า",
+                explanation: "การยอมรับว่าไม่รู้และอาสาที่จะหาคำตอบที่ถูกต้องให้ลูกค้า แสดงถึงความรับผิดชอบและความเป็นมืออาชีพ"
+            },
+            {
+                question: "ข้อใดคือ 'การบริการที่เหนือความคาดหวัง' (Service Beyond Expectation)?",
+                options: ["ให้บริการตามมาตรฐาน", "ให้บริการตามที่ลูกค้าขอ", "ให้บริการที่ลูกค้าไม่เคยคิดว่าจะได้รับ", "ให้บริการแบบรวดเร็ว"],
+                answer: "ให้บริการที่ลูกค้าไม่เคยคิดว่าจะได้รับ",
+                explanation: "การบริการที่เหนือความคาดหวังคือการสร้างความประทับใจด้วยการทำในสิ่งที่เกินกว่าที่ลูกค้าคาดหวังไว้"
+            },
+            {
+                question: "การฝึกอบรมพนักงานในธุรกิจโรงแรมควรเน้นด้านใด?",
+                options: ["การทำความสะอาด", "การตลาด", "การสื่อสารและการแก้ไขปัญหา", "การบัญชี"],
+                answer: "การสื่อสารและการแก้ไขปัญหา",
+                explanation: "ทักษะเหล่านี้เป็นหัวใจสำคัญของงานบริการ ช่วยให้พนักงานสามารถรับมือกับสถานการณ์ต่างๆ และทำให้ลูกค้าพึงพอใจได้"
+            },
+            {
+                question: "ข้อใดคือความหมายของ 'การท่องเที่ยวอย่างยั่งยืน'?",
+                options: ["การท่องเที่ยวที่ไม่ทำลายธรรมชาติ", "การท่องเที่ยวที่ช่วยชุมชนท้องถิ่น", "การท่องเที่ยวที่คำนึงถึงเศรษฐกิจ สังคม และสิ่งแวดล้อม", "ถูกทุกข้อ"],
+                answer: "ถูกทุกข้อ",
+                explanation: "การท่องเที่ยวอย่างยั่งยืนครอบคลุมทั้ง 3 มิติ ได้แก่ การรักษาสิ่งแวดล้อม การส่งเสริมเศรษฐกิจชุมชน และการคงไว้ซึ่งวัฒนธรรมท้องถิ่น"
+            },
+            {
+                question: "คุณจะจัดการกับลูกค้าร้องเรียนในเรื่องเล็กๆ น้อยๆ ได้อย่างไร?",
+                options: ["รับฟังอย่างสุภาพและแก้ไขให้ดีที่สุด", "ละเลยเพราะไม่ใช่เรื่องใหญ่", "โต้เถียงว่าไม่ใช่ปัญหา", "บอกให้ลูกค้าใจเย็นๆ"],
+                answer: "รับฟังอย่างสุภาพและแก้ไขให้ดีที่สุด",
+                explanation: "ไม่ว่าจะเป็นเรื่องเล็กหรือใหญ่ การรับฟังและแสดงความเต็มใจที่จะแก้ไขปัญหาจะทำให้ลูกค้ารู้สึกว่าได้รับการให้ความสำคัญ"
+            },
+            {
+                question: "ข้อใดคือคุณสมบัติของ 'การเป็นผู้นำที่ดี' ในงานบริการ?",
+                options: ["สั่งงานเก่ง", "สามารถทำตามกฎระเบียบได้", "เป็นแบบอย่างที่ดีและสร้างขวัญกำลังใจให้ทีม", "ทำงานได้คนเดียว"],
+                answer: "เป็นแบบอย่างที่ดีและสร้างขวัญกำลังใจให้ทีม",
+                explanation: "ผู้นำในงานบริการต้องเป็นแบบอย่างที่ดีในเรื่องทัศนคติและทักษะการบริการ เพื่อสร้างแรงบันดาลใจให้ทีมทำงานได้อย่างมีประสิทธิภาพ"
+            },
+            {
+                question: "การสร้าง 'ประสบการณ์ที่น่าจดจำ' ให้กับลูกค้าคืออะไร?",
+                options: ["การให้ของขวัญ", "การจัดงานปาร์ตี้", "การสร้างความรู้สึกเชิงบวกและความผูกพัน", "การลดราคา"],
+                answer: "การสร้างความรู้สึกเชิงบวกและความผูกพัน",
+                explanation: "ประสบการณ์ที่น่าจดจำไม่ได้ขึ้นอยู่กับสิ่งของ แต่คือความรู้สึกที่ลูกค้าได้รับจากบริการ ซึ่งจะนำไปสู่ความภักดีต่อแบรนด์ในระยะยาว"
+            },
+            {
+                question: "หากเกิดความผิดพลาดในการจองห้องพัก คุณจะแก้ไขสถานการณ์อย่างไร?",
+                options: ["บอกให้ลูกค้าไปหาโรงแรมอื่น", "ขอโทษและหาห้องพักทดแทนในโรงแรมอื่นที่มีคุณภาพเทียบเท่ากัน", "เปลี่ยนห้องพักที่ด้อยกว่าให้ลูกค้า", "ไม่รับผิดชอบ"],
+                answer: "ขอโทษและหาห้องพักทดแทนในโรงแรมอื่นที่มีคุณภาพเทียบเท่ากัน",
+                explanation: "การแสดงความรับผิดชอบอย่างเต็มที่ และหาทางออกที่ดีที่สุดให้ลูกค้าจะช่วยรักษาความสัมพันธ์และสร้างความน่าเชื่อถือให้กับธุรกิจ"
+            },
+            {
+                question: "ข้อใดคือบทบาทสำคัญของ 'มัคคุเทศก์'?",
+                options: ["พาเที่ยวอย่างเดียว", "ให้ความรู้และสร้างความประทับใจให้แก่ลูกค้า", "คอยเก็บสัมภาระให้ลูกค้า", "ถ่ายรูปให้ลูกค้า"],
+                answer: "ให้ความรู้และสร้างความประทับใจให้แก่ลูกค้า",
+                explanation: "มัคคุเทศก์ที่ดีไม่ได้เป็นเพียงผู้นำทาง แต่ต้องสามารถให้ข้อมูลที่น่าสนใจและสร้างประสบการณ์ที่ดีให้กับผู้เดินทางได้"
+            },
+            {
+                question: "หากลูกค้ามีข้อเสนอแนะในการปรับปรุงบริการ คุณควรทำอย่างไร?",
+                options: ["ไม่สนใจ", "รับฟังและนำไปพิจารณา", "โต้แย้งว่าบริการของเราดีอยู่แล้ว", "ตอบตกลงทันทีโดยไม่พิจารณา"],
+                answer: "รับฟังและนำไปพิจารณา",
+                explanation: "การรับฟังข้อเสนอแนะจากลูกค้าคือโอกาสในการพัฒนาธุรกิจให้ดีขึ้นอย่างต่อเนื่อง"
+            },
+            {
+                question: "ในงานบริการลูกค้า 'การยิ้ม' สำคัญอย่างไร?",
+                options: ["ไม่มีผล", "ทำให้ดูเป็นมิตร", "ทำให้ลูกค้าไว้ใจ", "ถูกทุกข้อ"],
+                answer: "ถูกทุกข้อ",
+                explanation: "การยิ้มเป็นภาษาสากลที่แสดงถึงความเป็นมิตร สร้างความประทับใจและทำให้ลูกค้ารู้สึกผ่อนคลาย"
+            },
+            {
+                question: "การใช้เทคโนโลยีในโรงแรมมีประโยชน์หลักในด้านใด?",
+                options: ["เพิ่มค่าใช้จ่าย", "ลดการใช้แรงงาน", "เพิ่มประสิทธิภาพการทำงานและสร้างความสะดวกสบายให้ลูกค้า", "ทำให้งานซับซ้อนขึ้น"],
+                answer: "เพิ่มประสิทธิภาพการทำงานและสร้างความสะดวกสบายให้ลูกค้า",
+                explanation: "การใช้เทคโนโลยีอย่างเหมาะสมจะช่วยให้พนักงานทำงานได้รวดเร็วขึ้น และมอบประสบการณ์ที่ทันสมัยให้กับลูกค้า"
+            },
+            {
+                question: "ถ้าลูกค้าทำของหายในโรงแรม คุณควรจัดการอย่างไร?",
+                options: ["บอกให้ลูกค้าตามหาเอง", "บอกว่าโรงแรมไม่รับผิดชอบ", "ช่วยเหลือลูกค้าในการค้นหาและประสานงานกับแผนกที่เกี่ยวข้อง", "ให้ลูกค้าจ่ายค่าปรับ"],
+                answer: "ช่วยเหลือลูกค้าในการค้นหาและประสานงานกับแผนกที่เกี่ยวข้อง",
+                explanation: "การช่วยเหลือลูกค้าในสถานการณ์ที่ยากลำบากแสดงถึงความรับผิดชอบและความใส่ใจของธุรกิจ"
+            },
+            {
+                question: "ทัศนคติที่สำคัญที่สุดสำหรับผู้ให้บริการคือ?",
+                options: ["ทำตามคำสั่ง", "ความกระตือรือร้นและพร้อมช่วยเหลือ", "ทำงานให้เสร็จ", "เลี่ยงการพบปะลูกค้า"],
+                answer: "ความกระตือรือร้นและพร้อมช่วยเหลือ",
+                explanation: "ทัศนคติเชิงบวกและความพร้อมที่จะให้บริการเป็นปัจจัยสำคัญที่ทำให้ลูกค้าเกิดความประทับใจ"
+            },
+            {
+                question: "การให้บริการที่เป็นส่วนตัว (Personalized Service) คืออะไร?",
+                options: ["การให้บริการแบบ VIP", "การให้บริการที่ปรับให้เข้ากับความต้องการเฉพาะของลูกค้าแต่ละคน", "การให้บริการแบบมีค่าใช้จ่ายเพิ่มเติม", "การให้บริการเฉพาะลูกค้าประจำ"],
+                answer: "การให้บริการที่ปรับให้เข้ากับความต้องการเฉพาะของลูกค้าแต่ละคน",
+                explanation: "บริการที่เป็นส่วนตัวคือการปรับการบริการให้เข้ากับความชอบหรือความต้องการเฉพาะของลูกค้าแต่ละคน เพื่อให้พวกเขารู้สึกพิเศษและได้รับการดูแลอย่างดี"
+            },
+            {
+                question: "ข้อใดคือคุณสมบัติของ 'การเป็นนักเล่าเรื่อง' ที่ดีในการท่องเที่ยว?",
+                options: ["พูดเสียงดัง", "พูดเรื่องที่น่าเบื่อ", "ทำให้ประวัติศาสตร์หรือเรื่องราวต่างๆ มีชีวิตชีวาและน่าสนใจ", "พูดข้อมูลที่ถูกต้องแต่ไม่น่าฟัง"],
+                answer: "ทำให้ประวัติศาสตร์หรือเรื่องราวต่างๆ มีชีวิตชีวาและน่าสนใจ",
+                explanation: "มัคคุเทศก์ที่สามารถเล่าเรื่องราวได้อย่างน่าสนใจจะทำให้การเดินทางมีคุณค่าและน่าจดจำยิ่งขึ้น"
+            },
+            {
+                question: "การสร้าง 'ความสัมพันธ์กับลูกค้า' มีประโยชน์อย่างไร?",
+                options: ["ทำให้ลูกค้ากลับมาใช้บริการซ้ำ", "สร้างรายได้", "ถูกทุกข้อ", "ไม่มีผล"],
+                answer: "ถูกทุกข้อ",
+                explanation: "การสร้างความสัมพันธ์ที่แข็งแกร่งกับลูกค้าส่งผลดีทั้งในด้านความภักดีของลูกค้าและการสร้างรายได้ในระยะยาว"
+            },
+            {
+                question: "หากลูกค้ามีข้อจำกัดด้านอาหาร คุณควรทำอย่างไร?",
+                options: ["เสิร์ฟอาหารตามปกติ", "สอบถามและจัดหาอาหารที่เหมาะสม", "ไม่สนใจ", "บอกให้ลูกค้าเตรียมอาหารมาเอง"],
+                answer: "สอบถามและจัดหาอาหารที่เหมาะสม",
+                explanation: "การสอบถามเกี่ยวกับข้อจำกัดด้านอาหารและจัดเตรียมสิ่งที่เหมาะสมให้แสดงถึงความใส่ใจในความต้องการของลูกค้า"
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let userAnswers = [];
+        let timerInterval;
+        let timeRemaining = 60;
+        const totalTime = questions.length * 60;
+        let isModalOpen = false;
+
+        const startButton = document.getElementById('startButton');
+        const leaveButtonSplash = document.getElementById('leaveButton');
+        const splashScreen = document.getElementById('splash-screen');
+        const testContainer = document.getElementById('test-container');
+        const resultsContainer = document.getElementById('results-container');
+        const questionTextElement = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const nextButton = document.getElementById('nextButton');
+        const prevButton = document.getElementById('prevButton');
+        const submitButton = document.getElementById('submitButton');
+        const questionNumberElement = document.getElementById('question-number');
+        const progressBar = document.getElementById('progress-bar');
+        const scoreElement = document.getElementById('score');
+        const guidanceTextElement = document.getElementById('guidance-text');
+        const recommendedMajorsTextElement = document.getElementById('recommended-majors-text');
+        const reviewList = document.getElementById('review-list');
+        const retakeButton = document.getElementById('retakeButton');
+        const exitButton = document.getElementById('exitButton');
+        const timerElement = document.getElementById('timer');
+        const modal = document.getElementById('modal');
+        const modalMessage = document.getElementById('modal-message');
+        const modalCloseButton = document.getElementById('modal-close-button');
+
+        function showModal(message) {
+            if (isModalOpen) return;
+            modalMessage.textContent = message;
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            isModalOpen = true;
+        }
+
+        function hideModal() {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            isModalOpen = false;
+        }
+
+        modalCloseButton.addEventListener('click', hideModal);
+
+        function startTimer() {
+            timerElement.textContent = timeRemaining;
+            timerElement.classList.remove('timer-glow');
+            
+            clearInterval(timerInterval);
+
+            timerInterval = setInterval(() => {
+                timeRemaining--;
+                timerElement.textContent = timeRemaining;
+
+                if (timeRemaining <= 10) {
+                    timerElement.classList.add('timer-glow');
+                } else {
+                    timerElement.classList.remove('timer-glow');
+                }
+
+                if (timeRemaining <= 0) {
+                    clearInterval(timerInterval);
+                    handleTimeUp();
+                }
+            }, 1000);
+        }
+
+        function handleTimeUp() {
+            if (currentQuestionIndex < questions.length - 1) {
+                userAnswers[currentQuestionIndex] = "ไม่มีคำตอบ";
+                currentQuestionIndex++;
+                showQuestion(currentQuestionIndex);
+                resetTimer();
+                showModal("หมดเวลาแล้ว! คำตอบของคุณสำหรับข้อนี้ถูกข้ามไป");
+            } else {
+                calculateScore();
+            }
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            timeRemaining = 60;
+            startTimer();
+        }
+
+        function showQuestion(index) {
+            const question = questions[index];
+            questionTextElement.textContent = question.question;
+            optionsContainer.innerHTML = '';
+            
+            questionNumberElement.textContent = `ข้อที่ ${index + 1} จาก ${questions.length}`;
+
+            question.options.forEach(option => {
+                const optionWrapper = document.createElement('div');
+                const radioInput = document.createElement('input');
+                radioInput.type = 'radio';
+                radioInput.name = 'answer';
+                radioInput.value = option;
+                radioInput.id = `option-${option.replace(/\s/g, '-')}`;
+                radioInput.className = 'hidden';
+
+                const label = document.createElement('label');
+                label.htmlFor = `option-${option.replace(/\s/g, '-')}`;
+                label.textContent = option;
+                label.className = `block cursor-pointer px-6 py-4 text-lg md:text-xl rounded-full border-2 border-gray-300 transition-colors duration-300 text-gray-800 hover:bg-gray-100 hover:border-gray-400`;
+
+                if (userAnswers[index] === option) {
+                    radioInput.checked = true;
+                }
+
+                radioInput.addEventListener('change', (e) => {
+                    userAnswers[index] = e.target.value;
+                });
+
+                optionWrapper.appendChild(radioInput);
+                optionWrapper.appendChild(label);
+                optionsContainer.appendChild(optionWrapper);
+            });
+
+            prevButton.disabled = index === 0;
+            if (index === questions.length - 1) {
+                nextButton.classList.add('hidden');
+                submitButton.classList.remove('hidden');
+            } else {
+                nextButton.classList.remove('hidden');
+                submitButton.classList.add('hidden');
+            }
+            
+            const progress = ((index + 1) / questions.length) * 100;
+            progressBar.style.width = `${progress}%`;
+        }
+        
+        nextButton.addEventListener('click', () => {
+            if (currentQuestionIndex < questions.length - 1) {
+                const selectedOption = optionsContainer.querySelector('input[name="answer"]:checked');
+                userAnswers[currentQuestionIndex] = selectedOption ? selectedOption.value : null;
+                currentQuestionIndex++;
+                showQuestion(currentQuestionIndex);
+                resetTimer();
+            }
+        });
+
+        prevButton.addEventListener('click', () => {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                showQuestion(currentQuestionIndex);
+                resetTimer();
+            }
+        });
+
+        function calculateScore() {
+            let correctAnswers = 0;
+            questions.forEach((question, index) => {
+                const userAnswer = userAnswers[index];
+                if (userAnswer === question.answer) {
+                    correctAnswers++;
+                }
+            });
+            score = correctAnswers;
+            showResults();
+        }
+
+        submitButton.addEventListener('click', () => {
+            const selectedOption = optionsContainer.querySelector('input[name="answer"]:checked');
+            userAnswers[currentQuestionIndex] = selectedOption ? selectedOption.value : null;
+            clearInterval(timerInterval);
+            calculateScore();
+        });
+
+        function showResults() {
+            testContainer.classList.add('hidden');
+            resultsContainer.classList.remove('hidden');
+            scoreElement.textContent = `${score} / ${questions.length}`;
+
+            const percentage = (score / questions.length) * 100;
+            let guidanceMessage = "";
+            let recommendedMajorsMessage = "";
+
+            if (percentage >= 80) {
+                guidanceMessage = "เยี่ยมมาก! คุณมีความถนัดด้านการบริการสูงมาก คุณมีทักษะในการสื่อสารและแก้ปัญหาเฉพาะหน้าที่ยอดเยี่ยม ซึ่งเป็นรากฐานที่แข็งแกร่งสำหรับอาชีพด้านการโรงแรมและการท่องเที่ยว";
+                recommendedMajorsMessage = `จากคะแนนของคุณ (${score}/${questions.length}) คุณเหมาะสมอย่างยิ่งสำหรับสาขา <span class="font-bold text-teal-600">การโรงแรม</span> และ <span class="font-bold text-teal-600">การท่องเที่ยว</span>`;
+                confetti({
+                    particleCount: 150,
+                    spread: 180,
+                    origin: { y: 0.6 }
+                });
+            } else if (percentage >= 50) {
+                guidanceMessage = "ดีมาก! คุณมีความเข้าใจพื้นฐานที่ดีในงานบริการและการดูแลลูกค้า การพัฒนาทักษะการสื่อสารและเพิ่มความละเอียดอ่อนในการให้บริการจะช่วยให้คุณแข็งแกร่งขึ้น";
+                recommendedMajorsMessage = `คะแนนของคุณ (${score}/${questions.length}) แสดงว่าคุณมีความสนใจในสายงานนี้ ลองพิจารณาสาขา <span class="font-bold text-teal-600">การโรงแรม</span> และ <span class="font-bold text-teal-600">การท่องเที่ยว</span> และพัฒนาทักษะที่เกี่ยวข้องเพิ่มเติมนะครับ`;
+            } else {
+                guidanceMessage = "ไม่ต้องกังวลไปครับ! แบบทดสอบนี้เป็นเพียงส่วนหนึ่งในการสำรวจตัวเอง หากคุณมีความสนใจในสาขานี้จริง คุณสามารถพัฒนาความถนัดด้านการบริการได้ด้วยการฝึกฝนอย่างต่อเนื่อง";
+                recommendedMajorsMessage = `คะแนนของคุณ (${score}/${questions.length}) แสดงว่านี่อาจไม่ใช่ความถนัดหลักของคุณในตอนนี้ แต่ถ้าคุณยังสนใจในสายงานนี้ ควรเน้นการศึกษาและฝึกฝนทักษะด้าน <span class="font-bold text-teal-600">การสื่อสาร, การแก้ปัญหาเฉพาะหน้า และการดูแลลูกค้า</span> เพื่อเพิ่มศักยภาพของตัวเองครับ`;
+            }
+
+            guidanceTextElement.innerHTML = guidanceMessage;
+            recommendedMajorsTextElement.innerHTML = recommendedMajorsMessage;
+
+            reviewList.innerHTML = '';
+            questions.forEach((question, index) => {
+                const userAnswer = userAnswers[index];
+                const isCorrect = userAnswer === question.answer;
+                const reviewItem = document.createElement('div');
+                reviewItem.className = `p-4 rounded-xl border ${isCorrect ? 'border-green-400 bg-green-50' : 'border-red-400 bg-red-50'}`;
+                reviewItem.innerHTML = `
+                    <div class="flex items-center space-x-2 mb-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 ${isCorrect ? 'text-green-600' : 'text-red-600'}">
+                            ${isCorrect
+                                ? `<path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd" />`
+                                : `<path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm-1.72 6.97a.75.75 0 10-1.06 1.06L10.94 12l-1.72 1.72a.75.75 0 101.06 1.06L12 13.06l1.72 1.72a.75.75 0 101.06-1.06L13.06 12l1.72-1.72a.75.75 0 10-1.06-1.06L12 10.94l-1.72-1.72z" clip-rule="evenodd" />`}
+                        </svg>
+                        <p class="font-semibold text-lg md:text-xl">ข้อที่ ${index + 1}: ${question.question}</p>
+                    </div>
+                    <p class="mb-1 text-base md:text-lg">
+                        <span class="font-medium">คำตอบของคุณ:</span> <span class="${isCorrect ? 'text-green-600' : 'text-red-600'} font-bold">${userAnswer || 'ไม่ได้ตอบ'}</span>
+                    </p>
+                    <p class="text-base md:text-lg">
+                        <span class="font-medium">คำตอบที่ถูกต้อง:</span> <span class="text-gray-800 font-bold">${question.answer}</span>
+                    </p>
+                    ${question.explanation ? `<p class="mt-2 text-sm md:text-base text-gray-600"><strong>เหตุผล:</strong> ${question.explanation}</p>` : ''}
+                `;
+                reviewList.appendChild(reviewItem);
+            });
+        }
+
+        startButton.addEventListener('click', () => {
+            splashScreen.classList.add('hidden');
+            testContainer.classList.remove('hidden');
+            userAnswers = Array(questions.length).fill(null);
+            currentQuestionIndex = 0;
+            showQuestion(currentQuestionIndex);
+            resetTimer();
+        });
+
+        retakeButton.addEventListener('click', () => {
+            resultsContainer.classList.add('hidden');
+            splashScreen.classList.remove('hidden');
+        });
+
+        leaveButtonSplash.addEventListener('click', () => {
+            window.location.href = 'index.html';
+        });
+
+        exitButton.addEventListener('click', () => {
+            window.location.href = 'index.html';
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1386 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎮 ช่างอากาศยานฝึกหัด - 3 ภารกิจสุดมันส์</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600;700&display=swap');
+        
+        body {
+            font-family: 'Kanit', sans-serif;
+            overflow-x: hidden;
+        }
+        
+        .floating-animation {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .pulse-glow {
+            animation: pulseGlow 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.5); }
+            50% { box-shadow: 0 0 40px rgba(59, 130, 246, 0.8), 0 0 60px rgba(59, 130, 246, 0.4); }
+        }
+        
+        .mission-card {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .mission-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .mission-card:hover::before {
+            left: 100%;
+        }
+        
+        .mission-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.4);
+        }
+        
+        .game-screen {
+            display: none;
+            min-height: 100vh;
+        }
+        
+        .game-screen.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .engine-part {
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .engine-part:hover {
+            transform: scale(1.1) rotate(5deg);
+            z-index: 10;
+        }
+        
+        .engine-part.selected {
+            transform: scale(1.2);
+            box-shadow: 0 0 30px rgba(59, 130, 246, 0.8);
+        }
+        
+        .cockpit-button {
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .cockpit-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px rgba(255,255,255,0.6);
+        }
+        
+        .cockpit-button:active {
+            transform: scale(0.95);
+        }
+        
+        .alert-flash {
+            animation: flash 0.8s infinite alternate;
+        }
+        
+        @keyframes flash {
+            0% { background-color: #ef4444; transform: scale(1); }
+            100% { background-color: #dc2626; transform: scale(1.02); }
+        }
+        
+        .success-glow {
+            animation: successGlow 1.5s ease-in-out;
+        }
+        
+        @keyframes successGlow {
+            0% { box-shadow: 0 0 5px #10b981; }
+            50% { box-shadow: 0 0 30px #10b981, 0 0 50px #10b981; }
+            100% { box-shadow: 0 0 10px #10b981; }
+        }
+        
+        .shake {
+            animation: shake 0.6s ease-in-out;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-8px); }
+            20%, 40%, 60%, 80% { transform: translateX(8px); }
+        }
+        
+        .explosion {
+            animation: explosion 1s ease-out;
+        }
+        
+        @keyframes explosion {
+            0% { transform: scale(1); background-color: #ef4444; }
+            50% { transform: scale(1.2); background-color: #f97316; }
+            100% { transform: scale(1.5); background-color: #dc2626; opacity: 0; }
+        }
+        
+        .hint-box {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            border: 2px solid #d97706;
+            animation: hintPulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes hintPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+        
+        .progress-bar {
+            transition: width 0.5s ease-in-out;
+        }
+        
+        .star-rating {
+            color: #fbbf24;
+            text-shadow: 0 0 10px #fbbf24;
+        }
+        
+        .intro-animation {
+            animation: introSlide 1s ease-out;
+        }
+        
+        @keyframes introSlide {
+            from { transform: translateY(-100px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #fbbf24;
+            border-radius: 50%;
+            animation: particle 3s linear infinite;
+        }
+        
+        @keyframes particle {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 min-h-screen text-white relative">
+    
+    <!-- Particles Background -->
+    <div id="particles-container" class="fixed inset-0 pointer-events-none z-0"></div>
+    
+    <!-- หน้าแรก - Intro -->
+    <div id="intro-screen" class="game-screen active relative z-10">
+        <div class="container mx-auto px-4 py-8 text-center min-h-screen flex flex-col justify-center">
+            <div class="intro-animation">
+                <div class="text-8xl mb-6 floating-animation">✈️</div>
+                <h1 class="text-6xl font-bold mb-6 bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 bg-clip-text text-transparent">
+                    ช่างอากาศยานฝึกหัด
+                </h1>
+                <p class="text-2xl text-gray-300 mb-8">3 ภารกิจสุดมันส์ที่จะเปลี่ยนคุณให้เป็นช่างมืออาชีพ!</p>
+                
+                <div class="bg-black/30 backdrop-blur-sm rounded-2xl p-8 max-w-2xl mx-auto mb-8">
+                    <h2 class="text-3xl font-bold mb-4 text-yellow-400">🎯 เกี่ยวกับเกม</h2>
+                    <p class="text-lg text-gray-200 leading-relaxed">
+                        ยินดีต้อนรับสู่โลกของช่างอากาศยาน! คุณจะได้ผ่าน 3 ภารกิจที่ท้าทาย 
+                        แต่ละภารกิจจะทดสอบทักษะที่แตกต่างกัน และในตอนท้ายเราจะบอกคุณว่า 
+                        คุณเหมาะกับสายงานไหนในวงการอากาศยาน
+                    </p>
+                </div>
+                
+                <button onclick="showGameRules()" class="pulse-glow bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 px-12 py-4 rounded-full text-2xl font-bold transition-all duration-300 transform hover:scale-105">
+                    🚀 เริ่มเกม
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- หน้ากติกา -->
+    <div id="rules-screen" class="game-screen relative z-10">
+        <div class="container mx-auto px-4 py-8">
+            <div class="max-w-4xl mx-auto">
+                <h2 class="text-4xl font-bold text-center mb-8 text-yellow-400">📋 กติกาและวิธีเล่น</h2>
+                
+                <div class="grid md:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-black/40 backdrop-blur-sm rounded-xl p-6">
+                        <div class="text-4xl mb-4 text-center">🔧</div>
+                        <h3 class="text-xl font-bold mb-3 text-center text-blue-400">ภารกิจที่ 1: Jet Engine X</h3>
+                        <ul class="text-sm space-y-2 text-gray-300">
+                            <li>• เวลา 5 นาที ในการซ่อมเครื่องยนต์</li>
+                            <li>• คลิกเลือกอะไหล่ที่ถูกต้อง</li>
+                            <li>• ประกอบให้ครบ 3 ชิ้นส่วน</li>
+                            <li>• เลือกผิดจะเสียเวลา 30 วินาที</li>
+                            <li>• หมดเวลา = เครื่องยนต์ระเบิด!</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="bg-black/40 backdrop-blur-sm rounded-xl p-6">
+                        <div class="text-4xl mb-4 text-center">🚨</div>
+                        <h3 class="text-xl font-bold mb-3 text-center text-red-400">ภารกิจที่ 2: Cockpit Emergency</h3>
+                        <ul class="text-sm space-y-2 text-gray-300">
+                            <li>• แก้ไขปัญหาฉุกเฉิน 3 ระบบ</li>
+                            <li>• คลิกปุ่มแก้ไขที่ถูกต้อง</li>
+                            <li>• ระบบน้ำมัน, ไฟฟ้า, ไฮดรอลิก</li>
+                            <li>• แก้ไขผิดลำดับ = อันตราย!</li>
+                            <li>• ต้องแก้ไขให้ครบทั้ง 3 ระบบ</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="bg-black/40 backdrop-blur-sm rounded-xl p-6">
+                        <div class="text-4xl mb-4 text-center">✈️</div>
+                        <h3 class="text-xl font-bold mb-3 text-center text-green-400">ภารกิจที่ 3: Runway Guardian</h3>
+                        <ul class="text-sm space-y-2 text-gray-300">
+                            <li>• จัดการเครื่องบิน 3 ลำ</li>
+                            <li>• แต่ละลำมีปัญหาต่างกัน</li>
+                            <li>• เลือกวิธีแก้ไขที่เหมาะสม</li>
+                            <li>• ตัดสินใจผิด = อุบัติเหตุ!</li>
+                            <li>• ต้องดูแลความปลอดภัย</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="bg-gradient-to-r from-yellow-500/20 to-orange-500/20 rounded-xl p-6 mb-8">
+                    <h3 class="text-2xl font-bold mb-4 text-center text-yellow-400">🏆 ระบบการให้คะแนน</h3>
+                    <div class="grid md:grid-cols-3 gap-4 text-center">
+                        <div>
+                            <div class="text-3xl mb-2">⭐⭐⭐</div>
+                            <p class="font-semibold">เยี่ยม (80-100%)</p>
+                            <p class="text-sm text-gray-300">ทำได้รวดเร็วและแม่นยำ</p>
+                        </div>
+                        <div>
+                            <div class="text-3xl mb-2">⭐⭐</div>
+                            <p class="font-semibold">ดี (60-79%)</p>
+                            <p class="text-sm text-gray-300">ทำได้ถูกต้องแต่ใช้เวลา</p>
+                        </div>
+                        <div>
+                            <div class="text-3xl mb-2">⭐</div>
+                            <p class="font-semibold">พอใช้ (40-59%)</p>
+                            <p class="text-sm text-gray-300">ทำได้แต่มีข้อผิดพลาด</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center">
+                    <button onclick="showMissionSelect()" class="bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 px-10 py-4 rounded-full text-xl font-bold transition-all duration-300 transform hover:scale-105">
+                        ✅ เข้าใจแล้ว เริ่มเลย!
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- หน้าเลือกภารกิจ -->
+    <div id="mission-select-screen" class="game-screen relative z-10">
+        <div class="container mx-auto px-4 py-8">
+            <div class="text-center mb-12">
+                <h1 class="text-5xl font-bold mb-4 bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
+                    🎮 เลือกภารกิจ
+                </h1>
+                <p class="text-xl text-gray-300">เลือกภารกิจที่คุณต้องการทำ (แนะนำให้ทำตามลำดับ)</p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                <!-- ภารกิจที่ 1 -->
+                <div class="mission-card rounded-xl p-6 text-center cursor-pointer" onclick="startMission(1)">
+                    <div class="text-6xl mb-4 floating-animation">🔧</div>
+                    <h3 class="text-2xl font-bold mb-3">ภารกิจที่ 1</h3>
+                    <h4 class="text-lg font-semibold mb-4 text-yellow-300">Jet Engine X – Time Attack</h4>
+                    <p class="text-sm mb-4">ซ่อมเครื่องยนต์เจ็ทภายใน 5 นาที! เลือกอะไหล่ที่ถูกต้องมาประกอบ</p>
+                    <div class="bg-white/20 rounded-lg p-3 mb-4">
+                        <p class="text-xs">🎯 ฝึกความแม่นยำ + การทำงานแข่งกับเวลา</p>
+                    </div>
+                    <div id="mission1-status" class="text-sm">
+                        <span class="text-gray-400">⏳ ยังไม่ได้ทำ</span>
+                    </div>
+                </div>
+                
+                <!-- ภารกิจที่ 2 -->
+                <div class="mission-card rounded-xl p-6 text-center cursor-pointer" onclick="startMission(2)">
+                    <div class="text-6xl mb-4 floating-animation">🚨</div>
+                    <h3 class="text-2xl font-bold mb-3">ภารกิจที่ 2</h3>
+                    <h4 class="text-lg font-semibold mb-4 text-yellow-300">Cockpit Emergency VR</h4>
+                    <p class="text-sm mb-4">จำลองห้องนักบิน! แก้ไขปัญหาฉุกเฉินก่อนเครื่องบินตก</p>
+                    <div class="bg-white/20 rounded-lg p-3 mb-4">
+                        <p class="text-xs">🎯 ฝึกการวิเคราะห์ปัญหา + ตัดสินใจรวดเร็ว</p>
+                    </div>
+                    <div id="mission2-status" class="text-sm">
+                        <span class="text-gray-400">⏳ ยังไม่ได้ทำ</span>
+                    </div>
+                </div>
+                
+                <!-- ภารกิจที่ 3 -->
+                <div class="mission-card rounded-xl p-6 text-center cursor-pointer" onclick="startMission(3)">
+                    <div class="text-6xl mb-4 floating-animation">✈️</div>
+                    <h3 class="text-2xl font-bold mb-3">ภารกิจที่ 3</h3>
+                    <h4 class="text-lg font-semibold mb-4 text-yellow-300">Runway Guardian</h4>
+                    <p class="text-sm mb-4">เป็นหัวหน้าช่างสนามบิน! จัดการทีมและตัดสินใจสำคัญ</p>
+                    <div class="bg-white/20 rounded-lg p-3 mb-4">
+                        <p class="text-xs">🎯 ฝึกการจัดการทีม + ความรับผิดชอบ</p>
+                    </div>
+                    <div id="mission3-status" class="text-sm">
+                        <span class="text-gray-400">⏳ ยังไม่ได้ทำ</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-8">
+                <button onclick="goToIntro()" class="bg-gray-600 hover:bg-gray-700 px-6 py-3 rounded-lg font-semibold transition-all duration-300">
+                    🏠 กลับหน้าแรก
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- ภารกิจที่ 1: Jet Engine X -->
+    <div id="mission1-screen" class="game-screen relative z-10">
+        <div class="container mx-auto px-4 py-8">
+            <div class="text-center mb-8">
+                <h2 class="text-4xl font-bold mb-4">🔧 Jet Engine X – Time Attack</h2>
+                <div class="bg-red-600 text-white px-6 py-3 rounded-lg inline-block text-xl font-bold pulse-glow">
+                    ⏰ เวลาเหลือ: <span id="timer1">05:00</span>
+                </div>
+            </div>
+            
+            <!-- คำใบ้ -->
+            <div class="max-w-4xl mx-auto mb-6">
+                <div class="hint-box rounded-xl p-4 text-black">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="font-bold">💡 คำใบ้:</h3>
+                        <div class="space-x-2">
+                            <button onclick="showHint(1, 1)" class="bg-yellow-600 hover:bg-yellow-700 px-3 py-1 rounded text-xs font-semibold text-white">คำใบ้ 1</button>
+                            <button onclick="showHint(1, 2)" class="bg-orange-600 hover:bg-orange-700 px-3 py-1 rounded text-xs font-semibold text-white">คำใบ้ 2</button>
+                        </div>
+                    </div>
+                    <div id="hint1-container">
+                        <p id="hint1-display" class="text-sm text-gray-600">กดปุ่มคำใบ้เพื่อดูคำแนะนำ</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                <!-- เครื่องยนต์ -->
+                <div class="bg-gray-800 rounded-xl p-6">
+                    <h3 class="text-xl font-bold mb-4 text-center">เครื่องยนต์เจ็ท</h3>
+                    <div class="relative bg-gray-700 rounded-lg h-64 flex items-center justify-center">
+                        <svg width="200" height="150" viewBox="0 0 200 150" class="text-gray-400">
+                            <!-- เครื่องยนต์พื้นฐาน -->
+                            <rect x="20" y="40" width="160" height="70" rx="35" fill="currentColor" stroke="#666" stroke-width="2"/>
+                            <!-- ช่องว่างสำหรับชิ้นส่วน -->
+                            <circle id="part-slot-1" cx="60" cy="75" r="15" fill="transparent" stroke="#ff6b6b" stroke-width="3" stroke-dasharray="5,5"/>
+                            <circle id="part-slot-2" cx="100" cy="75" r="15" fill="transparent" stroke="#ff6b6b" stroke-width="3" stroke-dasharray="5,5"/>
+                            <circle id="part-slot-3" cx="140" cy="75" r="15" fill="transparent" stroke="#ff6b6b" stroke-width="3" stroke-dasharray="5,5"/>
+                            <!-- ชิ้นส่วนที่ประกอบแล้ว -->
+                            <g id="installed-parts"></g>
+                        </svg>
+                    </div>
+                    <div class="text-center mt-4">
+                        <p class="text-sm text-gray-300 mb-2">คลิกชิ้นส่วนด้านขวาเพื่อประกอบ</p>
+                        <div class="bg-gray-700 rounded-lg p-3">
+                            <div class="flex justify-between items-center">
+                                <span class="text-green-400">✅ ประกอบแล้ว: <span id="parts-completed">0</span>/3</span>
+                                <div class="w-32 bg-gray-600 rounded-full h-2">
+                                    <div id="progress-bar" class="progress-bar bg-green-500 h-2 rounded-full" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- ชิ้นส่วน -->
+                <div class="bg-gray-800 rounded-xl p-6">
+                    <h3 class="text-xl font-bold mb-4 text-center">อะไหล่</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="engine-part bg-blue-600 rounded-lg p-4 text-center" data-part="turbine" onclick="selectPart('turbine', this)">
+                            <div class="text-3xl mb-2">⚙️</div>
+                            <p class="text-sm font-semibold">Turbine Blade</p>
+                            <p class="text-xs text-blue-200">ใบพัดกังหัน</p>
+                        </div>
+                        <div class="engine-part bg-green-600 rounded-lg p-4 text-center" data-part="compressor" onclick="selectPart('compressor', this)">
+                            <div class="text-3xl mb-2">🌀</div>
+                            <p class="text-sm font-semibold">Compressor</p>
+                            <p class="text-xs text-green-200">เครื่องอัดอากาศ</p>
+                        </div>
+                        <div class="engine-part bg-purple-600 rounded-lg p-4 text-center" data-part="combustor" onclick="selectPart('combustor', this)">
+                            <div class="text-3xl mb-2">🔥</div>
+                            <p class="text-sm font-semibold">Combustor</p>
+                            <p class="text-xs text-purple-200">ห้องเผาไหม้</p>
+                        </div>
+                        <div class="engine-part bg-red-600 rounded-lg p-4 text-center" data-part="wrong" onclick="selectPart('wrong', this)">
+                            <div class="text-3xl mb-2">❌</div>
+                            <p class="text-sm font-semibold">Wrong Part</p>
+                            <p class="text-xs text-red-200">ชิ้นส่วนผิด</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-8">
+                <button onclick="goToMissionSelect()" class="bg-gray-600 hover:bg-gray-700 px-6 py-3 rounded-lg font-semibold transition-all duration-300">
+                    🏠 กลับเลือกภารกิจ
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- ภารกิจที่ 2: Cockpit Emergency -->
+    <div id="mission2-screen" class="game-screen relative z-10">
+        <div class="container mx-auto px-4 py-8">
+            <div class="text-center mb-8">
+                <h2 class="text-4xl font-bold mb-4">🚨 Cockpit Emergency VR</h2>
+                <div class="bg-red-600 text-white px-6 py-3 rounded-lg inline-block text-xl font-bold alert-flash">
+                    ⚠️ สถานการณ์ฉุกเฉิน! แก้ไขปัญหาด่วน!
+                </div>
+            </div>
+            
+            <!-- คำใบ้ -->
+            <div class="max-w-4xl mx-auto mb-6">
+                <div class="hint-box rounded-xl p-4 text-black">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="font-bold">💡 คำใบ้:</h3>
+                        <div class="space-x-2">
+                            <button onclick="showHint(2, 1)" class="bg-yellow-600 hover:bg-yellow-700 px-3 py-1 rounded text-xs font-semibold text-white">คำใบ้ 1</button>
+                            <button onclick="showHint(2, 2)" class="bg-orange-600 hover:bg-orange-700 px-3 py-1 rounded text-xs font-semibold text-white">คำใบ้ 2</button>
+                        </div>
+                    </div>
+                    <div id="hint2-container">
+                        <p id="hint2-display" class="text-sm text-gray-600">กดปุ่มคำใบ้เพื่อดูคำแนะนำ</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="max-w-4xl mx-auto">
+                <!-- ห้องนักบิน -->
+                <div class="bg-gray-900 rounded-xl p-8 relative">
+                    <h3 class="text-xl font-bold mb-6 text-center">ห้องนักบิน - มุมมองนักบิน</h3>
+                    
+                    <!-- แผงควบคุม -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <!-- ระบบน้ำมัน -->
+                        <div class="bg-gray-800 rounded-lg p-4">
+                            <h4 class="font-bold mb-3 text-center">⛽ ระบบน้ำมัน</h4>
+                            <div id="fuel-warning" class="alert-flash bg-red-600 text-white p-2 rounded mb-3 text-center">
+                                🚨 แรงดันน้ำมันตก!
+                            </div>
+                            <button id="fuel-btn" class="cockpit-button w-full bg-blue-600 hover:bg-blue-700 p-3 rounded font-semibold" onclick="fixProblem('fuel')">
+                                🔧 เปิดปั๊มสำรอง
+                            </button>
+                            <div class="mt-2 text-xs text-gray-400 text-center">
+                                สถานะ: <span id="fuel-status">รอการแก้ไข</span>
+                            </div>
+                        </div>
+                        
+                        <!-- ระบบไฟฟ้า -->
+                        <div class="bg-gray-800 rounded-lg p-4">
+                            <h4 class="font-bold mb-3 text-center">⚡ ระบบไฟฟ้า</h4>
+                            <div id="electrical-warning" class="alert-flash bg-red-600 text-white p-2 rounded mb-3 text-center">
+                                🚨 ไฟฟ้าขัดข้อง!
+                            </div>
+                            <button id="electrical-btn" class="cockpit-button w-full bg-yellow-600 hover:bg-yellow-700 p-3 rounded font-semibold" onclick="fixProblem('electrical')">
+                                🔧 รีเซ็ตเซอร์กิต
+                            </button>
+                            <div class="mt-2 text-xs text-gray-400 text-center">
+                                สถานะ: <span id="electrical-status">รอการแก้ไข</span>
+                            </div>
+                        </div>
+                        
+                        <!-- ระบบไฮดรอลิก -->
+                        <div class="bg-gray-800 rounded-lg p-4">
+                            <h4 class="font-bold mb-3 text-center">🔧 ระบบไฮดรอลิก</h4>
+                            <div id="hydraulic-warning" class="alert-flash bg-red-600 text-white p-2 rounded mb-3 text-center">
+                                🚨 ไฮดรอลิกเสีย!
+                            </div>
+                            <button id="hydraulic-btn" class="cockpit-button w-full bg-green-600 hover:bg-green-700 p-3 rounded font-semibold" onclick="fixProblem('hydraulic')">
+                                🔧 เปิดระบบสำรอง
+                            </button>
+                            <div class="mt-2 text-xs text-gray-400 text-center">
+                                สถานะ: <span id="hydraulic-status">รอการแก้ไข</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- สถานะ -->
+                    <div class="mt-6 text-center">
+                        <div class="bg-gray-700 rounded-lg p-4">
+                            <p class="text-lg font-semibold mb-2">สถานะการแก้ไข: <span id="problems-fixed">0</span>/3</p>
+                            <div class="w-full bg-gray-600 rounded-full h-3 mb-3">
+                                <div id="mission2-progress" class="progress-bar bg-red-500 h-3 rounded-full" style="width: 0%"></div>
+                            </div>
+                            <div id="mission2-status" class="text-yellow-400">
+                                ⏳ รอการแก้ไขปัญหา...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-8">
+                <button onclick="goToMissionSelect()" class="bg-gray-600 hover:bg-gray-700 px-6 py-3 rounded-lg font-semibold transition-all duration-300">
+                    🏠 กลับเลือกภารกิจ
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- ภารกิจที่ 3: Runway Guardian -->
+    <div id="mission3-screen" class="game-screen relative z-10">
+        <div class="container mx-auto px-4 py-8">
+            <div class="text-center mb-8">
+                <h2 class="text-4xl font-bold mb-4">✈️ Runway Guardian</h2>
+                <p class="text-xl text-gray-300">คุณคือหัวหน้าช่างสนามบิน - ตัดสินใจอย่างชาญฉลาด!</p>
+            </div>
+            
+            <!-- คำใบ้ -->
+            <div class="max-w-6xl mx-auto mb-6">
+                <div class="hint-box rounded-xl p-4 text-black">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="font-bold">💡 คำใบ้:</h3>
+                        <div class="space-x-2">
+                            <button onclick="showHint(3, 1)" class="bg-yellow-600 hover:bg-yellow-700 px-3 py-1 rounded text-xs font-semibold text-white">คำใบ้ 1</button>
+                            <button onclick="showHint(3, 2)" class="bg-orange-600 hover:bg-orange-700 px-3 py-1 rounded text-xs font-semibold text-white">คำใบ้ 2</button>
+                        </div>
+                    </div>
+                    <div id="hint3-container">
+                        <p id="hint3-display" class="text-sm text-gray-600">กดปุ่มคำใบ้เพื่อดูคำแนะนำ</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="max-w-6xl mx-auto">
+                <div class="grid md:grid-cols-3 gap-6">
+                    <!-- เครื่องบินลำที่ 1 -->
+                    <div class="bg-gray-800 rounded-xl p-6 relative">
+                        <div class="text-center mb-4">
+                            <div class="text-4xl mb-2 floating-animation">✈️</div>
+                            <h3 class="text-xl font-bold">เครื่องบินลำที่ 1</h3>
+                            <p class="text-sm text-gray-400">เที่ยวบิน TG123 → กรุงเทพ-ภูเก็ต</p>
+                        </div>
+                        
+                        <div class="bg-red-600 text-white p-3 rounded-lg mb-4 text-center alert-flash">
+                            🚨 ปัญหา: ล้อหลัก 3 ตัวหลวม + ยางแตก!
+                        </div>
+                        
+                        <div class="bg-gray-700 p-2 rounded mb-3 text-xs">
+                            <p>📊 ข้อมูล: ผู้โดยสาร 180 คน, เที่ยวบินสำคัญ, อากาศแปรปรวน</p>
+                        </div>
+                        
+                        <div class="space-y-2">
+                            <button class="w-full bg-blue-600 hover:bg-blue-700 p-3 rounded font-semibold transition-all duration-300 transform hover:scale-105" onclick="makeDecision(1, 'repair')">
+                                🔧 ซ่อมด่วน + เปลี่ยนยาง (45 นาที)
+                            </button>
+                            <button class="w-full bg-purple-600 hover:bg-purple-700 p-3 rounded font-semibold transition-all duration-300 transform hover:scale-105" onclick="makeDecision(1, 'partial')">
+                                ⚡ แก้เฉพาะล้อหลวม (20 นาที)
+                            </button>
+                            <button class="w-full bg-yellow-600 hover:bg-yellow-700 p-3 rounded font-semibold transition-all duration-300 transform hover:scale-105" onclick="makeDecision(1, 'delay')">
+                                ⏰ เลื่อนเวลา + เปลี่ยนเครื่อง
+                            </button>
+                            <button class="w-full bg-red-600 hover:bg-red-700 p-3 rounded font-semibold transition-all duration-300 transform hover:scale-105" onclick="makeDecision(1, 'ignore')">
+                                ✈️ ให้บินไปเลย (อันตราย!)
+                            </button>
+                        </div>
+                        
+                        <div id="plane1-status" class="mt-4 text-center text-sm text-gray-400">
+                            รอการตัดสินใจ...
+                        </div>
+                    </div>
+                    
+                    <!-- เครื่องบินลำที่ 2 -->
+                    <div class="bg-gray-800 rounded-xl p-6 relative">
+                        <div class="text-center mb-4">
+                            <div class="text-4xl mb-2 floating-animation">✈️</div>
+                            <h3 class="text-xl font-bold">เครื่องบินลำที่ 2</h3>
+                            <p class="text-sm text-gray-400">เที่ยวบิน AA456 → กรุงเทพ-เชียงใหม่</p>
+                        </div>
+                        
+                        <div class="bg-red-600 text-white p-3 rounded-lg mb-4 text-center alert-flash">
+                            🚨 ปัญหา: ไฟนำทาง + เรดาร์ขัดข้อง!
+                        </div>
+                        
+                        <div class="bg-gray-700 p-2 rounded mb-3 text-xs">
+                            <p>📊 ข้อมูล: บินกลางคืน, ฝนตก, เที่ยวบินแรก, มีเครื่องบินอื่น 5 ลำ</p>
+                        </div>
+                        
+                        <div class="space-y-2">
+                            <button class="w-full bg-blue-600 hover:bg-blue-700 p-3 rounded font-semibold transition-all duration-300 transform hover:scale-105" onclick="makeDecision(2, 'fullrepair')">
+                                🔧 ซ่อมครบ + ทดสอบ (35 นาที)
+                            </button>
+                            <button class="w-full bg-green-600 hover:bg-green-700 p-3 rounded font-semibold transition-all duration-300 transform hover:scale-105" onclick="makeDecision(2, 'replace')">
+                                💡 เปลี่ยนเฉพาะไฟ (15 นาที)
+                            </button>
+                            <button class="w-full bg-yellow-600 hover:bg-yellow-700 p-3 rounded font-semibold transition-all duration-300 transform hover:scale-105" onclick="makeDecision(2, 'delay')">
+                                ⏰ รอให้ฝนหยุด + ซ่อม
+                            </button>
+                            <button class="w-full bg-red-600 hover:bg-red-700 p-3 rounded font-semibold transition-all duration-300 transform hover:scale-105" onclick="makeDecision(2, 'ignore')">
+                                ✈️ ใช้ระบบสำรองบิน (เสี่ยง!)
+                            </button>
+                        </div>
+                        
+                        <div id="plane2-status" class="mt-4 text-center text-sm text-gray-400">
+                            รอการตัดสินใจ...
+                        </div>
+                    </div>
+                    
+                    <!-- เครื่องบินลำที่ 3 -->
+                    <div class="bg-gray-800 rounded-xl p-6 relative">
+                        <div class="text-center mb-4">
+                            <div class="text-4xl mb-2 floating-animation">✈️</div>
+                            <h3 class="text-xl font-bold">เครื่องบินลำที่ 3</h3>
+                            <p class="text-sm text-gray-400">เที่ยวบิน UA789 → กรุงเทพ-หาดใหญ่</p>
+                        </div>
+                        
+                        <div class="bg-red-600 text-white p-3 rounded-lg mb-4 text-center alert-flash">
+                            🚨 ปัญหา: เชื้อเพลิงรั่ว + ปั๊มเสีย!
+                        </div>
+                        
+                        <div class="bg-gray-700 p-2 rounded mb-3 text-xs">
+                            <p>📊 ข้อมูล: เที่ยวบินไกล 3 ชม., ลมแรง, สนามบินปลายทางปิด 22:00</p>
+                        </div>
+                        
+                        <div class="space-y-2">
+                            <button class="w-full bg-blue-600 hover:bg-blue-700 p-3 rounded font-semibold transition-all duration-300 transform hover:scale-105" onclick="makeDecision(3, 'fullfix')">
+                                🔧 ซ่อมรั่ว + เปลี่ยนปั๊ม (60 นาที)
+                            </button>
+                            <button class="w-full bg-green-600 hover:bg-green-700 p-3 rounded font-semibold transition-all duration-300 transform hover:scale-105" onclick="makeDecision(3, 'refuel')">
+                                ⛽ อุดรั่ว + เติมเชื้อเพลิง (30 นาที)
+                            </button>
+                            <button class="w-full bg-orange-600 hover:bg-orange-700 p-3 rounded font-semibold transition-all duration-300 transform hover:scale-105" onclick="makeDecision(3, 'reroute')">
+                                🗺️ เปลี่ยนเส้นทางใกล้กว่า
+                            </button>
+                            <button class="w-full bg-yellow-600 hover:bg-yellow-700 p-3 rounded font-semibold transition-all duration-300 transform hover:scale-105" onclick="makeDecision(3, 'delay')">
+                                ⏰ เลื่อนเป็นวันพรุ่งนี้
+                            </button>
+                            <button class="w-full bg-red-600 hover:bg-red-700 p-3 rounded font-semibold transition-all duration-300 transform hover:scale-105" onclick="makeDecision(3, 'ignore')">
+                                ✈️ บินด้วยเชื้อเพลิงที่มี (อันตราย!)
+                            </button>
+                        </div>
+                        
+                        <div id="plane3-status" class="mt-4 text-center text-sm text-gray-400">
+                            รอการตัดสินใจ...
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- สถานะรวม -->
+                <div class="mt-8 text-center">
+                    <div class="bg-gray-700 rounded-lg p-6">
+                        <h3 class="text-xl font-bold mb-4">สถานะสนามบิน</h3>
+                        <p class="text-lg mb-3">เครื่องบินที่จัดการแล้ว: <span id="planes-managed">0</span>/3</p>
+                        <div class="w-full bg-gray-600 rounded-full h-3 mb-3">
+                            <div id="mission3-progress" class="progress-bar bg-blue-500 h-3 rounded-full" style="width: 0%"></div>
+                        </div>
+                        <div id="mission3-status" class="text-yellow-400">
+                            ⏳ รอการตัดสินใจ...
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-8">
+                <button onclick="goToMissionSelect()" class="bg-gray-600 hover:bg-gray-700 px-6 py-3 rounded-lg font-semibold transition-all duration-300">
+                    🏠 กลับเลือกภารกิจ
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- หน้าผลลัพธ์ -->
+    <div id="result-screen" class="game-screen relative z-10">
+        <div class="container mx-auto px-4 py-8 text-center">
+            <h2 class="text-4xl font-bold mb-8">🏆 ผลการประเมิน</h2>
+            
+            <div class="max-w-3xl mx-auto bg-gray-800 rounded-xl p-8">
+                <div id="result-content" class="space-y-6">
+                    <!-- ผลลัพธ์จะแสดงที่นี่ -->
+                </div>
+                
+                <div class="mt-8 space-y-4">
+                    <button onclick="resetGame()" class="bg-blue-600 hover:bg-blue-700 px-8 py-3 rounded-lg font-semibold text-lg transition-all duration-300 transform hover:scale-105">
+                        🔄 เล่นใหม่
+                    </button>
+                    <br>
+                    <button onclick="goToMissionSelect()" class="bg-gray-600 hover:bg-gray-700 px-6 py-3 rounded-lg font-semibold transition-all duration-300">
+                        🏠 กลับเลือกภารกิจ
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ตัวแปรเก็บคะแนน
+        let scores = {
+            mission1: 0,
+            mission2: 0,
+            mission3: 0
+        };
+        
+        let gameState = {
+            currentMission: 0,
+            mission1: {
+                timeLeft: 300, // 5 นาที
+                partsCompleted: 0,
+                timer: null,
+                correctSequence: ['turbine', 'compressor', 'combustor'],
+                currentStep: 0
+            },
+            mission2: {
+                problemsFixed: 0,
+                fixedProblems: []
+            },
+            mission3: {
+                planesManaged: 0,
+                decisions: []
+            }
+        };
+        
+        // สร้าง particles
+        function createParticles() {
+            const container = document.getElementById('particles-container');
+            for (let i = 0; i < 20; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 3 + 's';
+                particle.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                container.appendChild(particle);
+            }
+        }
+        
+        // เริ่มต้นเกม
+        window.onload = function() {
+            createParticles();
+        };
+        
+        // ฟังก์ชันแสดงกติกา
+        function showGameRules() {
+            hideAllScreens();
+            document.getElementById('rules-screen').classList.add('active');
+        }
+        
+        // ฟังก์ชันแสดงหน้าเลือกภารกิจ
+        function showMissionSelect() {
+            hideAllScreens();
+            document.getElementById('mission-select-screen').classList.add('active');
+        }
+        
+        // ฟังก์ชันกลับหน้าแรก
+        function goToIntro() {
+            hideAllScreens();
+            document.getElementById('intro-screen').classList.add('active');
+        }
+        
+        // ฟังก์ชันกลับหน้าเลือกภารกิจ
+        function goToMissionSelect() {
+            hideAllScreens();
+            document.getElementById('mission-select-screen').classList.add('active');
+            
+            // รีเซ็ตตัวจับเวลา
+            if (gameState.mission1.timer) {
+                clearInterval(gameState.mission1.timer);
+                gameState.mission1.timer = null;
+            }
+        }
+        
+        // ฟังก์ชันเริ่มภารกิจ
+        function startMission(missionNumber) {
+            hideAllScreens();
+            gameState.currentMission = missionNumber;
+            
+            if (missionNumber === 1) {
+                document.getElementById('mission1-screen').classList.add('active');
+                resetMission1();
+                startMission1Timer();
+            } else if (missionNumber === 2) {
+                document.getElementById('mission2-screen').classList.add('active');
+                resetMission2();
+            } else if (missionNumber === 3) {
+                document.getElementById('mission3-screen').classList.add('active');
+                resetMission3();
+            }
+        }
+        
+        // ฟังก์ชันซ่อนหน้าจอทั้งหมด
+        function hideAllScreens() {
+            const screens = document.querySelectorAll('.game-screen');
+            screens.forEach(screen => screen.classList.remove('active'));
+        }
+        
+        // ภารกิจที่ 1: Jet Engine X
+        function resetMission1() {
+            gameState.mission1 = {
+                timeLeft: 300,
+                partsCompleted: 0,
+                timer: null,
+                correctSequence: ['turbine', 'compressor', 'combustor'],
+                currentStep: 0
+            };
+            document.getElementById('parts-completed').textContent = '0';
+            document.getElementById('progress-bar').style.width = '0%';
+            document.getElementById('installed-parts').innerHTML = '';
+            
+            // รีเซ็ตชิ้นส่วน
+            const parts = document.querySelectorAll('.engine-part');
+            parts.forEach(part => {
+                part.classList.remove('selected');
+                part.style.opacity = '1';
+                part.style.pointerEvents = 'auto';
+            });
+        }
+        
+        function startMission1Timer() {
+            gameState.mission1.timeLeft = 300;
+            updateTimer();
+            
+            gameState.mission1.timer = setInterval(() => {
+                gameState.mission1.timeLeft--;
+                updateTimer();
+                
+                if (gameState.mission1.timeLeft <= 0) {
+                    clearInterval(gameState.mission1.timer);
+                    explodeEngine();
+                }
+            }, 1000);
+        }
+        
+        function updateTimer() {
+            const minutes = Math.floor(gameState.mission1.timeLeft / 60);
+            const seconds = gameState.mission1.timeLeft % 60;
+            document.getElementById('timer1').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+        
+        function selectPart(partType, element) {
+            if (partType === 'wrong') {
+                // เลือกผิด
+                playErrorEffect();
+                gameState.mission1.timeLeft -= 30; // ลดเวลา 30 วินาที
+                element.classList.add('shake');
+                setTimeout(() => element.classList.remove('shake'), 600);
+                return;
+            }
+            
+            const correctPart = gameState.mission1.correctSequence[gameState.mission1.currentStep];
+            
+            if (partType === correctPart) {
+                // เลือกถูก
+                gameState.mission1.partsCompleted++;
+                gameState.mission1.currentStep++;
+                
+                element.classList.add('selected');
+                element.style.opacity = '0.5';
+                element.style.pointerEvents = 'none';
+                
+                // อัพเดท UI
+                document.getElementById('parts-completed').textContent = gameState.mission1.partsCompleted;
+                const progress = (gameState.mission1.partsCompleted / 3) * 100;
+                document.getElementById('progress-bar').style.width = progress + '%';
+                
+                // เพิ่มชิ้นส่วนในเครื่องยนต์
+                addPartToEngine(partType, gameState.mission1.partsCompleted);
+                
+                playSuccessEffect();
+                
+                if (gameState.mission1.partsCompleted === 3) {
+                    // ซ่อมเสร็จ!
+                    clearInterval(gameState.mission1.timer);
+                    const timeBonus = Math.floor(gameState.mission1.timeLeft / 3);
+                    scores.mission1 = Math.min(100, 60 + timeBonus);
+                    updateMissionStatus(1, scores.mission1);
+                    showMissionComplete(1, `🎉 ซ่อมเครื่องยนต์สำเร็จ! เวลาเหลือ ${Math.floor(gameState.mission1.timeLeft/60)}:${(gameState.mission1.timeLeft%60).toString().padStart(2,'0')}`);
+                }
+            } else {
+                // เลือกผิดลำดับ
+                playErrorEffect();
+                element.classList.add('shake');
+                setTimeout(() => element.classList.remove('shake'), 600);
+            }
+        }
+        
+        function addPartToEngine(partType, position) {
+            const installedParts = document.getElementById('installed-parts');
+            const positions = [
+                { x: 60, y: 75, icon: '⚙️' },
+                { x: 100, y: 75, icon: '🌀' },
+                { x: 140, y: 75, icon: '🔥' }
+            ];
+            
+            const pos = positions[position - 1];
+            const part = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            part.setAttribute('x', pos.x);
+            part.setAttribute('y', pos.y + 5);
+            part.setAttribute('text-anchor', 'middle');
+            part.setAttribute('font-size', '20');
+            part.textContent = pos.icon;
+            part.classList.add('success-glow');
+            
+            installedParts.appendChild(part);
+        }
+        
+        function explodeEngine() {
+            document.body.classList.add('shake');
+            playExplosionEffect();
+            
+            setTimeout(() => {
+                alert('💥 เครื่องยนต์ระเบิด! ภารกิจล้มเหลว');
+                document.body.classList.remove('shake');
+                scores.mission1 = 0;
+                updateMissionStatus(1, 0);
+                goToMissionSelect();
+            }, 1000);
+        }
+        
+        // ภารกิจที่ 2: Cockpit Emergency
+        function resetMission2() {
+            gameState.mission2 = {
+                problemsFixed: 0,
+                fixedProblems: [],
+                correctSequence: ['fuel', 'electrical', 'hydraulic'],
+                currentStep: 0,
+                mistakes: 0,
+                timeStarted: Date.now()
+            };
+            
+            document.getElementById('problems-fixed').textContent = '0';
+            document.getElementById('mission2-progress').style.width = '0%';
+            document.getElementById('mission2-status').textContent = '⏳ รอการแก้ไขปัญหา...';
+            
+            // รีเซ็ตปุ่มและสถานะ
+            const systems = ['fuel', 'electrical', 'hydraulic'];
+            systems.forEach(system => {
+                const warning = document.getElementById(system + '-warning');
+                const button = document.getElementById(system + '-btn');
+                const status = document.getElementById(system + '-status');
+                
+                warning.className = 'alert-flash bg-red-600 text-white p-2 rounded mb-3 text-center';
+                warning.innerHTML = `🚨 ${system === 'fuel' ? 'แรงดันน้ำมันตก 15 PSI!' : system === 'electrical' ? 'ไฟฟ้าขัดข้อง - วงจร A3 ดับ!' : 'ไฮดรอลิกเสีย - แรงดัน 0 BAR!'}`;
+                
+                button.disabled = false;
+                button.classList.remove('opacity-50');
+                
+                status.textContent = 'รอการแก้ไข';
+                status.className = 'mt-2 text-xs text-gray-400 text-center';
+            });
+        }
+        
+        function fixProblem(problemType) {
+            if (gameState.mission2.fixedProblems.includes(problemType)) {
+                return; // ถ้าแก้ไขแล้วไม่ต้องทำอะไร
+            }
+            
+            const correctNext = gameState.mission2.correctSequence[gameState.mission2.currentStep];
+            
+            if (problemType !== correctNext) {
+                // แก้ไขผิดลำดับ
+                gameState.mission2.mistakes++;
+                playErrorEffect();
+                
+                const buttonElement = document.getElementById(problemType + '-btn');
+                buttonElement.classList.add('shake');
+                setTimeout(() => buttonElement.classList.remove('shake'), 600);
+                
+                // แสดงข้อความเตือน
+                const statusElement = document.getElementById(problemType + '-status');
+                statusElement.textContent = `❌ ต้องแก้ไข ${correctNext === 'fuel' ? 'น้ำมัน' : correctNext === 'electrical' ? 'ไฟฟ้า' : 'ไฮดรอลิก'} ก่อน!`;
+                statusElement.className = 'mt-2 text-xs text-red-400 text-center';
+                
+                setTimeout(() => {
+                    statusElement.textContent = 'รอการแก้ไข';
+                    statusElement.className = 'mt-2 text-xs text-gray-400 text-center';
+                }, 3000);
+                
+                return;
+            }
+            
+            const warningElement = document.getElementById(problemType + '-warning');
+            const buttonElement = document.getElementById(problemType + '-btn');
+            const statusElement = document.getElementById(problemType + '-status');
+            
+            // แก้ไขปัญหาถูกต้อง
+            warningElement.classList.remove('alert-flash');
+            warningElement.classList.add('success-glow');
+            
+            let successMessage = '';
+            if (problemType === 'fuel') {
+                successMessage = '✅ ปั๊มสำรองทำงาน - แรงดัน 45 PSI';
+            } else if (problemType === 'electrical') {
+                successMessage = '✅ วงจรรีเซ็ต - ไฟฟ้าปกติ';
+            } else {
+                successMessage = '✅ ระบบสำรองเปิด - แรงดัน 3000 PSI';
+            }
+            
+            warningElement.innerHTML = successMessage;
+            warningElement.className = 'bg-green-600 text-white p-2 rounded mb-3 text-center success-glow';
+            
+            buttonElement.disabled = true;
+            buttonElement.classList.add('opacity-50');
+            
+            statusElement.textContent = 'แก้ไขสำเร็จ';
+            statusElement.className = 'mt-2 text-xs text-green-400 text-center';
+            
+            gameState.mission2.problemsFixed++;
+            gameState.mission2.fixedProblems.push(problemType);
+            gameState.mission2.currentStep++;
+            
+            document.getElementById('problems-fixed').textContent = gameState.mission2.problemsFixed;
+            const progress = (gameState.mission2.problemsFixed / 3) * 100;
+            document.getElementById('mission2-progress').style.width = progress + '%';
+            
+            playSuccessEffect();
+            
+            if (gameState.mission2.problemsFixed === 3) {
+                const timeElapsed = (Date.now() - gameState.mission2.timeStarted) / 1000;
+                const timeBonus = Math.max(0, 60 - timeElapsed);
+                const mistakePenalty = gameState.mission2.mistakes * 10;
+                scores.mission2 = Math.max(40, Math.min(100, 80 + timeBonus - mistakePenalty));
+                
+                document.getElementById('mission2-status').innerHTML = '🎉 ภารกิจสำเร็จ! เครื่องบินปลอดภัย';
+                document.getElementById('mission2-status').className = 'text-green-400';
+                updateMissionStatus(2, scores.mission2);
+                
+                setTimeout(() => {
+                    showMissionComplete(2, `🎉 แก้ไขปัญหาฉุกเฉินสำเร็จ! ใช้เวลา ${Math.round(timeElapsed)} วินาที, ผิดพลาด ${gameState.mission2.mistakes} ครั้ง`);
+                }, 2000);
+            }
+        }
+        
+        // ภารกิจที่ 3: Runway Guardian
+        function resetMission3() {
+            gameState.mission3 = {
+                planesManaged: 0,
+                decisions: []
+            };
+            
+            document.getElementById('planes-managed').textContent = '0';
+            document.getElementById('mission3-progress').style.width = '0%';
+            document.getElementById('mission3-status').textContent = '⏳ รอการตัดสินใจ...';
+            
+            // รีเซ็ตสถานะเครื่องบิน
+            for (let i = 1; i <= 3; i++) {
+                document.getElementById(`plane${i}-status`).textContent = 'รอการตัดสินใจ...';
+                document.getElementById(`plane${i}-status`).className = 'mt-4 text-center text-sm text-gray-400';
+                
+                // เปิดปุ่มใหม่
+                const buttons = document.querySelectorAll(`#mission3-screen .bg-gray-800:nth-child(${i}) button`);
+                buttons.forEach(btn => {
+                    btn.disabled = false;
+                    btn.classList.remove('opacity-50');
+                });
+            }
+        }
+        
+        function makeDecision(planeNumber, decision) {
+            if (gameState.mission3.decisions[planeNumber - 1]) {
+                return; // ถ้าตัดสินใจแล้วไม่ต้องทำอะไร
+            }
+            
+            const statusElement = document.getElementById(`plane${planeNumber}-status`);
+            let result = '';
+            let success = false;
+            let points = 0;
+            
+            // ตรรกะการตัดสินใจ
+            if (planeNumber === 1) { // ล้อหลวม + ยางแตก
+                if (decision === 'repair') {
+                    result = '✅ ซ่อมครบถ้วน! เครื่องบินบินขึ้นปลอดภัย 100%';
+                    success = true;
+                    points = 35;
+                } else if (decision === 'partial') {
+                    result = '💥 ซ่อมไม่ครบ! ล้อหลุดขณะขึ้น - อุบัติเหตุร้ายแรง';
+                    success = false;
+                    points = 0;
+                } else if (decision === 'delay') {
+                    result = '⏰ เปลี่ยนเครื่อง - ปลอดภัยแต่ผู้โดยสารโกรธมาก';
+                    success = true;
+                    points = 15;
+                } else {
+                    result = '💥 อุบัติเหตุร้ายแรง! ล้อหลุด + ยางระเบิด';
+                    success = false;
+                    points = 0;
+                }
+            } else if (planeNumber === 2) { // ไฟนำทาง + เรดาร์
+                if (decision === 'fullrepair') {
+                    result = '✅ ซ่อมครบ + ทดสอบ! บินปลอดภัยในสภาพอากาศเลว';
+                    success = true;
+                    points = 35;
+                } else if (decision === 'replace') {
+                    result = '💥 เปลี่ยนเฉพาะไฟ - เรดาร์เสีย ชนเครื่องบินอื่น!';
+                    success = false;
+                    points = 0;
+                } else if (decision === 'delay') {
+                    result = '⏰ รอฝนหยุด - ปลอดภัยแต่เสียเวลามาก';
+                    success = true;
+                    points = 25;
+                } else {
+                    result = '💥 ชนเครื่องบินอื่นกลางอากาศ! ระบบสำรองไม่พอ';
+                    success = false;
+                    points = 0;
+                }
+            } else if (planeNumber === 3) { // เชื้อเพลิงรั่ว + ปั๊มเสีย
+                if (decision === 'fullfix') {
+                    result = '✅ ซ่อมครบถ้วน! บินได้ปลอดภัย แต่สายมาก';
+                    success = true;
+                    points = 30;
+                } else if (decision === 'refuel') {
+                    result = '💥 อุดรั่วไม่แน่น - เชื้อเพลิงหมดกลางทาง!';
+                    success = false;
+                    points = 0;
+                } else if (decision === 'reroute') {
+                    result = '✅ เปลี่ยนเส้นทางฉลาด! ประหยัดเชื้อเพลิงและเวลา';
+                    success = true;
+                    points = 35;
+                } else if (decision === 'delay') {
+                    result = '⏰ เลื่อนวันพรุ่งนี้ - ปลอดภัยแต่ผู้โดยสารต้องค้างคืน';
+                    success = true;
+                    points = 20;
+                } else {
+                    result = '💥 เชื้อเพลิงหมดกลางทาง! ลงจอดฉุกเฉินในป่า';
+                    success = false;
+                    points = 0;
+                }
+            }
+            
+            statusElement.textContent = result;
+            statusElement.className = success ? 'mt-4 text-center text-sm text-green-400' : 'mt-4 text-center text-sm text-red-400';
+            
+            scores.mission3 += points;
+            gameState.mission3.decisions[planeNumber - 1] = { decision, success, points };
+            
+            if (success) {
+                playSuccessEffect();
+            } else {
+                playErrorEffect();
+            }
+            
+            gameState.mission3.planesManaged++;
+            document.getElementById('planes-managed').textContent = gameState.mission3.planesManaged;
+            const progress = (gameState.mission3.planesManaged / 3) * 100;
+            document.getElementById('mission3-progress').style.width = progress + '%';
+            
+            // ปิดปุ่มของเครื่องบินนี้
+            const buttons = document.querySelectorAll(`#mission3-screen .bg-gray-800:nth-child(${planeNumber}) button`);
+            buttons.forEach(btn => {
+                btn.disabled = true;
+                btn.classList.add('opacity-50');
+            });
+            
+            if (gameState.mission3.planesManaged === 3) {
+                updateMissionStatus(3, scores.mission3);
+                setTimeout(() => {
+                    const successCount = gameState.mission3.decisions.filter(d => d.success).length;
+                    showMissionComplete(3, `🎉 จัดการสนามบินเสร็จสิ้น! เครื่องบินปลอดภัย ${successCount}/3 ลำ`);
+                }, 2000);
+            }
+        }
+        
+        // ฟังก์ชันอัพเดทสถานะภารกิจ
+        function updateMissionStatus(missionNumber, score) {
+            const statusElement = document.getElementById(`mission${missionNumber}-status`);
+            let stars = '';
+            let status = '';
+            
+            if (score >= 80) {
+                stars = '⭐⭐⭐';
+                status = 'เยี่ยม!';
+            } else if (score >= 60) {
+                stars = '⭐⭐';
+                status = 'ดี';
+            } else if (score >= 40) {
+                stars = '⭐';
+                status = 'พอใช้';
+            } else {
+                stars = '';
+                status = 'ล้มเหลว';
+            }
+            
+            statusElement.innerHTML = `<span class="star-rating">${stars}</span> <span class="text-white">${status} (${score} คะแนน)</span>`;
+        }
+        
+        // ฟังก์ชันแสดงผลเมื่อภารกิจเสร็จ
+        function showMissionComplete(missionNumber, message) {
+            alert(message);
+            
+            // ตรวจสอบว่าทำภารกิจครบทั้ง 3 แล้วหรือยัง
+            const completedMissions = Object.values(scores).filter(score => score >= 0).length;
+            
+            if (completedMissions === 3 && scores.mission1 > 0 && scores.mission2 > 0 && scores.mission3 > 0) {
+                setTimeout(() => showFinalResult(), 1000);
+            } else {
+                setTimeout(() => goToMissionSelect(), 1000);
+            }
+        }
+        
+        // ฟังก์ชันแสดงผลลัพธ์สุดท้าย
+        function showFinalResult() {
+            hideAllScreens();
+            document.getElementById('result-screen').classList.add('active');
+            
+            // หาภารกิจที่ทำได้ดีที่สุด
+            let bestMission = 1;
+            let bestScore = scores.mission1;
+            
+            if (scores.mission2 > bestScore) {
+                bestMission = 2;
+                bestScore = scores.mission2;
+            }
+            if (scores.mission3 > bestScore) {
+                bestMission = 3;
+                bestScore = scores.mission3;
+            }
+            
+            let recommendation = '';
+            let icon = '';
+            let description = '';
+            
+            if (bestMission === 1) {
+                recommendation = 'ช่างเครื่องยนต์ Jet Engine Specialist';
+                icon = '🔧';
+                description = 'คุณมีความแม่นยำสูงและทำงานได้ดีภายใต้ความกดดัน เหมาะกับการซ่อมบำรุงเครื่องยนต์เจ็ท';
+            } else if (bestMission === 2) {
+                recommendation = 'Avionics System Expert';
+                icon = '⚡';
+                description = 'คุณสามารถวิเคราะห์ปัญหาและตัดสินใจได้รวดเร็ว เหมาะกับการดูแลระบบอิเล็กทรอนิกส์';
+            } else {
+                recommendation = 'Maintenance Supervisor / Inspector';
+                icon = '👨‍💼';
+                description = 'คุณมีความสามารถในการจัดการและตัดสินใจ เหมาะกับการเป็นหัวหน้าทีมช่าง';
+            }
+            
+            const totalScore = scores.mission1 + scores.mission2 + scores.mission3;
+            const averageScore = Math.round(totalScore / 3);
+            
+            let overallRating = '';
+            if (averageScore >= 80) {
+                overallRating = '⭐⭐⭐ นักช่างระดับเซียน!';
+            } else if (averageScore >= 60) {
+                overallRating = '⭐⭐ นักช่างที่มีศักยภาพ';
+            } else if (averageScore >= 40) {
+                overallRating = '⭐ ต้องฝึกฝนเพิ่มเติม';
+            } else {
+                overallRating = 'ควรเรียนรู้เพิ่มเติม';
+            }
+            
+            document.getElementById('result-content').innerHTML = `
+                <div class="text-6xl mb-6 floating-animation">${icon}</div>
+                <h3 class="text-3xl font-bold mb-4 text-yellow-400">ผลการประเมิน</h3>
+                
+                <div class="bg-gradient-to-r from-yellow-400 to-orange-500 text-black p-6 rounded-lg mb-6">
+                    <h4 class="text-2xl font-bold mb-2">🎯 คำแนะนำสายงาน</h4>
+                    <p class="text-xl font-semibold mb-2">${recommendation}</p>
+                    <p class="text-sm">${description}</p>
+                </div>
+                
+                <div class="grid md:grid-cols-3 gap-4 mb-6">
+                    <div class="bg-gray-700 p-4 rounded-lg">
+                        <h5 class="font-bold mb-2">🔧 ภารกิจที่ 1</h5>
+                        <p class="text-2xl font-bold text-blue-400">${scores.mission1}</p>
+                        <p class="text-sm text-gray-300">Jet Engine X</p>
+                    </div>
+                    <div class="bg-gray-700 p-4 rounded-lg">
+                        <h5 class="font-bold mb-2">🚨 ภารกิจที่ 2</h5>
+                        <p class="text-2xl font-bold text-red-400">${scores.mission2}</p>
+                        <p class="text-sm text-gray-300">Cockpit Emergency</p>
+                    </div>
+                    <div class="bg-gray-700 p-4 rounded-lg">
+                        <h5 class="font-bold mb-2">✈️ ภารกิจที่ 3</h5>
+                        <p class="text-2xl font-bold text-green-400">${scores.mission3}</p>
+                        <p class="text-sm text-gray-300">Runway Guardian</p>
+                    </div>
+                </div>
+                
+                <div class="bg-gray-700 p-6 rounded-lg">
+                    <h4 class="text-xl font-bold mb-2">📊 คะแนนรวม</h4>
+                    <p class="text-3xl font-bold text-yellow-400 mb-2">${totalScore}/300</p>
+                    <p class="text-lg star-rating">${overallRating}</p>
+                </div>
+            `;
+        }
+        
+        // ฟังก์ชันรีเซ็ตเกม
+        function resetGame() {
+            scores = { mission1: 0, mission2: 0, mission3: 0 };
+            gameState = {
+                currentMission: 0,
+                mission1: { timeLeft: 300, partsCompleted: 0, timer: null, correctSequence: ['turbine', 'compressor', 'combustor'], currentStep: 0 },
+                mission2: { problemsFixed: 0, fixedProblems: [] },
+                mission3: { planesManaged: 0, decisions: [] }
+            };
+            
+            // รีเซ็ตสถานะภารกิจ
+            for (let i = 1; i <= 3; i++) {
+                const statusElement = document.getElementById(`mission${i}-status`);
+                statusElement.innerHTML = '<span class="text-gray-400">⏳ ยังไม่ได้ทำ</span>';
+            }
+            
+            goToMissionSelect();
+        }
+        
+        // ฟังก์ชันแสดงคำใบ้
+        function showHint(mission, hintNumber) {
+            const hints = {
+                1: {
+                    1: "🔍 <strong>คำใบ้ที่ 1:</strong> เครื่องยนต์เจ็ทต้องการ Turbine Blade (⚙️), Compressor (🌀), และ Combustor (🔥) ตามลำดับ",
+                    2: "⚠️ <strong>คำใบ้ที่ 2:</strong> หลีกเลี่ยงชิ้นส่วนที่มีเครื่องหมาย ❌ เพราะจะทำให้เสียเวลา 30 วินาที!"
+                },
+                2: {
+                    1: "🔧 <strong>คำใบ้ที่ 1:</strong> แก้ไขปัญหาตามลำดับความสำคัญ: น้ำมัน → ไฟฟ้า → ไฮดรอลิก (ถ้าแก้ผิดลำดับจะไม่ได้ผล)",
+                    2: "⚡ <strong>คำใบ้ที่ 2:</strong> ระบบไฟฟ้าต้องรีเซ็ตก่อน ระบบไฮดรอลิกจึงจะทำงานได้ปกติ และน้ำมันต้องมีแรงดันก่อน"
+                },
+                3: {
+                    1: "🛠️ <strong>คำใบ้ที่ 1:</strong> เครื่องบินลำ 1 ต้องซ่อมครบถ้วน! ซ่อมไม่ครบจะเกิดอุบัติเหตุ",
+                    2: "⚠️ <strong>คำใบ้ที่ 2:</strong> เครื่องบินลำ 2 ต้องซ่อมครบหรือเลื่อนเวลา - เปลี่ยนเฉพาะไฟจะชนเครื่องบินอื่น!"
+                }
+            };
+            
+            const displayElement = document.getElementById(`hint${mission}-display`);
+            displayElement.innerHTML = hints[mission][hintNumber];
+            displayElement.className = 'text-sm text-black';
+        }
+        
+        // ฟังก์ชันเอฟเฟกต์
+        function playSuccessEffect() {
+            document.body.style.boxShadow = '0 0 30px #10b981';
+            setTimeout(() => {
+                document.body.style.boxShadow = 'none';
+            }, 500);
+        }
+        
+        function playErrorEffect() {
+            document.body.style.boxShadow = '0 0 30px #ef4444';
+            document.body.classList.add('shake');
+            setTimeout(() => {
+                document.body.style.boxShadow = 'none';
+                document.body.classList.remove('shake');
+            }, 600);
+        }
+        
+        function playExplosionEffect() {
+            document.body.style.background = 'radial-gradient(circle, #ef4444 0%, #dc2626 50%, #991b1b 100%)';
+            setTimeout(() => {
+                document.body.style.background = '';
+            }, 1000);
+        }
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9784638971957b68',t:'MTc1NjcyNTczNi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

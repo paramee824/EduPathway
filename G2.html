@@ -1,0 +1,1879 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Factory Legend: Rise of the Machinist</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Kanit:wght@300;400;600;700&display=swap');
+        
+        body { font-family: 'Kanit', sans-serif; }
+        .orbitron { font-family: 'Orbitron', monospace; }
+        
+        @keyframes machineWork {
+            0% { transform: rotate(0deg) scale(1); }
+            25% { transform: rotate(90deg) scale(1.1); }
+            50% { transform: rotate(180deg) scale(1); }
+            75% { transform: rotate(270deg) scale(1.1); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+        
+        @keyframes sparks {
+            0% { opacity: 0; transform: scale(0.5) rotate(0deg); }
+            50% { opacity: 1; transform: scale(1.2) rotate(180deg); }
+            100% { opacity: 0; transform: scale(0.8) rotate(360deg); }
+        }
+        
+        @keyframes metalGlow {
+            0%, 100% { box-shadow: 0 0 20px #ff6b35, inset 0 0 20px #ff6b35; }
+            50% { box-shadow: 0 0 40px #ff4500, inset 0 0 30px #ff4500; }
+        }
+        
+        @keyframes precisionPulse {
+            0%, 100% { box-shadow: 0 0 15px #00ff88; }
+            50% { box-shadow: 0 0 30px #00ff88, 0 0 45px #00ff88; }
+        }
+        
+        @keyframes cncProcess {
+            0% { background: linear-gradient(45deg, #1a1a1a, #2a2a2a); }
+            25% { background: linear-gradient(45deg, #2a2a2a, #3a3a3a); }
+            50% { background: linear-gradient(45deg, #3a3a3a, #4a4a4a); }
+            75% { background: linear-gradient(45deg, #4a4a4a, #3a3a3a); }
+            100% { background: linear-gradient(45deg, #2a2a2a, #1a1a1a); }
+        }
+        
+        @keyframes assemblyGlow {
+            0% { filter: brightness(1) saturate(1); }
+            50% { filter: brightness(1.3) saturate(1.5); }
+            100% { filter: brightness(1) saturate(1); }
+        }
+        
+        @keyframes legendaryAwaken {
+            0% { transform: scale(0.5) rotateY(0deg); opacity: 0; }
+            25% { transform: scale(0.7) rotateY(90deg); opacity: 0.3; }
+            50% { transform: scale(0.9) rotateY(180deg); opacity: 0.6; }
+            75% { transform: scale(1.1) rotateY(270deg); opacity: 0.8; }
+            100% { transform: scale(1) rotateY(360deg); opacity: 1; }
+        }
+        
+        .machine-working { animation: machineWork 2s ease-in-out; }
+        .sparks-effect { animation: sparks 0.8s ease-out infinite; }
+        .metal-glow { animation: metalGlow 1.5s ease-in-out infinite; }
+        .precision-pulse { animation: precisionPulse 1s ease-in-out infinite; }
+        .cnc-processing { animation: cncProcess 3s ease-in-out; }
+        .assembly-glow { animation: assemblyGlow 2s ease-in-out infinite; }
+        .legendary-awaken { animation: legendaryAwaken 4s ease-out forwards; }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .neon-border {
+            border: 2px solid;
+            border-image: linear-gradient(45deg, #ff6b35, #f7931e, #ffd700) 1;
+        }
+        
+        .workshop-bg {
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(255, 107, 53, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0, 255, 136, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(255, 215, 0, 0.2) 0%, transparent 50%),
+                linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+        }
+        
+        .stage-card {
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.8), rgba(51, 65, 85, 0.6));
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .tool-button {
+            background: linear-gradient(145deg, rgba(59, 130, 246, 0.8), rgba(37, 99, 235, 0.9));
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .tool-button:hover {
+            background: linear-gradient(145deg, rgba(37, 99, 235, 0.9), rgba(29, 78, 216, 1));
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.4);
+        }
+        
+        .danger-button {
+            background: linear-gradient(145deg, rgba(239, 68, 68, 0.8), rgba(220, 38, 38, 0.9));
+        }
+        
+        .danger-button:hover {
+            background: linear-gradient(145deg, rgba(220, 38, 38, 0.9), rgba(185, 28, 28, 1));
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 10px 25px rgba(239, 68, 68, 0.4);
+        }
+        
+        .success-button {
+            background: linear-gradient(145deg, rgba(34, 197, 94, 0.8), rgba(22, 163, 74, 0.9));
+        }
+        
+        .success-button:hover {
+            background: linear-gradient(145deg, rgba(22, 163, 74, 0.9), rgba(21, 128, 61, 1));
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 10px 25px rgba(34, 197, 94, 0.4);
+        }
+        
+        .measurement-display {
+            background: linear-gradient(145deg, #000000, #1a1a1a);
+            border: 2px solid #00ff88;
+            color: #00ff88;
+            text-shadow: 0 0 10px #00ff88;
+        }
+        
+        .cnc-screen {
+            background: linear-gradient(145deg, #0a0a0a, #1a1a1a);
+            border: 3px solid #ffd700;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            text-shadow: 0 0 5px #00ff00;
+        }
+        
+        .part-slot {
+            background: linear-gradient(145deg, rgba(75, 85, 99, 0.5), rgba(55, 65, 81, 0.7));
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .part-slot.filled {
+            background: linear-gradient(145deg, rgba(34, 197, 94, 0.3), rgba(22, 163, 74, 0.5));
+            border: 2px solid rgba(34, 197, 94, 0.8);
+        }
+        
+        .legendary-machine {
+            background: radial-gradient(circle, rgba(255, 215, 0, 0.2), rgba(255, 107, 53, 0.1));
+            border: 3px solid;
+            border-image: linear-gradient(45deg, #ffd700, #ff6b35, #ffd700) 1;
+        }
+    </style>
+</head>
+<body class="workshop-bg min-h-screen text-white overflow-x-hidden">
+    <!-- Particle Background -->
+    <div class="fixed inset-0 pointer-events-none">
+        <div class="absolute inset-0" id="particles"></div>
+    </div>
+
+    <div class="relative z-10 container mx-auto px-4 py-6">
+        <!-- Header -->
+        <header class="text-center mb-8">
+            <h1 class="text-5xl font-black mb-4 orbitron bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 bg-clip-text text-transparent">
+                ⚡ FACTORY LEGEND ⚡
+            </h1>
+            <h2 class="text-2xl font-bold mb-2 text-orange-400">Rise of the Machinist</h2>
+            <p class="text-lg text-gray-300 max-w-2xl mx-auto">
+                พิสูจน์ความเป็นช่างกลโรงงานระดับตำนาน ผ่าน 5 ด่านที่ท้าทายความสามารถทุกด้าน
+            </p>
+        </header>
+
+        <!-- Progress System -->
+        <div class="mb-8 stage-card rounded-xl p-6 hidden" id="progressSystem">
+            <div class="flex justify-between items-center mb-4">
+                <div class="flex items-center space-x-4">
+                    <h3 class="text-xl font-bold orbitron">ความคืบหน้าภารกิจ</h3>
+                    <button onclick="goHomeHandler()" class="danger-button px-4 py-2 rounded-lg font-bold text-sm">
+                        🏠 หน้าแรก
+                    </button>
+                    <button onclick="restartHandler()" class="tool-button px-4 py-2 rounded-lg font-bold text-sm">
+                        🔄 เริ่มใหม่
+                    </button>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="text-center">
+                        <div class="text-sm text-gray-400">เวลาคงเหลือ</div>
+                        <div class="text-2xl font-bold text-red-400 orbitron" id="timer">5:00</div>
+                    </div>
+                    <span class="text-lg font-bold text-yellow-400" id="progressText">ด่าน 1/5</span>
+                </div>
+            </div>
+            <div class="relative w-full bg-gray-700 rounded-full h-4 overflow-hidden">
+                <div class="absolute inset-0 bg-gradient-to-r from-blue-500 via-purple-500 to-yellow-500 h-full rounded-full transition-all duration-1000 ease-out" 
+                     id="progressBar" style="width: 20%"></div>
+                <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-30 animate-pulse"></div>
+            </div>
+            <div class="flex justify-between mt-2 text-sm text-gray-400">
+                <span>Metal Hero</span>
+                <span>Precision Master</span>
+                <span>CNC Guardian</span>
+                <span>Assembly Expert</span>
+                <span>Machine God</span>
+            </div>
+        </div>
+
+        <!-- Score Display -->
+        <div class="mb-8 grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="stage-card rounded-lg p-4 text-center">
+                <div class="text-2xl mb-1">🔥</div>
+                <div class="text-sm text-gray-400">การตัดโลหะ</div>
+                <div class="text-xl font-bold text-orange-400" id="machiningScore">0</div>
+            </div>
+            <div class="stage-card rounded-lg p-4 text-center">
+                <div class="text-2xl mb-1">📏</div>
+                <div class="text-sm text-gray-400">ความแม่นยำ</div>
+                <div class="text-xl font-bold text-green-400" id="precisionScore">0</div>
+            </div>
+            <div class="stage-card rounded-lg p-4 text-center">
+                <div class="text-2xl mb-1">🤖</div>
+                <div class="text-sm text-gray-400">CNC Programming</div>
+                <div class="text-xl font-bold text-blue-400" id="cncScore">0</div>
+            </div>
+            <div class="stage-card rounded-lg p-4 text-center">
+                <div class="text-2xl mb-1">⚙️</div>
+                <div class="text-sm text-gray-400">การประกอบ</div>
+                <div class="text-xl font-bold text-purple-400" id="assemblyScore">0</div>
+            </div>
+        </div>
+
+        <!-- Start Screen -->
+        <div class="stage-card rounded-xl p-8 shadow-2xl text-center" id="startScreen">
+            <div class="mb-8">
+                <div class="text-9xl mb-6 legendary-awaken">🏭</div>
+                <h2 class="text-4xl font-bold mb-4 text-yellow-400 orbitron">ยินดีต้อนรับสู่ Factory Legend</h2>
+                <p class="text-xl text-gray-300 mb-6 max-w-3xl mx-auto">
+                    เกมทดสอบความสามารถช่างกลโรงงาน ผ่าน 5 ด่านที่ท้าทายทุกทักษะ 
+                    พร้อมระบบวัดผลและแนะนำสายอาชีพที่เหมาะสม
+                </p>
+            </div>
+
+            <!-- Game Rules -->
+            <div class="glass-effect rounded-lg p-6 mb-8 text-left max-w-4xl mx-auto">
+                <h3 class="text-2xl font-bold mb-4 text-yellow-400 text-center">📋 กติกาการเล่น</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h4 class="text-lg font-bold mb-3 text-orange-400">⏱️ ระบบเวลา:</h4>
+                        <ul class="space-y-2 text-gray-300 text-sm">
+                            <li>• แต่ละด่านมีเวลาจำกัด 3-5 นาที</li>
+                            <li>• ทำเสร็จเร็ว = โบนัสคะแนน</li>
+                            <li>• เกินเวลา = หักคะแนน 50%</li>
+                            <li>• ตอบผิด = หักคะแนน 20 คะแนน</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="text-lg font-bold mb-3 text-green-400">🏆 ระบบคะแนน:</h4>
+                        <ul class="space-y-2 text-gray-300 text-sm">
+                            <li>• ตอบถูกครั้งแรก = คะแนนเต็ม</li>
+                            <li>• ใช้คำใบ้ = หักคะแนน 10%</li>
+                            <li>• ความแม่นยำ = คะแนนพิเศษ</li>
+                            <li>• ทำครบทุกด่าน = โบนัส 50 คะแนน</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="mt-6 bg-blue-900 bg-opacity-30 rounded-lg p-4">
+                    <h4 class="text-lg font-bold mb-2 text-blue-400">🎯 เป้าหมาย:</h4>
+                    <p class="text-gray-300 text-sm">
+                        ผ่านทุกด่านเพื่อค้นหาสายอาชีพที่เหมาะสมในงานช่างกลโรงงาน 
+                        พร้อมรับคำแนะนำการพัฒนาตนเองและเส้นทางการศึกษาต่อ
+                    </p>
+                </div>
+            </div>
+
+            <!-- Difficulty Selection -->
+            <div class="mb-8">
+                <h3 class="text-xl font-bold mb-4 text-gray-300">เลือกระดับความยาก:</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-4xl mx-auto">
+                    <button class="difficulty-btn tool-button rounded-lg p-4" data-difficulty="easy">
+                        <div class="text-3xl mb-2">🟢</div>
+                        <div class="font-bold">ง่าย</div>
+                        <div class="text-xs text-gray-400 space-y-1">
+                            <p>⏰ เวลา +2 นาที</p>
+                            <p>💡 คำใบ้หัก -5%</p>
+                            <p>🎯 ปุ่มปรับละเอียด</p>
+                            <p>📊 คะแนนพื้นฐาน</p>
+                        </div>
+                    </button>
+                    <button class="difficulty-btn success-button rounded-lg p-4" data-difficulty="normal">
+                        <div class="text-3xl mb-2">🟡</div>
+                        <div class="font-bold">ปกติ</div>
+                        <div class="text-xs text-gray-400 space-y-1">
+                            <p>⏰ เวลามาตรฐาน</p>
+                            <p>💡 คำใบ้หัก -10%</p>
+                            <p>🎯 ปุ่มปกติ</p>
+                            <p>📊 คะแนนสมดุล</p>
+                        </div>
+                    </button>
+                    <button class="difficulty-btn danger-button rounded-lg p-4" data-difficulty="hard">
+                        <div class="text-3xl mb-2">🔴</div>
+                        <div class="font-bold">ยาก</div>
+                        <div class="text-xs text-gray-400 space-y-1">
+                            <p>⏰ เวลา -2 นาที</p>
+                            <p>💡 คำใบ้หัก -15%</p>
+                            <p>🎯 ปุ่มกระโดด</p>
+                            <p>📊 คะแนนสูงสุด</p>
+                        </div>
+                    </button>
+                </div>
+            </div>
+
+            <button id="startGame" class="success-button px-12 py-4 rounded-xl font-bold text-xl disabled:opacity-50" disabled>
+                🚀 เริ่มการผจญภัย
+            </button>
+        </div>
+
+        <!-- Game Screen -->
+        <div class="stage-card rounded-xl p-8 shadow-2xl hidden" id="gameScreen">
+            
+            <!-- Stage 1: Metal Hero -->
+            <div id="stage1" class="stage">
+                <div class="text-center mb-8">
+                    <h2 class="text-4xl font-bold mb-4 text-orange-400 orbitron">🔥 METAL HERO</h2>
+                    <p class="text-xl text-gray-300 mb-6">ด่านที่ 1: การเลือกเครื่องจักรตัดโลหะ</p>
+                </div>
+
+                <!-- Rules Panel -->
+                <div class="glass-effect rounded-lg p-6 mb-8">
+                    <h3 class="text-lg font-bold mb-3 text-yellow-400">📋 กติกาและคำใบ้:</h3>
+                    <ul class="space-y-2 text-gray-300">
+                        <li>• <strong>เครื่องกลึง:</strong> เหมาะสำหรับชิ้นงานกลม หมุนชิ้นงานตัดด้วยมีดกลึง</li>
+                        <li>• <strong>เครื่องกัด:</strong> เหมาะสำหรับชิ้นงานเหลี่ยม หมุนมีดกัดตัดชิ้นงาน</li>
+                        <li>• <strong>เครื่องเจาะ:</strong> เหมาะสำหรับเจาะรู หมุนดอกเจาะเจาะลงชิ้นงาน</li>
+                        <li class="text-yellow-300">💡 <strong>คำใบ้:</strong> ดูรูปร่างของชิ้นงานให้ดี!</li>
+                    </ul>
+                </div>
+
+                <!-- Workpiece Display -->
+                <div class="text-center mb-8">
+                    <div class="inline-block stage-card rounded-lg p-8">
+                        <h3 class="text-xl font-bold mb-4 text-gray-300">ชิ้นงานที่ต้องผลิต:</h3>
+                        <div class="text-8xl mb-4" id="workpiece">🔩</div>
+                        <p class="text-lg text-gray-400" id="workpieceDesc">เพลาเหล็กกลม เส้นผ่านศูนย์กลาง 50 มม.</p>
+                        <div class="mt-4 text-sm text-yellow-300">
+                            <p>📐 ขนาด: Ø50 × 200 มม.</p>
+                            <p>🔧 วัสดุ: เหล็กกล้าคาร์บอน</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Machine Selection -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <button class="tool-button machine-btn rounded-xl p-6 text-center transition-all duration-300" data-machine="lathe">
+                        <div class="text-6xl mb-4">🔄</div>
+                        <h3 class="text-xl font-bold mb-2">เครื่องกลึง</h3>
+                        <p class="text-sm text-gray-300 mb-3">Lathe Machine</p>
+                        <div class="text-xs text-gray-400">
+                            <p>• หมุนชิ้นงาน</p>
+                            <p>• ตัดด้วยมีดกลึง</p>
+                            <p>• เหมาะกับงานกลม</p>
+                        </div>
+                    </button>
+                    
+                    <button class="tool-button machine-btn rounded-xl p-6 text-center transition-all duration-300" data-machine="mill">
+                        <div class="text-6xl mb-4">⚙️</div>
+                        <h3 class="text-xl font-bold mb-2">เครื่องกัด</h3>
+                        <p class="text-sm text-gray-300 mb-3">Milling Machine</p>
+                        <div class="text-xs text-gray-400">
+                            <p>• หมุนมีดกัด</p>
+                            <p>• ชิ้นงานนิ่ง</p>
+                            <p>• เหมาะกับงานเหลี่ยม</p>
+                        </div>
+                    </button>
+                    
+                    <button class="tool-button machine-btn rounded-xl p-6 text-center transition-all duration-300" data-machine="drill">
+                        <div class="text-6xl mb-4">🔨</div>
+                        <h3 class="text-xl font-bold mb-2">เครื่องเจาะ</h3>
+                        <p class="text-sm text-gray-300 mb-3">Drilling Machine</p>
+                        <div class="text-xs text-gray-400">
+                            <p>• หมุนดอกเจาะ</p>
+                            <p>• เจาะลงชิ้นงาน</p>
+                            <p>• เหมาะกับการเจาะรู</p>
+                        </div>
+                    </button>
+                </div>
+
+                <!-- Result Display -->
+                <div id="stage1Result" class="text-center hidden">
+                    <div id="stage1Success" class="hidden">
+                        <div class="text-8xl mb-4 assembly-glow">✨</div>
+                        <h3 class="text-2xl font-bold text-green-400 mb-4">เลือกถูกต้อง! เครื่องทำงานสมบูรณ์</h3>
+                        <p class="text-lg text-gray-300 mb-4">เครื่องกลึงเหมาะสำหรับการผลิตเพลากลม</p>
+                        <div class="stage-card rounded-lg p-4 inline-block">
+                            <p class="text-yellow-400 font-bold">🏆 ได้รับ: ชิ้นส่วนเพลาหลัก +25 คะแนน</p>
+                        </div>
+                    </div>
+                    <div id="stage1Fail" class="hidden">
+                        <div class="text-8xl mb-4 sparks-effect">💥</div>
+                        <h3 class="text-2xl font-bold text-red-400 mb-4">เลือกผิด! เครื่องจักรเสียหาย</h3>
+                        <p class="text-lg text-gray-300 mb-4">เครื่องกลึงเหมาะสำหรับชิ้นงานกลมมากกว่า</p>
+                        <div class="stage-card rounded-lg p-4 inline-block">
+                            <p class="text-red-400 font-bold">⚠️ ได้รับ: ชิ้นส่วนเสียหาย +5 คะแนน</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stage 2: Precision Master -->
+            <div id="stage2" class="stage hidden">
+                <div class="text-center mb-8">
+                    <h2 class="text-4xl font-bold mb-4 text-green-400 orbitron">📏 PRECISION MASTER</h2>
+                    <p class="text-xl text-gray-300 mb-6">ด่านที่ 2: การวัดความแม่นยำ</p>
+                </div>
+
+                <!-- Rules Panel -->
+                <div class="glass-effect rounded-lg p-6 mb-8">
+                    <h3 class="text-lg font-bold mb-3 text-yellow-400">📋 กติกาและคำใบ้:</h3>
+                    <ul class="space-y-2 text-gray-300">
+                        <li>• <strong>เวอร์เนียร์คาลิเปอร์:</strong> วัดได้แม่นยำถึง 0.02 มม.</li>
+                        <li>• <strong>ไมโครมิเตอร์:</strong> วัดได้แม่นยำถึง 0.01 มม.</li>
+                        <li>• <strong>เกจบล็อก:</strong> มาตรฐานความแม่นยำสูงสุด</li>
+                        <li class="text-yellow-300">💡 <strong>คำใบ้:</strong> ขนาดต้องแม่นยำ 25.50 ± 0.02 มม.</li>
+                    </ul>
+                </div>
+
+                <!-- Measurement Challenge -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                    <div class="stage-card rounded-lg p-6">
+                        <h3 class="text-xl font-bold mb-4 text-center">🔧 เครื่องมือวัด</h3>
+                        <div class="space-y-4">
+                            <div class="measurement-display rounded-lg p-4 text-center">
+                                <div class="text-sm text-gray-400 mb-2">การวัดปัจจุบัน</div>
+                                <div class="text-4xl font-bold orbitron" id="currentMeasurement">20.00</div>
+                                <div class="text-lg">มิลลิเมตร</div>
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-3" id="measurementButtons">
+                                <button id="decreaseCoarse" class="danger-button rounded-lg py-3 font-bold">
+                                    -1.0 มม.
+                                </button>
+                                <button id="increaseCoarse" class="success-button rounded-lg py-3 font-bold">
+                                    +1.0 มม.
+                                </button>
+                                <button id="decreaseFine" class="danger-button rounded-lg py-3 font-bold">
+                                    -0.1 มม.
+                                </button>
+                                <button id="increaseFine" class="success-button rounded-lg py-3 font-bold">
+                                    +0.1 มม.
+                                </button>
+                                <button id="decreasePrecise" class="danger-button rounded-lg py-3 font-bold">
+                                    -0.01 มม.
+                                </button>
+                                <button id="increasePrecise" class="success-button rounded-lg py-3 font-bold">
+                                    +0.01 มม.
+                                </button>
+                            </div>
+                            
+                            <button id="measureBtn" class="tool-button w-full rounded-lg py-4 font-bold text-lg">
+                                📐 วัดขนาดชิ้นงาน
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="stage-card rounded-lg p-6">
+                        <h3 class="text-xl font-bold mb-4 text-center">🎯 เป้าหมาย</h3>
+                        <div class="text-center">
+                            <div class="text-6xl mb-4">🔩</div>
+                            <h4 class="text-lg font-bold mb-2">ชิ้นส่วนเพลาขนาดแม่นยำ</h4>
+                            <div class="bg-yellow-900 bg-opacity-30 rounded-lg p-4 mb-4">
+                                <p class="text-yellow-300 font-bold text-xl">เป้าหมาย: 25.50 มม.</p>
+                                <p class="text-sm text-gray-400">ความคลาดเคลื่อน: ± 0.02 มม.</p>
+                            </div>
+                            <div class="text-sm text-gray-400 space-y-1">
+                                <p>📏 ช่วงที่ยอมรับได้:</p>
+                                <p>25.48 - 25.52 มม.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Result Display -->
+                <div id="stage2Result" class="text-center hidden">
+                    <div id="stage2Success" class="hidden">
+                        <div class="text-8xl mb-4 precision-pulse">🎯</div>
+                        <h3 class="text-2xl font-bold text-green-400 mb-4">แม่นยำสมบูรณ์!</h3>
+                        <p class="text-lg text-gray-300 mb-4">การวัดอยู่ในช่วงที่ยอมรับได้</p>
+                        <div class="stage-card rounded-lg p-4 inline-block">
+                            <p class="text-yellow-400 font-bold">🏆 ได้รับ: ชิ้นส่วนแม่นยำ +30 คะแนน</p>
+                        </div>
+                    </div>
+                    <div id="stage2Fail" class="hidden">
+                        <div class="text-8xl mb-4 sparks-effect">⚡</div>
+                        <h3 class="text-2xl font-bold text-red-400 mb-4">ไม่แม่นยำ!</h3>
+                        <p class="text-lg text-gray-300 mb-4">ขนาดไม่อยู่ในช่วงที่กำหนด</p>
+                        <div class="stage-card rounded-lg p-4 inline-block">
+                            <p class="text-red-400 font-bold">⚠️ ได้รับ: ชิ้นส่วนไม่ผ่านมาตรฐาน +10 คะแนน</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stage 3: CNC Guardian -->
+            <div id="stage3" class="stage hidden">
+                <div class="text-center mb-8">
+                    <h2 class="text-4xl font-bold mb-4 text-blue-400 orbitron">🤖 CNC GUARDIAN</h2>
+                    <p class="text-xl text-gray-300 mb-6">ด่านที่ 3: การเขียนโปรแกรม CNC</p>
+                </div>
+
+                <!-- Rules Panel -->
+                <div class="glass-effect rounded-lg p-6 mb-8">
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="text-lg font-bold text-yellow-400">📋 กติกาและคำใบ้:</h3>
+                        <button id="showCNCHint" class="tool-button px-4 py-2 rounded-lg text-sm font-bold">
+                            💡 ขอคำใบ้ (-10%)
+                        </button>
+                    </div>
+                    <ul class="space-y-2 text-gray-300">
+                        <li>• <strong>G-Code:</strong> ภาษาคำสั่งควบคุมเครื่อง CNC</li>
+                        <li>• <strong>แกน X,Y,Z:</strong> ตำแหน่งการเคลื่อนที่ของเครื่องจักร</li>
+                        <li>• <strong>Feed Rate:</strong> ความเร็วการป้อนชิ้นงาน (mm/min)</li>
+                        <li>• <strong>Spindle Speed:</strong> ความเร็วรอบของแกนหมุน (RPM)</li>
+                        <li class="text-yellow-300">💡 <strong>เป้าหมาย:</strong> สี่เหลี่ยม 50×50 มม. เริ่มจาก (0,0)</li>
+                    </ul>
+                    
+                    <!-- Hidden Hint Panel -->
+                    <div id="cncHintPanel" class="hidden mt-4 bg-yellow-900 bg-opacity-30 rounded-lg p-4 border border-yellow-500">
+                        <h4 class="text-yellow-400 font-bold mb-2">🔍 คำใบ้เฉพาะ:</h4>
+                        <div class="text-sm text-yellow-200 space-y-1">
+                            <p>• <strong>X = 50, Y = 50</strong> (ขนาดสี่เหลี่ยม)</p>
+                            <p>• <strong>Feed Rate = 300</strong> (เหมาะสำหรับอลูมิเนียม)</p>
+                            <p>• <strong>Spindle Speed = 1200</strong> (RPM สำหรับ End Mill)</p>
+                            <p>• <strong>Tool = End Mill Ø10mm</strong> (เหมาะสำหรับงานกัด)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CNC Programming Interface -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                    <div class="stage-card rounded-lg p-6">
+                        <h3 class="text-xl font-bold mb-4 text-center">⌨️ CNC Control Panel</h3>
+                        <div class="space-y-4">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-bold mb-2 text-gray-300">แกน X (มม.)</label>
+                                    <input type="number" id="xAxis" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3 text-white" value="0" min="0" max="100">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold mb-2 text-gray-300">แกน Y (มม.)</label>
+                                    <input type="number" id="yAxis" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3 text-white" value="0" min="0" max="100">
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-bold mb-2 text-gray-300">Feed Rate (mm/min)</label>
+                                    <select id="feedRate" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3 text-white">
+                                        <option value="100">100</option>
+                                        <option value="200">200</option>
+                                        <option value="300">300</option>
+                                        <option value="500">500</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold mb-2 text-gray-300">Spindle Speed (RPM)</label>
+                                    <select id="spindleSpeed" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3 text-white">
+                                        <option value="800">800</option>
+                                        <option value="1000">1000</option>
+                                        <option value="1200">1200</option>
+                                        <option value="1500">1500</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-bold mb-2 text-gray-300">เครื่องมือตัด</label>
+                                <select id="toolSelection" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3 text-white">
+                                    <option value="endmill6">End Mill Ø6mm</option>
+                                    <option value="endmill10">End Mill Ø10mm</option>
+                                    <option value="endmill12">End Mill Ø12mm</option>
+                                </select>
+                            </div>
+                            
+                            <button id="runCNC" class="danger-button w-full rounded-lg py-4 font-bold text-lg">
+                                🚀 RUN CNC PROGRAM
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="stage-card rounded-lg p-6">
+                        <h3 class="text-xl font-bold mb-4 text-center">📺 CNC Monitor</h3>
+                        <div id="cncDisplay" class="cnc-screen rounded-lg p-6 h-64 flex flex-col justify-center items-center">
+                            <div class="text-center">
+                                <div class="text-2xl mb-2">🟢 SYSTEM READY</div>
+                                <div class="text-sm">CNC Machine Online</div>
+                                <div class="text-xs mt-4 text-gray-400">
+                                    <p>Target: Rectangle 50×50mm</p>
+                                    <p>Material: Aluminum 6061</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4 text-center">
+                            <div class="text-sm text-gray-400 mb-2">เป้าหมายการผลิต</div>
+                            <div class="bg-blue-900 bg-opacity-30 rounded-lg p-4">
+                                <div class="text-4xl mb-2">⬜</div>
+                                <p class="text-blue-300 font-bold">สี่เหลี่ยมจัตุรัส 50×50 มม.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Result Display -->
+                <div id="stage3Result" class="text-center hidden">
+                    <div id="stage3Success" class="hidden">
+                        <div class="text-8xl mb-4 assembly-glow">🏭</div>
+                        <h3 class="text-2xl font-bold text-green-400 mb-4">โปรแกรมสำเร็จ!</h3>
+                        <p class="text-lg text-gray-300 mb-4">CNC ผลิตชิ้นงานได้ตามมาตรฐาน</p>
+                        <div class="stage-card rounded-lg p-4 inline-block">
+                            <p class="text-yellow-400 font-bold">🏆 ได้รับ: ชิ้นส่วนแม่นยำ CNC +35 คะแนน</p>
+                        </div>
+                    </div>
+                    <div id="stage3Fail" class="hidden">
+                        <div class="text-8xl mb-4 sparks-effect">💥</div>
+                        <h3 class="text-2xl font-bold text-red-400 mb-4">โปรแกรมผิดพลาด!</h3>
+                        <p class="text-lg text-gray-300 mb-4">พารามิเตอร์ไม่ถูกต้อง</p>
+                        <div class="stage-card rounded-lg p-4 inline-block">
+                            <p class="text-red-400 font-bold">⚠️ ได้รับ: ชิ้นงานเสียหาย +15 คะแนน</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stage 4: Assembly Expert -->
+            <div id="stage4" class="stage hidden">
+                <div class="text-center mb-8">
+                    <h2 class="text-4xl font-bold mb-4 text-purple-400 orbitron">⚙️ ASSEMBLY EXPERT</h2>
+                    <p class="text-xl text-gray-300 mb-6">ด่านที่ 4: การประกอบเครื่องจักรกล</p>
+                </div>
+
+                <!-- Rules Panel -->
+                <div class="glass-effect rounded-lg p-6 mb-8">
+                    <h3 class="text-lg font-bold mb-3 text-yellow-400">📋 กติกาและคำใบ้:</h3>
+                    <ul class="space-y-2 text-gray-300">
+                        <li>• <strong>ลำดับการประกอบ:</strong> ฐาน → เพลาหลัก → เกียร์ → มอเตอร์</li>
+                        <li>• <strong>การยึดติด:</strong> ใช้สกรูและน็อตยึดให้แน่น</li>
+                        <li>• <strong>การหล่อลื่น:</strong> ใส่น้ำมันเครื่องที่จุดสำคัญ</li>
+                        <li class="text-yellow-300">💡 <strong>คำใบ้:</strong> ประกอบตามลำดับที่ถูกต้อง!</li>
+                    </ul>
+                </div>
+
+                <!-- Assembly Interface -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                    <div class="stage-card rounded-lg p-6">
+                        <h3 class="text-xl font-bold mb-4 text-center">🔧 ชิ้นส่วนที่มี</h3>
+                        <div class="space-y-3" id="availableParts">
+                            <div class="part-item bg-gray-700 rounded-lg p-4 flex items-center justify-between" data-part="base">
+                                <div class="flex items-center space-x-3">
+                                    <div class="text-3xl">🏗️</div>
+                                    <div>
+                                        <div class="font-bold">ฐานเครื่องจักร</div>
+                                        <div class="text-sm text-gray-400">Machine Base</div>
+                                    </div>
+                                </div>
+                                <button class="part-btn success-button px-4 py-2 rounded-lg font-bold">ประกอบ</button>
+                            </div>
+                            
+                            <div class="part-item bg-gray-700 rounded-lg p-4 flex items-center justify-between" data-part="shaft">
+                                <div class="flex items-center space-x-3">
+                                    <div class="text-3xl">🔩</div>
+                                    <div>
+                                        <div class="font-bold">เพลาหลัก</div>
+                                        <div class="text-sm text-gray-400">Main Shaft</div>
+                                    </div>
+                                </div>
+                                <button class="part-btn success-button px-4 py-2 rounded-lg font-bold">ประกอบ</button>
+                            </div>
+                            
+                            <div class="part-item bg-gray-700 rounded-lg p-4 flex items-center justify-between" data-part="gear">
+                                <div class="flex items-center space-x-3">
+                                    <div class="text-3xl">⚙️</div>
+                                    <div>
+                                        <div class="font-bold">ชุดเกียร์</div>
+                                        <div class="text-sm text-gray-400">Gear Set</div>
+                                    </div>
+                                </div>
+                                <button class="part-btn success-button px-4 py-2 rounded-lg font-bold">ประกอบ</button>
+                            </div>
+                            
+                            <div class="part-item bg-gray-700 rounded-lg p-4 flex items-center justify-between" data-part="motor">
+                                <div class="flex items-center space-x-3">
+                                    <div class="text-3xl">🔌</div>
+                                    <div>
+                                        <div class="font-bold">มอเตอร์</div>
+                                        <div class="text-sm text-gray-400">Electric Motor</div>
+                                    </div>
+                                </div>
+                                <button class="part-btn success-button px-4 py-2 rounded-lg font-bold">ประกอบ</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="stage-card rounded-lg p-6">
+                        <h3 class="text-xl font-bold mb-4 text-center">🏭 เครื่องจักรที่ประกอบ</h3>
+                        <div id="machineAssembly" class="text-center space-y-4">
+                            <div class="part-slot rounded-lg p-4 h-16 flex items-center justify-center" id="slot-motor">
+                                <span class="text-gray-500">มอเตอร์ (4)</span>
+                            </div>
+                            <div class="part-slot rounded-lg p-4 h-16 flex items-center justify-center" id="slot-gear">
+                                <span class="text-gray-500">ชุดเกียร์ (3)</span>
+                            </div>
+                            <div class="part-slot rounded-lg p-4 h-16 flex items-center justify-center" id="slot-shaft">
+                                <span class="text-gray-500">เพลาหลัก (2)</span>
+                            </div>
+                            <div class="part-slot rounded-lg p-4 h-16 flex items-center justify-center" id="slot-base">
+                                <span class="text-gray-500">ฐานเครื่องจักร (1)</span>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-6 text-center">
+                            <button id="testMachine" class="tool-button px-8 py-3 rounded-lg font-bold text-lg hidden">
+                                ⚡ ทดสอบเครื่องจักร
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Result Display -->
+                <div id="stage4Result" class="text-center hidden">
+                    <div id="stage4Success" class="hidden">
+                        <div class="text-8xl mb-4 assembly-glow">✨</div>
+                        <h3 class="text-2xl font-bold text-green-400 mb-4">ประกอบสำเร็จ!</h3>
+                        <p class="text-lg text-gray-300 mb-4">เครื่องจักรทำงานได้อย่างสมบูรณ์</p>
+                        <div class="stage-card rounded-lg p-4 inline-block">
+                            <p class="text-yellow-400 font-bold">🏆 ได้รับ: เครื่องจักรสมบูรณ์ +40 คะแนน</p>
+                        </div>
+                    </div>
+                    <div id="stage4Fail" class="hidden">
+                        <div class="text-8xl mb-4 sparks-effect">⚠️</div>
+                        <h3 class="text-2xl font-bold text-red-400 mb-4">ประกอบผิดลำดับ!</h3>
+                        <p class="text-lg text-gray-300 mb-4">เครื่องจักรไม่สามารถทำงานได้</p>
+                        <div class="stage-card rounded-lg p-4 inline-block">
+                            <p class="text-red-400 font-bold">⚠️ ได้รับ: เครื่องจักรไม่สมบูรณ์ +20 คะแนน</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stage 5: Machine God -->
+            <div id="stage5" class="stage hidden">
+                <div class="text-center mb-8">
+                    <h2 class="text-4xl font-bold mb-4 text-yellow-400 orbitron">👑 MACHINE GOD</h2>
+                    <p class="text-xl text-gray-300 mb-6">ด่านสุดท้าย: การควบคุมเครื่องจักรยักษ์</p>
+                </div>
+
+                <!-- Rules Panel -->
+                <div class="glass-effect rounded-lg p-6 mb-8">
+                    <h3 class="text-lg font-bold mb-3 text-yellow-400">📋 ภารกิจสุดท้าย:</h3>
+                    <ul class="space-y-2 text-gray-300">
+                        <li>• <strong>ควบคุมเครื่องจักรยักษ์:</strong> ผลิตชิ้นงานขนาดใหญ่</li>
+                        <li>• <strong>การทดสอบ 3 ขั้นตอน:</strong> เจาะ → กัด → กลึง</li>
+                        <li>• <strong>ความแม่นยำสูงสุด:</strong> ทุกขั้นตอนต้องสมบูรณ์</li>
+                        <li class="text-yellow-300">💡 <strong>คำใบ้:</strong> ทำตามลำดับและใช้พารามิเตอร์ที่เหมาะสม!</li>
+                    </ul>
+                </div>
+
+                <!-- Legendary Machine Display -->
+                <div class="text-center mb-8">
+                    <div class="legendary-machine rounded-xl p-8 inline-block">
+                        <div id="legendaryMachine" class="text-9xl mb-4 legendary-awaken">🏭</div>
+                        <h3 class="text-3xl font-bold text-yellow-400 mb-2 orbitron">LEGENDARY CNC CENTER</h3>
+                        <p class="text-lg text-gray-300">เครื่องจักรกลในตำนาน</p>
+                    </div>
+                </div>
+
+                <!-- Machine Operations -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <button class="operation-btn tool-button rounded-xl p-6 text-center transition-all duration-300" data-operation="drill">
+                        <div class="text-6xl mb-4">🔩</div>
+                        <h3 class="text-xl font-bold mb-2">เจาะรูแม่นยำ</h3>
+                        <p class="text-sm text-gray-300 mb-3">Precision Drilling</p>
+                        <div class="text-xs text-gray-400">
+                            <p>• เจาะรู Ø20mm</p>
+                            <p>• ความลึก 50mm</p>
+                            <p>• ความแม่นยำ ±0.01mm</p>
+                        </div>
+                    </button>
+                    
+                    <button class="operation-btn tool-button rounded-xl p-6 text-center transition-all duration-300" data-operation="mill">
+                        <div class="text-6xl mb-4">⚙️</div>
+                        <h3 class="text-xl font-bold mb-2">กัดร่องเพลา</h3>
+                        <p class="text-sm text-gray-300 mb-3">Shaft Milling</p>
+                        <div class="text-xs text-gray-400">
+                            <p>• กัดร่องกุญแจ</p>
+                            <p>• ความกว้าง 8mm</p>
+                            <p>• ความลึก 4mm</p>
+                        </div>
+                    </button>
+                    
+                    <button class="operation-btn tool-button rounded-xl p-6 text-center transition-all duration-300" data-operation="lathe">
+                        <div class="text-6xl mb-4">🔄</div>
+                        <h3 class="text-xl font-bold mb-2">กลึงผิวเรียบ</h3>
+                        <p class="text-sm text-gray-300 mb-3">Surface Turning</p>
+                        <div class="text-xs text-gray-400">
+                            <p>• ผิวเรียบ Ra 0.8</p>
+                            <p>• ความแม่นยำ IT7</p>
+                            <p>• ความยาว 200mm</p>
+                        </div>
+                    </button>
+                </div>
+
+                <!-- Operation Status -->
+                <div class="stage-card rounded-lg p-6 mb-8">
+                    <h3 class="text-xl font-bold mb-4 text-center">📊 สถานะการดำเนินงาน</h3>
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="text-center">
+                            <div class="text-4xl mb-2" id="drillStatus">⭕</div>
+                            <div class="text-sm text-gray-400">การเจาะ</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-4xl mb-2" id="millStatus">⭕</div>
+                            <div class="text-sm text-gray-400">การกัด</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-4xl mb-2" id="latheStatus">⭕</div>
+                            <div class="text-sm text-gray-400">การกลึง</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Result Display -->
+                <div id="stage5Result" class="text-center hidden">
+                    <div class="text-8xl mb-6 assembly-glow">🏆</div>
+                    <h3 class="text-4xl font-bold text-yellow-400 mb-4 orbitron">YOU ARE THE FACTORY LEGEND!</h3>
+                    <p class="text-xl text-gray-300 mb-6">คุณได้พิสูจน์แล้วว่าเป็นช่างกลโรงงานระดับตำนาน!</p>
+                    <div class="legendary-machine rounded-xl p-6 inline-block">
+                        <p class="text-2xl font-bold text-yellow-400 mb-2">🎉 ภารกิจสำเร็จ!</p>
+                        <p class="text-lg text-gray-300">เครื่องจักรยักษ์ทำงานได้อย่างสมบูรณ์แบบ</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Final Results -->
+            <div id="finalResults" class="hidden">
+                <div class="text-center mb-8">
+                    <h2 class="text-4xl font-bold mb-4 text-yellow-400 orbitron">🏆 ผลการประเมิน</h2>
+                    <p class="text-xl text-gray-300">การวิเคราะห์ความสามารถและแนะนำสายงาน</p>
+                </div>
+                
+                <div class="stage-card rounded-xl p-8">
+                    <div id="careerResult" class="text-center">
+                        <div class="text-8xl mb-6" id="careerIcon">🎯</div>
+                        <h3 class="text-3xl font-bold mb-4 orbitron" id="careerTitle"></h3>
+                        <p class="text-lg text-gray-300 mb-6 max-w-2xl mx-auto" id="careerDescription"></p>
+                        
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                            <div class="bg-orange-900 bg-opacity-30 rounded-lg p-4">
+                                <div class="text-2xl mb-2">🔥</div>
+                                <div class="text-sm text-gray-400">การตัดโลหะ</div>
+                                <div class="text-2xl font-bold text-orange-400" id="finalMachiningScore">0</div>
+                            </div>
+                            <div class="bg-green-900 bg-opacity-30 rounded-lg p-4">
+                                <div class="text-2xl mb-2">📏</div>
+                                <div class="text-sm text-gray-400">ความแม่นยำ</div>
+                                <div class="text-2xl font-bold text-green-400" id="finalPrecisionScore">0</div>
+                            </div>
+                            <div class="bg-blue-900 bg-opacity-30 rounded-lg p-4">
+                                <div class="text-2xl mb-2">🤖</div>
+                                <div class="text-sm text-gray-400">CNC Programming</div>
+                                <div class="text-2xl font-bold text-blue-400" id="finalCncScore">0</div>
+                            </div>
+                            <div class="bg-purple-900 bg-opacity-30 rounded-lg p-4">
+                                <div class="text-2xl mb-2">⚙️</div>
+                                <div class="text-sm text-gray-400">การประกอบ</div>
+                                <div class="text-2xl font-bold text-purple-400" id="finalAssemblyScore">0</div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-yellow-900 bg-opacity-30 rounded-lg p-6 mb-6">
+                            <h4 class="text-xl font-bold mb-4 text-yellow-400">🎓 แนะนำการพัฒนาต่อ:</h4>
+                            <div id="recommendations" class="text-left space-y-2 text-gray-300"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-8 space-x-4">
+                    <button onclick="homeFromResultsHandler()" class="danger-button px-8 py-4 rounded-xl font-bold text-lg">
+                        🏠 กลับหน้าแรก
+                    </button>
+                    <button onclick="restartGameHandler()" class="tool-button px-8 py-4 rounded-xl font-bold text-lg">
+                        🔄 เริ่มการผจญภัยใหม่
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Next Stage Button -->
+        <div class="text-center mt-8">
+            <button id="nextStage" class="success-button px-8 py-4 rounded-xl font-bold text-lg hidden">
+                ไปด่านต่อไป →
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Game State
+        let gameStarted = false;
+        let currentStage = 1;
+        let difficulty = 'normal';
+        let scores = {
+            machining: 0,
+            precision: 0,
+            cnc: 0,
+            assembly: 0
+        };
+        let stageCompleted = [false, false, false, false, false];
+        let stageTimers = [300, 240, 300, 240, 180]; // 5min, 4min, 5min, 4min, 3min
+        let currentTimer = 0;
+        let timerInterval = null;
+        let hintsUsed = [];
+        let wrongAnswers = 0;
+        let startTime = 0;
+
+        // Initialize particles
+        function createParticles() {
+            const particles = document.getElementById('particles');
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'absolute w-1 h-1 bg-yellow-400 rounded-full opacity-30';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 3 + 's';
+                particle.style.animation = 'float 6s ease-in-out infinite';
+                particles.appendChild(particle);
+            }
+        }
+
+        // Start Game System
+        function initStartScreen() {
+            document.querySelectorAll('.difficulty-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.difficulty-btn').forEach(b => {
+                        b.classList.remove('ring-4', 'ring-yellow-400');
+                    });
+                    this.classList.add('ring-4', 'ring-yellow-400');
+                    difficulty = this.dataset.difficulty;
+                    document.getElementById('startGame').disabled = false;
+                });
+            });
+
+            document.getElementById('startGame').addEventListener('click', function() {
+                startGame();
+            });
+        }
+
+        function startGame() {
+            gameStarted = true;
+            document.getElementById('startScreen').classList.add('hidden');
+            document.getElementById('gameScreen').classList.remove('hidden');
+            document.getElementById('progressSystem').classList.remove('hidden');
+            
+            // Adjust timers and scoring based on difficulty
+            if (difficulty === 'easy') {
+                stageTimers = [420, 360, 420, 360, 300]; // +2 minutes each
+            } else if (difficulty === 'hard') {
+                stageTimers = [180, 120, 180, 120, 90]; // -2 minutes each
+            } else {
+                stageTimers = [300, 240, 300, 240, 180]; // normal
+            }
+            
+            startTime = Date.now();
+            randomizeQuestions(); // Generate new questions
+            updateProgress();
+            showStage(1);
+        }
+
+        // Timer System
+        function startTimer(seconds) {
+            currentTimer = seconds;
+            updateTimerDisplay();
+            
+            timerInterval = setInterval(() => {
+                currentTimer--;
+                updateTimerDisplay();
+                
+                if (currentTimer <= 30) {
+                    document.getElementById('timer').classList.add('text-red-500', 'animate-pulse');
+                }
+                
+                if (currentTimer <= 0) {
+                    clearInterval(timerInterval);
+                    handleTimeUp();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(currentTimer / 60);
+            const seconds = currentTimer % 60;
+            document.getElementById('timer').textContent = 
+                `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function handleTimeUp() {
+            // Reduce score by 50% for timeout
+            const currentStageScore = getCurrentStageScore();
+            reduceScore(Math.floor(currentStageScore * 0.5));
+            
+            // Show timeout message and move to next stage
+            showTimeoutMessage();
+        }
+
+        function showTimeoutMessage() {
+            const timeoutDiv = document.createElement('div');
+            timeoutDiv.className = 'fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50';
+            timeoutDiv.innerHTML = `
+                <div class="bg-red-900 bg-opacity-90 rounded-xl p-8 text-center max-w-md">
+                    <div class="text-6xl mb-4">⏰</div>
+                    <h3 class="text-2xl font-bold text-red-400 mb-4">หมดเวลา!</h3>
+                    <p class="text-gray-300 mb-4">คะแนนถูกหักไป 50%</p>
+                    <button class="success-button px-6 py-3 rounded-lg font-bold" onclick="this.parentElement.parentElement.remove(); nextStageAuto();">
+                        ไปด่านต่อไป
+                    </button>
+                </div>
+            `;
+            document.body.appendChild(timeoutDiv);
+        }
+
+        function getCurrentStageScore() {
+            const stageScores = [scores.machining, scores.precision, scores.cnc, scores.assembly, 0];
+            return stageScores[currentStage - 1] || 0;
+        }
+
+        function reduceScore(amount) {
+            if (currentStage === 1) scores.machining = Math.max(0, scores.machining - amount);
+            else if (currentStage === 2) scores.precision = Math.max(0, scores.precision - amount);
+            else if (currentStage === 3) scores.cnc = Math.max(0, scores.cnc - amount);
+            else if (currentStage === 4) scores.assembly = Math.max(0, scores.assembly - amount);
+            updateScoreDisplay();
+        }
+
+        function nextStageAuto() {
+            if (currentStage < 5) {
+                currentStage++;
+                updateProgress();
+                showStage(currentStage);
+            } else {
+                showFinalResults();
+            }
+        }
+
+        // Stage 1: Metal Hero
+        function initStage1() {
+            clearInterval(timerInterval);
+            startTimer(stageTimers[0]);
+            
+            // Update workpiece display with current question
+            const question = currentQuestions.stage1;
+            document.getElementById('workpiece').textContent = question.workpiece;
+            document.getElementById('workpieceDesc').textContent = question.desc;
+            document.querySelector('#stage1 .text-sm.text-yellow-300').innerHTML = question.details;
+            
+            // Reset stage 1 elements
+            document.querySelectorAll('.machine-btn').forEach(b => {
+                b.disabled = false;
+                b.classList.remove('machine-working', 'sparks-effect');
+            });
+            document.getElementById('stage1Result').classList.add('hidden');
+            document.getElementById('stage1Success').classList.add('hidden');
+            document.getElementById('stage1Fail').classList.add('hidden');
+            
+            // Remove existing listeners and add fresh ones
+            document.querySelectorAll('.machine-btn').forEach(btn => {
+                const newBtn = btn.cloneNode(true);
+                btn.replaceWith(newBtn);
+            });
+            
+            document.querySelectorAll('.machine-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const machine = this.dataset.machine;
+                    const result = document.getElementById('stage1Result');
+                    const success = document.getElementById('stage1Success');
+                    const fail = document.getElementById('stage1Fail');
+                    
+                    clearInterval(timerInterval);
+                    
+                    // Disable all buttons
+                    document.querySelectorAll('.machine-btn').forEach(b => b.disabled = true);
+                    
+                    // Add working animation
+                    this.classList.add('machine-working');
+                    
+                    setTimeout(() => {
+                        result.classList.remove('hidden');
+                        
+                        if (machine === question.answer) {
+                            success.classList.remove('hidden');
+                            fail.classList.add('hidden');
+                            
+                            // Calculate score with time bonus and difficulty multiplier
+                            let baseScore = difficulty === 'easy' ? 20 : difficulty === 'hard' ? 35 : 25;
+                            const timeBonus = Math.floor(currentTimer / 10);
+                            scores.machining += baseScore + timeBonus;
+                            stageCompleted[0] = true;
+                        } else {
+                            success.classList.add('hidden');
+                            fail.classList.remove('hidden');
+                            
+                            let penaltyScore = difficulty === 'easy' ? 8 : difficulty === 'hard' ? 3 : 5;
+                            scores.machining += penaltyScore;
+                            wrongAnswers++;
+                            
+                            // Penalty for wrong answer
+                            let penalty = difficulty === 'easy' ? 10 : difficulty === 'hard' ? 30 : 20;
+                            scores.machining = Math.max(0, scores.machining - penalty);
+                            
+                            // Add sparks effect
+                            this.classList.add('sparks-effect');
+                        }
+                        
+                        updateScoreDisplay();
+                        showNextButton();
+                    }, 2000);
+                });
+            });
+        }
+
+        // Stage 2: Precision Master
+        function initStage2() {
+            clearInterval(timerInterval);
+            startTimer(stageTimers[1]);
+            
+            // Get current question
+            const question = currentQuestions.stage2;
+            const targetValue = question.target;
+            const tolerance = question.tolerance;
+            
+            // Update target display
+            document.querySelector('#stage2 .text-yellow-300.font-bold.text-xl').textContent = `เป้าหมาย: ${targetValue.toFixed(2)} มม.`;
+            document.querySelector('#stage2 .text-sm.text-gray-400').textContent = `ความคลาดเคลื่อน: ± ${tolerance.toFixed(2)} มม.`;
+            document.querySelector('#stage2 .text-sm.text-gray-400').nextElementSibling.innerHTML = `<p>📏 ช่วงที่ยอมรับได้:</p><p>${(targetValue - tolerance).toFixed(2)} - ${(targetValue + tolerance).toFixed(2)} มม.</p>`;
+            
+            let measurement = Math.random() * 10 + 15; // Random starting point
+            const measurementDisplay = document.getElementById('currentMeasurement');
+            
+            // Reset stage 2 elements
+            document.getElementById('measureBtn').disabled = false;
+            document.getElementById('measureBtn').textContent = '📐 วัดขนาดชิ้นงาน';
+            document.getElementById('stage2Result').classList.add('hidden');
+            document.getElementById('stage2Success').classList.add('hidden');
+            document.getElementById('stage2Fail').classList.add('hidden');
+            measurementDisplay.parentElement.classList.remove('precision-pulse');
+            
+            function updateMeasurement() {
+                measurementDisplay.textContent = measurement.toFixed(2);
+                if (Math.abs(measurement - targetValue) <= tolerance) {
+                    measurementDisplay.parentElement.classList.add('precision-pulse');
+                } else {
+                    measurementDisplay.parentElement.classList.remove('precision-pulse');
+                }
+            }
+            
+            updateMeasurement(); // Initial display
+            
+            // Remove existing listeners and add fresh ones for measurement buttons
+            const measurementBtns = ['increaseCoarse', 'decreaseCoarse', 'increaseFine', 'decreaseFine', 'increasePrecise', 'decreasePrecise', 'measureBtn'];
+            measurementBtns.forEach(btnId => {
+                const btn = document.getElementById(btnId);
+                btn.replaceWith(btn.cloneNode(true));
+            });
+            
+            // Adjust button increments based on difficulty
+            const coarseStep = difficulty === 'easy' ? 0.5 : difficulty === 'hard' ? 2.0 : 1.0;
+            const fineStep = difficulty === 'easy' ? 0.05 : difficulty === 'hard' ? 0.2 : 0.1;
+            const preciseStep = difficulty === 'easy' ? 0.005 : difficulty === 'hard' ? 0.02 : 0.01;
+            
+            // Update button labels based on difficulty
+            document.getElementById('decreaseCoarse').innerHTML = `-${coarseStep} มม.`;
+            document.getElementById('increaseCoarse').innerHTML = `+${coarseStep} มม.`;
+            document.getElementById('decreaseFine').innerHTML = `-${fineStep} มม.`;
+            document.getElementById('increaseFine').innerHTML = `+${fineStep} มม.`;
+            document.getElementById('decreasePrecise').innerHTML = `-${preciseStep.toFixed(3)} มม.`;
+            document.getElementById('increasePrecise').innerHTML = `+${preciseStep.toFixed(3)} มม.`;
+            
+            document.getElementById('increaseCoarse').addEventListener('click', () => {
+                measurement += coarseStep;
+                updateMeasurement();
+            });
+            
+            document.getElementById('decreaseCoarse').addEventListener('click', () => {
+                measurement -= coarseStep;
+                updateMeasurement();
+            });
+            
+            document.getElementById('increaseFine').addEventListener('click', () => {
+                measurement += fineStep;
+                updateMeasurement();
+            });
+            
+            document.getElementById('decreaseFine').addEventListener('click', () => {
+                measurement -= fineStep;
+                updateMeasurement();
+            });
+            
+            document.getElementById('increasePrecise').addEventListener('click', () => {
+                measurement += preciseStep;
+                updateMeasurement();
+            });
+            
+            document.getElementById('decreasePrecise').addEventListener('click', () => {
+                measurement -= preciseStep;
+                updateMeasurement();
+            });
+            
+            document.getElementById('measureBtn').addEventListener('click', function() {
+                const result = document.getElementById('stage2Result');
+                const success = document.getElementById('stage2Success');
+                const fail = document.getElementById('stage2Fail');
+                
+                this.disabled = true;
+                this.textContent = 'กำลังวัด...';
+                
+                setTimeout(() => {
+                    result.classList.remove('hidden');
+                    
+                    if (Math.abs(measurement - targetValue) <= tolerance) {
+                        success.classList.remove('hidden');
+                        fail.classList.add('hidden');
+                        
+                        // Score based on difficulty and accuracy
+                        let baseScore = difficulty === 'easy' ? 25 : difficulty === 'hard' ? 40 : 30;
+                        const accuracyBonus = Math.max(0, Math.floor((tolerance - Math.abs(measurement - targetValue)) * 100));
+                        scores.precision += baseScore + accuracyBonus;
+                        stageCompleted[1] = true;
+                    } else {
+                        success.classList.add('hidden');
+                        fail.classList.remove('hidden');
+                        
+                        let penaltyScore = difficulty === 'easy' ? 12 : difficulty === 'hard' ? 5 : 10;
+                        scores.precision += penaltyScore;
+                    }
+                    
+                    updateScoreDisplay();
+                    showNextButton();
+                }, 1500);
+            });
+        }
+
+        // Stage 3: CNC Guardian
+        function initStage3() {
+            clearInterval(timerInterval);
+            startTimer(stageTimers[2]);
+            
+            // Get current question
+            const question = currentQuestions.stage3;
+            
+            // Update display with current question
+            document.getElementById('cncDisplay').innerHTML = `
+                <div class="text-center">
+                    <div class="text-2xl mb-2">🟢 SYSTEM READY</div>
+                    <div class="text-sm">CNC Machine Online</div>
+                    <div class="text-xs mt-4 text-gray-400">
+                        <p>Target: ${question.desc}</p>
+                        <p>Material: Aluminum 6061</p>
+                    </div>
+                </div>
+            `;
+            
+            // Update target shape display
+            document.querySelector('#stage3 .text-4xl.mb-2').textContent = question.shape;
+            document.querySelector('#stage3 .text-blue-300.font-bold').textContent = question.desc;
+            
+            // Update hint panel with current question
+            document.querySelector('#cncHintPanel .text-yellow-200').innerHTML = `
+                <p>• <strong>X = ${question.x}, Y = ${question.y}</strong> (ขนาด${question.desc.includes('สี่เหลี่ยมจัตุรัส') ? 'สี่เหลี่ยมจัตุรัส' : 'สี่เหลี่ยมผืนผ้า'})</p>
+                <p>• <strong>Feed Rate = ${question.feed}</strong> (เหมาะสำหรับอลูมิเนียม)</p>
+                <p>• <strong>Spindle Speed = ${question.speed}</strong> (RPM สำหรับ ${question.tool.replace('endmill', 'End Mill Ø')}mm)</p>
+                <p>• <strong>Tool = ${question.tool.replace('endmill', 'End Mill Ø')}mm</strong> (เหมาะสำหรับงานกัด)</p>
+            `;
+            
+            // Reset stage 3 elements
+            document.getElementById('runCNC').disabled = false;
+            document.getElementById('showCNCHint').disabled = false;
+            document.getElementById('showCNCHint').textContent = difficulty === 'easy' ? '💡 ขอคำใบ้ (-5%)' : difficulty === 'hard' ? '💡 ขอคำใบ้ (-15%)' : '💡 ขอคำใบ้ (-10%)';
+            document.getElementById('cncHintPanel').classList.add('hidden');
+            document.getElementById('stage3Result').classList.add('hidden');
+            document.getElementById('stage3Success').classList.add('hidden');
+            document.getElementById('stage3Fail').classList.add('hidden');
+            document.getElementById('cncDisplay').classList.remove('cnc-processing');
+            
+            // Reset form values
+            document.getElementById('xAxis').value = '0';
+            document.getElementById('yAxis').value = '0';
+            document.getElementById('feedRate').value = '100';
+            document.getElementById('spindleSpeed').value = '800';
+            document.getElementById('toolSelection').value = 'endmill6';
+            
+            // Hint system - remove existing listener first
+            const hintBtn = document.getElementById('showCNCHint');
+            hintBtn.replaceWith(hintBtn.cloneNode(true));
+            document.getElementById('showCNCHint').addEventListener('click', function() {
+                document.getElementById('cncHintPanel').classList.remove('hidden');
+                this.disabled = true;
+                this.textContent = 'คำใบ้ถูกใช้แล้ว';
+                hintsUsed.push('cnc');
+            });
+            
+            // CNC run button - remove existing listener first
+            const runBtn = document.getElementById('runCNC');
+            runBtn.replaceWith(runBtn.cloneNode(true));
+            document.getElementById('runCNC').addEventListener('click', function() {
+                const x = parseInt(document.getElementById('xAxis').value);
+                const y = parseInt(document.getElementById('yAxis').value);
+                const feedRate = parseInt(document.getElementById('feedRate').value);
+                const spindleSpeed = parseInt(document.getElementById('spindleSpeed').value);
+                const tool = document.getElementById('toolSelection').value;
+                
+                const display = document.getElementById('cncDisplay');
+                const result = document.getElementById('stage3Result');
+                const success = document.getElementById('stage3Success');
+                const fail = document.getElementById('stage3Fail');
+                
+                this.disabled = true;
+                display.classList.add('cnc-processing');
+                display.innerHTML = `
+                    <div class="text-center">
+                        <div class="text-2xl mb-2 text-yellow-400">🔄 PROCESSING...</div>
+                        <div class="text-sm">Running G-Code Program</div>
+                        <div class="text-xs mt-2">
+                            <p>X: ${x}mm, Y: ${y}mm</p>
+                            <p>Feed: ${feedRate}mm/min</p>
+                            <p>Speed: ${spindleSpeed}RPM</p>
+                        </div>
+                    </div>
+                `;
+                
+                setTimeout(() => {
+                    result.classList.remove('hidden');
+                    clearInterval(timerInterval);
+                    
+                    if (x === question.x && y === question.y && feedRate === question.feed && spindleSpeed === question.speed && tool === question.tool) {
+                        display.innerHTML = `
+                            <div class="text-center">
+                                <div class="text-2xl mb-2 text-green-400">✅ SUCCESS</div>
+                                <div class="text-sm">Perfect ${question.desc}</div>
+                                <div class="text-xs mt-2 text-green-300">
+                                    <p>Surface Finish: Ra 0.8</p>
+                                    <p>Tolerance: ±0.05mm</p>
+                                </div>
+                            </div>
+                        `;
+                        success.classList.remove('hidden');
+                        fail.classList.add('hidden');
+                        
+                        // Calculate score with bonuses/penalties based on difficulty
+                        let baseScore = difficulty === 'easy' ? 30 : difficulty === 'hard' ? 45 : 35;
+                        const timeBonus = Math.floor(currentTimer / 10);
+                        let finalScore = baseScore + timeBonus;
+                        
+                        // Penalty for using hints
+                        if (hintsUsed.includes('cnc')) {
+                            const hintPenalty = difficulty === 'easy' ? 0.95 : difficulty === 'hard' ? 0.85 : 0.9;
+                            finalScore = Math.floor(finalScore * hintPenalty);
+                        }
+                        
+                        scores.cnc += finalScore;
+                        stageCompleted[2] = true;
+                    } else {
+                        display.innerHTML = `
+                            <div class="text-center">
+                                <div class="text-2xl mb-2 text-red-400">❌ ERROR</div>
+                                <div class="text-sm">Program Failed</div>
+                                <div class="text-xs mt-2 text-red-300">
+                                    <p>Check parameters:</p>
+                                    <p>X=${question.x}, Y=${question.y}, F=${question.feed}, S=${question.speed}</p>
+                                    <p>Tool: ${question.tool.replace('endmill', 'End Mill Ø')}mm</p>
+                                </div>
+                            </div>
+                        `;
+                        success.classList.add('hidden');
+                        fail.classList.remove('hidden');
+                        
+                        let penaltyScore = difficulty === 'easy' ? 18 : difficulty === 'hard' ? 8 : 15;
+                        scores.cnc += penaltyScore;
+                        wrongAnswers++;
+                        
+                        // Penalty for wrong answer
+                        let penalty = difficulty === 'easy' ? 15 : difficulty === 'hard' ? 25 : 20;
+                        scores.cnc = Math.max(0, scores.cnc - penalty);
+                    }
+                    
+                    updateScoreDisplay();
+                    showNextButton();
+                }, 3000);
+            });
+        }
+
+        // Stage 4: Assembly Expert
+        function initStage4() {
+            clearInterval(timerInterval);
+            startTimer(stageTimers[3]);
+            
+            let assemblyOrder = [];
+            const correctOrder = ['base', 'shaft', 'gear', 'motor'];
+            
+            // Reset stage 4 elements
+            document.getElementById('testMachine').classList.add('hidden');
+            document.getElementById('testMachine').disabled = false;
+            document.getElementById('testMachine').textContent = '⚡ ทดสอบเครื่องจักร';
+            document.getElementById('stage4Result').classList.add('hidden');
+            document.getElementById('stage4Success').classList.add('hidden');
+            document.getElementById('stage4Fail').classList.add('hidden');
+            document.getElementById('machineAssembly').classList.remove('assembly-glow');
+            
+            // Reset part items and slots
+            document.querySelectorAll('.part-item').forEach(item => {
+                item.style.opacity = '1';
+                const btn = item.querySelector('.part-btn');
+                btn.disabled = false;
+                btn.textContent = 'ประกอบ';
+            });
+            
+            // Reset slots
+            ['base', 'shaft', 'gear', 'motor'].forEach((part, index) => {
+                const slot = document.getElementById(`slot-${part}`);
+                slot.classList.remove('filled');
+                const labels = ['ฐานเครื่องจักร (1)', 'เพลาหลัก (2)', 'ชุดเกียร์ (3)', 'มอเตอร์ (4)'];
+                slot.innerHTML = `<span class="text-gray-500">${labels[index]}</span>`;
+            });
+            
+            // Remove existing listeners and add fresh ones for part buttons
+            document.querySelectorAll('.part-btn').forEach(btn => {
+                const newBtn = btn.cloneNode(true);
+                btn.replaceWith(newBtn);
+            });
+            
+            document.querySelectorAll('.part-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const partItem = this.closest('.part-item');
+                    const partType = partItem.dataset.part;
+                    
+                    if (!assemblyOrder.includes(partType)) {
+                        assemblyOrder.push(partType);
+                        
+                        // Update slot
+                        const slot = document.getElementById(`slot-${partType}`);
+                        slot.classList.add('filled');
+                        slot.innerHTML = `
+                            <div class="flex items-center space-x-2">
+                                <div class="text-2xl">${partItem.querySelector('.text-3xl').textContent}</div>
+                                <div class="font-bold text-green-400">ติดตั้งแล้ว</div>
+                            </div>
+                        `;
+                        
+                        // Disable button
+                        partItem.style.opacity = '0.5';
+                        this.disabled = true;
+                        this.textContent = 'ติดตั้งแล้ว';
+                        
+                        if (assemblyOrder.length === 4) {
+                            document.getElementById('testMachine').classList.remove('hidden');
+                        }
+                    }
+                });
+            });
+            
+            // Test machine button - remove existing listener first
+            const testBtn = document.getElementById('testMachine');
+            testBtn.replaceWith(testBtn.cloneNode(true));
+            document.getElementById('testMachine').addEventListener('click', function() {
+                const result = document.getElementById('stage4Result');
+                const success = document.getElementById('stage4Success');
+                const fail = document.getElementById('stage4Fail');
+                
+                this.disabled = true;
+                this.textContent = 'กำลังทดสอบ...';
+                
+                setTimeout(() => {
+                    result.classList.remove('hidden');
+                    
+                    // Check if assembly order is correct
+                    const isCorrect = JSON.stringify(assemblyOrder) === JSON.stringify(correctOrder);
+                    
+                    if (isCorrect) {
+                        success.classList.remove('hidden');
+                        fail.classList.add('hidden');
+                        scores.assembly += 40;
+                        stageCompleted[3] = true;
+                        
+                        // Add glow effect to machine
+                        document.getElementById('machineAssembly').classList.add('assembly-glow');
+                    } else {
+                        success.classList.add('hidden');
+                        fail.classList.remove('hidden');
+                        scores.assembly += 20;
+                    }
+                    
+                    updateScoreDisplay();
+                    showNextButton();
+                }, 2000);
+            });
+        }
+
+        // Stage 5: Machine God
+        function initStage5() {
+            clearInterval(timerInterval);
+            startTimer(stageTimers[4]);
+            
+            let operationsCompleted = [];
+            const requiredOperations = ['drill', 'mill', 'lathe'];
+            
+            // Reset stage 5 elements
+            document.getElementById('stage5Result').classList.add('hidden');
+            document.querySelectorAll('.operation-btn').forEach(btn => {
+                btn.style.opacity = '1';
+                btn.disabled = false;
+            });
+            
+            // Reset status indicators
+            document.getElementById('drillStatus').textContent = '⭕';
+            document.getElementById('millStatus').textContent = '⭕';
+            document.getElementById('latheStatus').textContent = '⭕';
+            
+            // Remove existing listeners and add fresh ones for operation buttons
+            document.querySelectorAll('.operation-btn').forEach(btn => {
+                const newBtn = btn.cloneNode(true);
+                btn.replaceWith(newBtn);
+            });
+            
+            document.querySelectorAll('.operation-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const operation = this.dataset.operation;
+                    
+                    if (!operationsCompleted.includes(operation)) {
+                        operationsCompleted.push(operation);
+                        
+                        // Update status
+                        document.getElementById(`${operation}Status`).textContent = '✅';
+                        
+                        // Disable button
+                        this.style.opacity = '0.5';
+                        this.disabled = true;
+                        
+                        // Add score based on operation
+                        if (operation === 'drill') scores.machining += 15;
+                        else if (operation === 'mill') scores.cnc += 15;
+                        else if (operation === 'lathe') scores.precision += 15;
+                        
+                        updateScoreDisplay();
+                        
+                        if (operationsCompleted.length === 3) {
+                            setTimeout(() => {
+                                document.getElementById('stage5Result').classList.remove('hidden');
+                                stageCompleted[4] = true;
+                                
+                                setTimeout(() => {
+                                    showFinalResults();
+                                }, 3000);
+                            }, 1000);
+                        }
+                    }
+                });
+            });
+        }
+
+        // Update score display
+        function updateScoreDisplay() {
+            document.getElementById('machiningScore').textContent = scores.machining;
+            document.getElementById('precisionScore').textContent = scores.precision;
+            document.getElementById('cncScore').textContent = scores.cnc;
+            document.getElementById('assemblyScore').textContent = scores.assembly;
+        }
+
+        // Show next stage button
+        function showNextButton() {
+            if (currentStage < 5) {
+                document.getElementById('nextStage').classList.remove('hidden');
+            }
+        }
+
+        // Next stage handler
+        document.getElementById('nextStage').addEventListener('click', function() {
+            currentStage++;
+            updateProgress();
+            showStage(currentStage);
+            this.classList.add('hidden');
+        });
+
+        // Show stage
+        function showStage(stage) {
+            document.querySelectorAll('.stage').forEach(s => s.classList.add('hidden'));
+            document.getElementById(`stage${stage}`).classList.remove('hidden');
+            
+            // Initialize stage-specific functionality
+            if (stage === 1) initStage1();
+            else if (stage === 2) initStage2();
+            else if (stage === 3) initStage3();
+            else if (stage === 4) initStage4();
+            else if (stage === 5) initStage5();
+        }
+
+        // Update progress
+        function updateProgress() {
+            const progress = (currentStage / 5) * 100;
+            document.getElementById('progressBar').style.width = `${progress}%`;
+            document.getElementById('progressText').textContent = `ด่าน ${currentStage}/5`;
+        }
+
+        // Show final results
+        function showFinalResults() {
+            document.getElementById('gameScreen').classList.add('hidden');
+            document.getElementById('finalResults').classList.remove('hidden');
+            
+            // Add completion bonus
+            const completedStages = stageCompleted.filter(Boolean).length;
+            if (completedStages === 5) {
+                scores.assembly += 50; // Completion bonus
+            }
+            
+            // Update final scores
+            document.getElementById('finalMachiningScore').textContent = scores.machining;
+            document.getElementById('finalPrecisionScore').textContent = scores.precision;
+            document.getElementById('finalCncScore').textContent = scores.cnc;
+            document.getElementById('finalAssemblyScore').textContent = scores.assembly;
+            
+            // Calculate performance metrics
+            const totalScore = Object.values(scores).reduce((a, b) => a + b, 0);
+            const maxScore = Math.max(...Object.values(scores));
+            const playTime = Math.floor((Date.now() - startTime) / 1000 / 60); // minutes
+            const efficiency = Math.floor((completedStages / 5) * 100);
+            
+            let career = '';
+            let description = '';
+            let icon = '';
+            let recommendations = [];
+            let grade = '';
+            
+            // Determine grade
+            if (totalScore >= 150) grade = 'A+';
+            else if (totalScore >= 130) grade = 'A';
+            else if (totalScore >= 110) grade = 'B+';
+            else if (totalScore >= 90) grade = 'B';
+            else if (totalScore >= 70) grade = 'C+';
+            else if (totalScore >= 50) grade = 'C';
+            else grade = 'D';
+
+            if (totalScore >= 120 && Object.values(scores).every(s => s >= 25)) {
+                career = '👑 MASTER MACHINIST';
+                description = 'คุณมีความสามารถครบทุกด้าน เหมาะเป็นหัวหน้าช่างกลโรงงานหรือผู้เชี่ยวชาญระดับสูง สามารถทำงานได้ทุกสาขาในงานกลโรงงาน';
+                icon = '👑';
+                recommendations = [
+                    '• ศึกษาต่อระดับปริญญาตรี สาขาวิศวกรรมเครื่องกล',
+                    '• พัฒนาทักษะการจัดการและภาวะผู้นำ',
+                    '• เรียนรู้เทคโนโลยี Industry 4.0 และ IoT',
+                    '• พิจารณาเป็นอาจารย์สอนหรือที่ปรึกษาเทคนิค'
+                ];
+            } else if (scores.cnc === maxScore && scores.cnc >= 30) {
+                career = '🤖 CNC PROGRAMMING SPECIALIST';
+                description = 'คุณมีความเชี่ยวชาญในการเขียนโปรแกรม CNC และระบบอัตโนมัติ เหมาะกับงานที่ต้องใช้เทคโนโลยีขั้นสูง';
+                icon = '🤖';
+                recommendations = [
+                    '• เรียนรู้ CAD/CAM Software เพิ่มเติม',
+                    '• ศึกษา Multi-axis CNC Programming',
+                    '• พัฒนาทักษะ Automation และ Robotics'
+                ];
+            } else if (scores.precision === maxScore && scores.precision >= 30) {
+                career = '📏 QUALITY CONTROL SPECIALIST';
+                description = 'คุณมีความแม่นยำสูงและใส่ใจในรายละเอียด เหมาะกับงานควบคุมคุณภาพและการตรวจสอบ';
+                icon = '📏';
+                recommendations = [
+                    '• ศึกษาระบบ ISO 9001 และ Quality Management',
+                    '• เรียนรู้เครื่องมือวัดขั้นสูง เช่น CMM',
+                    '• พัฒนาทักษะ Statistical Process Control'
+                ];
+            } else if (scores.machining === maxScore && scores.machining >= 30) {
+                career = '🔥 MACHINING SPECIALIST';
+                description = 'คุณมีความเชี่ยวชาญในการใช้เครื่องจักรตัดโลหะ เหมาะกับงานช่างกลึง ช่างกัด และการผลิตชิ้นส่วนแม่นยำ';
+                icon = '🔥';
+                recommendations = [
+                    '• พัฒนาทักษะการใช้เครื่องจักรขั้นสูง',
+                    '• ศึกษาวัสดุและเครื่องมือตัดใหม่ๆ',
+                    '• เรียนรู้เทคนิคการตัดเฉพาะทาง'
+                ];
+            } else if (scores.assembly === maxScore && scores.assembly >= 30) {
+                career = '⚙️ ASSEMBLY & MAINTENANCE EXPERT';
+                description = 'คุณมีความสามารถในการประกอบและบำรุงรักษาเครื่องจักร เหมาะกับงานซ่อมบำรุงและการติดตั้ง';
+                icon = '⚙️';
+                recommendations = [
+                    '• ศึกษาระบบ Preventive Maintenance',
+                    '• เรียนรู้การใช้เครื่องมือวินิจฉัยขั้นสูง',
+                    '• พัฒนาทักษะการอ่านแบบเครื่องจักร'
+                ];
+            } else {
+                career = '🎯 APPRENTICE MACHINIST';
+                description = 'คุณมีพื้นฐานที่ดีและมีศักยภาพในการพัฒนา ควรฝึกฝนเพิ่มเติมในด้านที่สนใจเพื่อเป็นผู้เชี่ยวชาญ';
+                icon = '🎯';
+                recommendations = [
+                    '• ฝึกฝนทักษะพื้นฐานให้แข็งแกร่ง',
+                    '• หาประสบการณ์จากการฝึกงานในโรงงาน',
+                    '• เลือกสาขาที่สนใจเพื่อพัฒนาเป็นพิเศษ'
+                ];
+            }
+            
+            document.getElementById('careerIcon').textContent = icon;
+            document.getElementById('careerTitle').textContent = `${career} (เกรด ${grade})`;
+            document.getElementById('careerDescription').textContent = description;
+            
+            const recommendationsDiv = document.getElementById('recommendations');
+            recommendationsDiv.innerHTML = `
+                <div class="mb-4 grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                    <div class="bg-blue-900 bg-opacity-30 rounded-lg p-3">
+                        <div class="text-2xl font-bold text-blue-400">${totalScore}</div>
+                        <div class="text-xs text-gray-400">คะแนนรวม</div>
+                    </div>
+                    <div class="bg-green-900 bg-opacity-30 rounded-lg p-3">
+                        <div class="text-2xl font-bold text-green-400">${efficiency}%</div>
+                        <div class="text-xs text-gray-400">ความสำเร็จ</div>
+                    </div>
+                    <div class="bg-purple-900 bg-opacity-30 rounded-lg p-3">
+                        <div class="text-2xl font-bold text-purple-400">${playTime}</div>
+                        <div class="text-xs text-gray-400">นาที</div>
+                    </div>
+                    <div class="bg-red-900 bg-opacity-30 rounded-lg p-3">
+                        <div class="text-2xl font-bold text-red-400">${wrongAnswers}</div>
+                        <div class="text-xs text-gray-400">ตอบผิด</div>
+                    </div>
+                </div>
+                ${recommendations.map(rec => `<p>${rec}</p>`).join('')}
+            `;
+        }
+
+        // Question variations for each stage
+        const questionSets = {
+            stage1: [
+                {
+                    workpiece: '🔩',
+                    desc: 'เพลาเหล็กกลม เส้นผ่านศูนย์กลาง 50 มม.',
+                    details: '📐 ขนาด: Ø50 × 200 มม.<br>🔧 วัสดุ: เหล็กกล้าคาร์บอน',
+                    answer: 'lathe'
+                },
+                {
+                    workpiece: '⬜',
+                    desc: 'แผ่นอลูมิเนียมสี่เหลี่ยม 100×50 มม.',
+                    details: '📐 ขนาด: 100×50×20 มม.<br>🔧 วัสดุ: อลูมิเนียม 6061',
+                    answer: 'mill'
+                },
+                {
+                    workpiece: '🕳️',
+                    desc: 'แผ่นเหล็กต้องเจาะรู 12 รู',
+                    details: '📐 รู: Ø8 มม. ลึก 15 มม.<br>🔧 วัสดุ: เหล็กกล้าคาร์บอน',
+                    answer: 'drill'
+                },
+                {
+                    workpiece: '🔧',
+                    desc: 'ก้านเหล็กกลมสำหรับประแจ',
+                    details: '📐 ขนาด: Ø25 × 150 มม.<br>🔧 วัสดุ: เหล็กกล้าเครื่องมือ',
+                    answer: 'lathe'
+                },
+                {
+                    workpiece: '📐',
+                    desc: 'แผ่นฐานเครื่องจักรรูปสี่เหลี่ยม',
+                    details: '📐 ขนาด: 200×150×25 มม.<br>🔧 วัสดุ: เหล็กหล่อ',
+                    answer: 'mill'
+                }
+            ],
+            stage2: [
+                { target: 25.50, tolerance: 0.02 },
+                { target: 12.75, tolerance: 0.01 },
+                { target: 38.25, tolerance: 0.03 },
+                { target: 15.00, tolerance: 0.02 },
+                { target: 42.80, tolerance: 0.05 }
+            ],
+            stage3: [
+                { x: 50, y: 50, feed: 300, speed: 1200, tool: 'endmill10', shape: '⬜', desc: 'สี่เหลี่ยมจัตุรัส 50×50 มม.' },
+                { x: 75, y: 25, feed: 250, speed: 1000, tool: 'endmill6', shape: '▭', desc: 'สี่เหลี่ยมผืนผ้า 75×25 มม.' },
+                { x: 30, y: 30, feed: 400, speed: 1500, tool: 'endmill12', shape: '⬜', desc: 'สี่เหลี่ยมจัตุรัส 30×30 มม.' },
+                { x: 60, y: 40, feed: 350, speed: 1200, tool: 'endmill10', shape: '▭', desc: 'สี่เหลี่ยมผืนผ้า 60×40 มม.' },
+                { x: 80, y: 80, feed: 200, speed: 800, tool: 'endmill12', shape: '⬜', desc: 'สี่เหลี่ยมจัตุรัส 80×80 มม.' }
+            ]
+        };
+
+        let currentQuestions = {};
+
+        // Randomize questions for new game
+        function randomizeQuestions() {
+            currentQuestions = {
+                stage1: questionSets.stage1[Math.floor(Math.random() * questionSets.stage1.length)],
+                stage2: questionSets.stage2[Math.floor(Math.random() * questionSets.stage2.length)],
+                stage3: questionSets.stage3[Math.floor(Math.random() * questionSets.stage3.length)]
+            };
+        }
+
+        // Navigation functions
+        function goHome() {
+            // Reset all game state
+            gameStarted = false;
+            currentStage = 1;
+            difficulty = 'normal';
+            scores = { machining: 0, precision: 0, cnc: 0, assembly: 0 };
+            stageCompleted = [false, false, false, false, false];
+            hintsUsed = [];
+            wrongAnswers = 0;
+            clearInterval(timerInterval);
+            
+            // Show start screen, hide others
+            document.getElementById('startScreen').classList.remove('hidden');
+            document.getElementById('gameScreen').classList.add('hidden');
+            document.getElementById('finalResults').classList.add('hidden');
+            document.getElementById('progressSystem').classList.add('hidden');
+            document.getElementById('nextStage').classList.add('hidden');
+            
+            // Reset difficulty selection
+            document.querySelectorAll('.difficulty-btn').forEach(b => {
+                b.classList.remove('ring-4', 'ring-yellow-400');
+            });
+            document.getElementById('startGame').disabled = true;
+            
+            // Reset timer display
+            document.getElementById('timer').textContent = '5:00';
+            document.getElementById('timer').classList.remove('text-red-500', 'animate-pulse');
+            
+            // Reset progress
+            document.getElementById('progressBar').style.width = '20%';
+            document.getElementById('progressText').textContent = 'ด่าน 1/5';
+            
+            // Reset scores display
+            updateScoreDisplay();
+            
+            // Randomize questions for next game
+            randomizeQuestions();
+            
+            // Re-setup start screen listeners
+            initStartScreen();
+        }
+        
+        function restartGame() {
+            goHome();
+        }
+        
+        // Global navigation handlers
+        window.goHomeHandler = function() {
+            if (confirm('คุณต้องการกลับหน้าแรกใช่หรือไม่? ความคืบหน้าจะหายไป')) {
+                goHome();
+            }
+        };
+        
+        window.restartHandler = function() {
+            if (confirm('คุณต้องการเริ่มเกมใหม่ใช่หรือไม่? ความคืบหน้าจะหายไป')) {
+                restartGame();
+            }
+        };
+        
+        window.homeFromResultsHandler = function() {
+            goHome();
+        };
+        
+        window.restartGameHandler = function() {
+            restartGame();
+        };
+
+        // Add floating animation for particles
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes float {
+                0%, 100% { transform: translateY(0px) rotate(0deg); }
+                33% { transform: translateY(-10px) rotate(120deg); }
+                66% { transform: translateY(5px) rotate(240deg); }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Initialize game
+        createParticles();
+        initStartScreen();
+        randomizeQuestions(); // Initialize questions on page load
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'978595dec7637b68',t:'MTc1NjczODI4My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

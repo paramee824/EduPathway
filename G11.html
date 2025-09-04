@@ -1,0 +1,2230 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔧 เกมซ่อมรางรถไฟไทย - Railway Maintenance Simulator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700;800&display=swap');
+        
+        body { 
+            font-family: 'Kanit', sans-serif; 
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #1e3c72 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .game-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+        }
+        
+        .rail-track {
+            background: repeating-linear-gradient(
+                90deg,
+                #8B4513 0px,
+                #8B4513 15px,
+                #A0522D 15px,
+                #A0522D 30px
+            );
+            border: 4px solid #654321;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .rail-track::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent 0px,
+                transparent 8px,
+                rgba(0,0,0,0.1) 8px,
+                rgba(0,0,0,0.1) 10px
+            );
+        }
+        
+        .damage-indicator {
+            position: absolute;
+            animation: damage-pulse 1.5s ease-in-out infinite;
+            filter: drop-shadow(0 0 10px currentColor);
+        }
+        
+        @keyframes damage-pulse {
+            0%, 100% { transform: scale(1) rotate(0deg); opacity: 1; }
+            50% { transform: scale(1.2) rotate(5deg); opacity: 0.7; }
+        }
+        
+        .repair-tool {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+        }
+        
+        .repair-tool:hover {
+            transform: translateY(-5px) scale(1.1);
+            filter: drop-shadow(0 8px 16px rgba(0,0,0,0.3));
+            background: rgba(59, 130, 246, 0.2) !important;
+            border: 2px solid #3b82f6;
+        }
+        
+        .repair-tool.selected {
+            animation: tool-selected 0.5s ease-in-out;
+            border: 3px solid #fbbf24 !important;
+            background: rgba(251, 191, 36, 0.3) !important;
+            box-shadow: 0 0 20px rgba(251, 191, 36, 0.5);
+            transform: scale(1.05);
+        }
+        
+        @keyframes tool-selected {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        .progress-bar {
+            background: linear-gradient(90deg, #ef4444, #f59e0b, #10b981);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .progress-bar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: progress-shine 2s linear infinite;
+        }
+        
+        @keyframes progress-shine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        .weather-effect {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            z-index: 10;
+        }
+        
+        .rain-effect {
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="rain" patternUnits="userSpaceOnUse" width="10" height="10"><line x1="5" y1="0" x2="3" y2="10" stroke="%23add8e6" stroke-width="0.5" opacity="0.6"/></pattern></defs><rect width="100" height="100" fill="url(%23rain)"/></svg>');
+            animation: rain-fall 0.5s linear infinite;
+        }
+        
+        @keyframes rain-fall {
+            0% { background-position: 0 0; }
+            100% { background-position: 0 20px; }
+        }
+        
+        .spark-effect {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #fbbf24;
+            border-radius: 50%;
+            animation: spark-fly 1s ease-out forwards;
+        }
+        
+        @keyframes spark-fly {
+            0% { 
+                transform: scale(1) translate(0, 0);
+                opacity: 1;
+            }
+            100% { 
+                transform: scale(0) translate(var(--spark-x, 20px), var(--spark-y, -20px));
+                opacity: 0;
+            }
+        }
+        
+        .repair-animation {
+            animation: repair-work 2s ease-in-out;
+        }
+        
+        @keyframes repair-work {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-10deg); }
+            75% { transform: rotate(10deg); }
+        }
+        
+        .level-up-effect {
+            animation: level-celebration 3s ease-out;
+            transform-origin: center;
+        }
+        
+        @keyframes level-celebration {
+            0% { transform: scale(1) rotate(0deg); }
+            25% { transform: scale(1.3) rotate(10deg); }
+            50% { transform: scale(1.1) rotate(-5deg); }
+            75% { transform: scale(1.2) rotate(5deg); }
+            100% { transform: scale(1) rotate(0deg); }
+        }
+        
+        .notification {
+            animation: notification-slide 0.5s ease-out;
+        }
+        
+        @keyframes notification-slide {
+            0% { transform: translateX(100%); opacity: 0; }
+            100% { transform: translateX(0); opacity: 1; }
+        }
+        
+        .tool-inventory {
+            background: linear-gradient(135deg, #374151 0%, #4b5563 100%);
+            border: 2px solid #6b7280;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .damage-type-critical {
+            background: radial-gradient(circle, #dc2626, #991b1b);
+            animation: critical-alert 1s ease-in-out infinite alternate;
+        }
+        
+        @keyframes critical-alert {
+            0% { box-shadow: 0 0 10px #dc2626; }
+            100% { box-shadow: 0 0 30px #dc2626, 0 0 50px #dc2626; }
+        }
+        
+        .damage-type-major {
+            background: radial-gradient(circle, #f59e0b, #d97706);
+            animation: major-warning 2s ease-in-out infinite;
+        }
+        
+        @keyframes major-warning {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .damage-type-minor {
+            background: radial-gradient(circle, #eab308, #ca8a04);
+        }
+        
+        .repair-success {
+            animation: repair-complete 1s ease-out;
+        }
+        
+        @keyframes repair-complete {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.5); opacity: 0.8; }
+            100% { transform: scale(0); opacity: 0; }
+        }
+        
+        .money-popup {
+            animation: money-earn 2s ease-out forwards;
+            pointer-events: none;
+            z-index: 1000;
+        }
+        
+        @keyframes money-earn {
+            0% { 
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: translateY(-30px) scale(1.2);
+                opacity: 1;
+            }
+            100% { 
+                transform: translateY(-60px) scale(0.8);
+                opacity: 0;
+            }
+        }
+        
+        .experience-bar {
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .experience-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            animation: exp-glow 3s ease-in-out infinite;
+        }
+        
+        @keyframes exp-glow {
+            0%, 100% { transform: translateX(-100%); }
+            50% { transform: translateX(100%); }
+        }
+        
+        .weather-indicator {
+            animation: weather-change 4s ease-in-out infinite;
+        }
+        
+        @keyframes weather-change {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(360deg); }
+        }
+        
+        .emergency-alert {
+            background: linear-gradient(45deg, #dc2626, #991b1b, #dc2626);
+            background-size: 200% 200%;
+            animation: emergency-flash 0.5s ease-in-out infinite alternate;
+        }
+        
+        @keyframes emergency-flash {
+            0% { 
+                background-position: 0% 50%;
+                box-shadow: 0 0 20px #dc2626;
+            }
+            100% { 
+                background-position: 100% 50%;
+                box-shadow: 0 0 40px #dc2626, 0 0 60px #dc2626;
+            }
+        }
+        
+        .achievement-badge {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            border: 3px solid #d97706;
+            animation: badge-shine 3s ease-in-out infinite;
+        }
+        
+        @keyframes badge-shine {
+            0%, 100% { transform: scale(1); filter: brightness(1); }
+            50% { transform: scale(1.05); filter: brightness(1.2); }
+        }
+        
+        .mini-game-container {
+            background: linear-gradient(135deg, #1f2937, #374151);
+            border: 2px solid #4b5563;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+        
+        .wire-connection {
+            stroke-dasharray: 5, 5;
+            animation: wire-flow 1s linear infinite;
+        }
+        
+        @keyframes wire-flow {
+            0% { stroke-dashoffset: 0; }
+            100% { stroke-dashoffset: 10; }
+        }
+        
+        .safety-warning {
+            background: repeating-linear-gradient(
+                45deg,
+                #fbbf24,
+                #fbbf24 10px,
+                #000 10px,
+                #000 20px
+            );
+            animation: safety-blink 1s ease-in-out infinite;
+        }
+        
+        @keyframes safety-blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .holographic-ui {
+            background: linear-gradient(135deg, 
+                rgba(59, 130, 246, 0.1) 0%, 
+                rgba(147, 51, 234, 0.1) 50%, 
+                rgba(59, 130, 246, 0.1) 100%);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        
+        .diagnostic-screen {
+            background: #000;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            text-shadow: 0 0 5px #00ff00;
+            animation: screen-flicker 0.1s linear infinite;
+        }
+        
+        @keyframes screen-flicker {
+            0%, 98% { opacity: 1; }
+            99% { opacity: 0.98; }
+            100% { opacity: 1; }
+        }
+        
+        .repair-zone {
+            border: 3px dashed #3b82f6;
+            background: rgba(59, 130, 246, 0.1);
+            animation: zone-pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes zone-pulse {
+            0%, 100% { border-color: #3b82f6; background: rgba(59, 130, 246, 0.1); }
+            50% { border-color: #1d4ed8; background: rgba(29, 78, 216, 0.2); }
+        }
+        
+        .quality-meter {
+            background: conic-gradient(
+                from 0deg,
+                #dc2626 0deg 60deg,
+                #f59e0b 60deg 120deg,
+                #eab308 120deg 180deg,
+                #84cc16 180deg 240deg,
+                #10b981 240deg 300deg,
+                #059669 300deg 360deg
+            );
+            border-radius: 50%;
+            position: relative;
+        }
+        
+        .quality-needle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform-origin: bottom center;
+            transition: transform 0.5s ease-out;
+            z-index: 10;
+        }
+        
+        .particle-effect {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: #fbbf24;
+            border-radius: 50%;
+            animation: particle-float 3s ease-out infinite;
+        }
+        
+        @keyframes particle-float {
+            0% { 
+                transform: translate(0, 0) scale(1);
+                opacity: 1;
+            }
+            100% { 
+                transform: translate(var(--random-x, 50px), var(--random-y, -100px)) scale(0);
+                opacity: 0;
+            }
+        }
+        
+        @keyframes star-burst {
+            0% { 
+                transform: translate(-50%, -50%) rotate(var(--angle)) translateX(0) scale(1);
+                opacity: 1;
+            }
+            100% { 
+                transform: translate(-50%, -50%) rotate(var(--angle)) translateX(60px) scale(0);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen p-2">
+    <!-- หัวเกม -->
+    <div class="text-center mb-4">
+        <h1 class="text-5xl font-bold text-white mb-2 drop-shadow-lg">🔧 เกมซ่อมรางรถไฟไทย</h1>
+        <p class="text-2xl text-blue-100 drop-shadow">Railway Maintenance Simulator - Professional Edition</p>
+        <div class="mt-2 text-lg text-yellow-200">
+            ⚡ ระบบซ่อมแซมขั้นสูง | 🛠️ เครื่องมือครบครัน | 🏆 ระบบความสำเร็จ
+        </div>
+    </div>
+
+    <!-- แผงควบคุมหลัก -->
+    <div class="max-w-7xl mx-auto">
+        <!-- สถิติและข้อมูลหลัก -->
+        <div class="game-container rounded-2xl p-6 mb-6">
+            <div class="grid grid-cols-2 md:grid-cols-6 gap-4 mb-4">
+                <div class="text-center holographic-ui rounded-xl p-4">
+                    <div class="text-sm text-gray-600 mb-1">💰 เงิน</div>
+                    <div class="text-2xl font-bold text-green-600" id="money">5,000 ฿</div>
+                </div>
+                <div class="text-center holographic-ui rounded-xl p-4">
+                    <div class="text-sm text-gray-600 mb-1">⭐ ระดับ</div>
+                    <div class="text-2xl font-bold text-blue-600" id="level">1</div>
+                </div>
+                <div class="text-center holographic-ui rounded-xl p-4">
+                    <div class="text-sm text-gray-600 mb-1">🏆 คะแนน</div>
+                    <div class="text-2xl font-bold text-purple-600" id="score">0</div>
+                </div>
+                <div class="text-center holographic-ui rounded-xl p-4">
+                    <div class="text-sm text-gray-600 mb-1">🔧 งานซ่อม</div>
+                    <div class="text-2xl font-bold text-orange-600" id="repairs-completed">0</div>
+                </div>
+                <div class="text-center holographic-ui rounded-xl p-4">
+                    <div class="text-sm text-gray-600 mb-1">⚡ พลังงาน</div>
+                    <div class="text-2xl font-bold text-yellow-600" id="energy">100%</div>
+                </div>
+                <div class="text-center holographic-ui rounded-xl p-4">
+                    <div class="text-sm text-gray-600 mb-1">🌡️ อุณหภูมิ</div>
+                    <div class="text-2xl font-bold text-red-600" id="temperature">32°C</div>
+                </div>
+            </div>
+
+            <!-- แถบประสบการณ์ -->
+            <div class="mb-4">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-sm font-semibold text-gray-700">📈 ประสบการณ์</span>
+                    <span class="text-sm text-gray-600" id="exp-text">0 / 100 EXP</span>
+                </div>
+                <div class="w-full bg-gray-300 rounded-full h-4 overflow-hidden">
+                    <div class="experience-bar h-full rounded-full transition-all duration-500" id="exp-bar" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <!-- สภาพอากาศและเวลา -->
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-4">
+                    <div class="weather-indicator text-3xl" id="weather-icon">☀️</div>
+                    <div>
+                        <div class="text-sm text-gray-600">สภาพอากาศ</div>
+                        <div class="font-semibold text-gray-800" id="weather-status">แจ่มใส</div>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <div class="text-sm text-gray-600">เวลา</div>
+                    <div class="font-semibold text-gray-800" id="game-time">08:00 น.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid lg:grid-cols-4 gap-6">
+            <!-- พื้นที่ซ่อมแซมหลัก -->
+            <div class="lg:col-span-3">
+                <div class="game-container rounded-2xl p-6 mb-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-2xl font-bold text-gray-800">🛤️ พื้นที่ซ่อมแซมรางรถไฟ</h2>
+                        <div class="flex space-x-2">
+                            <button class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors" id="scan-btn">
+                                🔍 สแกนหาความเสียหาย
+                            </button>
+                            <button class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors" id="auto-repair-btn">
+                                🤖 ซ่อมอัตโนมัติ
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- พื้นที่รางรถไฟ -->
+                    <div class="rail-track rounded-xl p-6 mb-6 relative" style="height: 400px;" id="rail-area">
+                        <div class="weather-effect" id="weather-effect"></div>
+                        
+                        <!-- รางรถไฟหลัก -->
+                        <div class="absolute inset-6">
+                            <!-- รางซ้าย -->
+                            <div class="absolute top-1/3 left-0 right-0 h-3 bg-gray-600 rounded-full shadow-lg"></div>
+                            <!-- รางขวา -->
+                            <div class="absolute top-2/3 left-0 right-0 h-3 bg-gray-600 rounded-full shadow-lg"></div>
+                            
+                            <!-- หมอนรองรางแนวนอน -->
+                            <div class="absolute top-1/4 left-0 right-0 h-1 bg-gray-800" style="background: repeating-linear-gradient(90deg, #4b5563 0px, #4b5563 20px, transparent 20px, transparent 40px);"></div>
+                            <div class="absolute top-3/4 left-0 right-0 h-1 bg-gray-800" style="background: repeating-linear-gradient(90deg, #4b5563 0px, #4b5563 20px, transparent 20px, transparent 40px);"></div>
+                            
+                            <!-- หมอนรองรางแนวตั้ง -->
+                            <div class="absolute top-0 bottom-0 left-1/6 w-2 bg-amber-800 opacity-60"></div>
+                            <div class="absolute top-0 bottom-0 left-2/6 w-2 bg-amber-800 opacity-60"></div>
+                            <div class="absolute top-0 bottom-0 left-3/6 w-2 bg-amber-800 opacity-60"></div>
+                            <div class="absolute top-0 bottom-0 left-4/6 w-2 bg-amber-800 opacity-60"></div>
+                            <div class="absolute top-0 bottom-0 left-5/6 w-2 bg-amber-800 opacity-60"></div>
+                            
+                            <!-- พื้นที่ความเสียหาย -->
+                            <div id="damage-areas"></div>
+                            
+                            <!-- พื้นที่ซ่อมแซม -->
+                            <div class="repair-zone absolute inset-0 hidden" id="repair-zone">
+                                <div class="text-center text-blue-600 font-bold mt-4">🔧 พื้นที่ซ่อมแซม</div>
+                            </div>
+                        </div>
+                        
+                        <!-- เอฟเฟกต์อนุภาค -->
+                        <div id="particle-container"></div>
+                    </div>
+
+                    <!-- แผงควบคุมการซ่อมแซม -->
+                    <div class="grid md:grid-cols-3 gap-4">
+                        <div class="holographic-ui rounded-xl p-4">
+                            <h3 class="font-bold text-gray-800 mb-3">🎯 เป้าหมายปัจจุบัน</h3>
+                            <div class="space-y-2 text-sm">
+                                <div class="flex justify-between">
+                                    <span>ความเสียหายที่พบ:</span>
+                                    <span class="font-bold text-red-600" id="damage-count">0</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>ซ่อมแล้ว:</span>
+                                    <span class="font-bold text-green-600" id="repaired-count">0</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>คุณภาพงาน:</span>
+                                    <span class="font-bold text-blue-600" id="quality-score">100%</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="holographic-ui rounded-xl p-4">
+                            <h3 class="font-bold text-gray-800 mb-3">⚡ สถานะระบบ</h3>
+                            <div class="space-y-2 text-sm">
+                                <div class="flex justify-between">
+                                    <span>ความปลอดภัย:</span>
+                                    <span class="font-bold text-green-600" id="safety-level">ปลอดภัย</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>ประสิทธิภาพ:</span>
+                                    <span class="font-bold text-blue-600" id="efficiency">95%</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>สถานะเครื่องมือ:</span>
+                                    <span class="font-bold text-yellow-600" id="tool-status">พร้อมใช้งาน</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="holographic-ui rounded-xl p-4">
+                            <h3 class="font-bold text-gray-800 mb-3">🏆 ความสำเร็จ</h3>
+                            <div class="space-y-2 text-sm">
+                                <div class="flex justify-between">
+                                    <span>งานซ่อมวันนี้:</span>
+                                    <span class="font-bold text-purple-600" id="daily-repairs">0</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>สถิติต่อเนื่อง:</span>
+                                    <span class="font-bold text-orange-600" id="streak">0 วัน</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>อันดับ:</span>
+                                    <span class="font-bold text-pink-600" id="rank">มือใหม่</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- มินิเกมซ่อมแซม -->
+                <div class="mini-game-container rounded-2xl p-6 hidden" id="mini-game-container">
+                    <h3 class="text-xl font-bold text-white mb-4">🎮 มินิเกมซ่อมแซม</h3>
+                    <div id="mini-game-content">
+                        <!-- เนื้อหามินิเกมจะถูกใส่ที่นี่ -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- แผงเครื่องมือและควบคุม -->
+            <div class="space-y-6">
+                <!-- คลังเครื่องมือ -->
+                <div class="game-container rounded-2xl p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">🧰 คลังเครื่องมือ</h3>
+                    <div class="grid grid-cols-2 gap-2" id="tool-inventory">
+                        <div class="repair-tool tool-inventory rounded-lg p-2 text-center cursor-pointer" data-tool="hammer">
+                            <div class="text-2xl mb-1">🔨</div>
+                            <div class="text-xs font-semibold">ค้อนทุบราง</div>
+                            <div class="text-xs text-gray-600">รอยแตก/บิ่น</div>
+                        </div>
+                        <div class="repair-tool tool-inventory rounded-lg p-2 text-center cursor-pointer" data-tool="wrench">
+                            <div class="text-2xl mb-1">🔧</div>
+                            <div class="text-xs font-semibold">ประแจขันน็อต</div>
+                            <div class="text-xs text-gray-600">น็อตหลวม</div>
+                        </div>
+                        <div class="repair-tool tool-inventory rounded-lg p-2 text-center cursor-pointer" data-tool="welder">
+                            <div class="text-2xl mb-1">⚡</div>
+                            <div class="text-xs font-semibold">เครื่องเชื่อมราง</div>
+                            <div class="text-xs text-gray-600">รางหัก</div>
+                        </div>
+                        <div class="repair-tool tool-inventory rounded-lg p-2 text-center cursor-pointer" data-tool="grinder">
+                            <div class="text-2xl mb-1">⚙️</div>
+                            <div class="text-xs font-semibold">เครื่องเจียรราง</div>
+                            <div class="text-xs text-gray-600">สนิม/สึกหรอ</div>
+                        </div>
+                        <div class="repair-tool tool-inventory rounded-lg p-2 text-center cursor-pointer" data-tool="drill">
+                            <div class="text-2xl mb-1">🪚</div>
+                            <div class="text-xs font-semibold">สว่านเจาะราง</div>
+                            <div class="text-xs text-gray-600">เจาะรูใหม่</div>
+                        </div>
+                        <div class="repair-tool tool-inventory rounded-lg p-2 text-center cursor-pointer" data-tool="scanner">
+                            <div class="text-2xl mb-1">📡</div>
+                            <div class="text-xs font-semibold">เครื่องสแกนราง</div>
+                            <div class="text-xs text-gray-600">ตรวจสอบ</div>
+                        </div>
+                        <div class="repair-tool tool-inventory rounded-lg p-2 text-center cursor-pointer" data-tool="railSaw">
+                            <div class="text-2xl mb-1">🪚</div>
+                            <div class="text-xs font-semibold">เลื่อยตัดราง</div>
+                            <div class="text-xs text-gray-600">ตัดรางเสีย</div>
+                        </div>
+                        <div class="repair-tool tool-inventory rounded-lg p-2 text-center cursor-pointer" data-tool="railLifter">
+                            <div class="text-2xl mb-1">🏗️</div>
+                            <div class="text-xs font-semibold">เครื่องยกราง</div>
+                            <div class="text-xs text-gray-600">ยกราง</div>
+                        </div>
+                        <div class="repair-tool tool-inventory rounded-lg p-2 text-center cursor-pointer" data-tool="railBender">
+                            <div class="text-2xl mb-1">🔄</div>
+                            <div class="text-xs font-semibold">เครื่องดัดราง</div>
+                            <div class="text-xs text-gray-600">ดัดรางตรง</div>
+                        </div>
+                        <div class="repair-tool tool-inventory rounded-lg p-2 text-center cursor-pointer" data-tool="thermometer">
+                            <div class="text-2xl mb-1">🌡️</div>
+                            <div class="text-xs font-semibold">เครื่องวัดอุณหภูมิ</div>
+                            <div class="text-xs text-gray-600">วัดความร้อน</div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 p-3 bg-gray-100 rounded-lg">
+                        <div class="text-sm font-semibold text-gray-700 mb-2">🔧 เครื่องมือที่เลือก:</div>
+                        <div class="text-lg font-bold text-blue-600" id="selected-tool">ไม่ได้เลือก</div>
+                    </div>
+                </div>
+
+                <!-- ระบบวินิจฉัย -->
+                <div class="game-container rounded-2xl p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">🔍 ระบบวินิจฉัย</h3>
+                    <div class="diagnostic-screen rounded-lg p-4 mb-4" style="height: 150px; overflow-y: auto;" id="diagnostic-output">
+                        <div>> ระบบวินิจฉัยพร้อมใช้งาน...</div>
+                        <div>> กำลังสแกนหาความเสียหาย...</div>
+                        <div>> พร้อมรับคำสั่ง</div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button class="px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded text-sm transition-colors" id="full-scan-btn">
+                            🔍 สแกนเต็มระบบ
+                        </button>
+                        <button class="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm transition-colors" id="quick-scan-btn">
+                            ⚡ สแกนด่วน
+                        </button>
+                        <button class="px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded text-sm transition-colors" id="deep-scan-btn">
+                            🎯 สแกนลึก
+                        </button>
+                        <button class="px-3 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded text-sm transition-colors" id="thermal-scan-btn">
+                            🌡️ สแกนความร้อน
+                        </button>
+                    </div>
+                </div>
+
+                <!-- มาตรวัดคุณภาพ -->
+                <div class="game-container rounded-2xl p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">📊 มาตรวัดคุณภาพ</h3>
+                    <div class="flex justify-center mb-4">
+                        <div class="quality-meter w-32 h-32 relative">
+                            <div class="quality-needle w-1 h-16 bg-red-600 absolute" style="transform: translate(-50%, -100%) rotate(45deg);" id="quality-needle"></div>
+                            <div class="absolute inset-4 bg-white rounded-full flex items-center justify-center">
+                                <div class="text-center">
+                                    <div class="text-xs text-gray-600">คุณภาพ</div>
+                                    <div class="text-lg font-bold" id="quality-percentage">100%</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span>ความแม่นยำ:</span>
+                            <span class="font-bold text-green-600" id="accuracy">100%</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>ความเร็ว:</span>
+                            <span class="font-bold text-blue-600" id="speed-rating">A+</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>ความปลอดภัย:</span>
+                            <span class="font-bold text-purple-600" id="safety-rating">เยี่ยม</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- อุปกรณ์ป้องกันสภาพอากาศ -->
+                <div class="game-container rounded-2xl p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">🛡️ อุปกรณ์ป้องกันสภาพอากาศ</h3>
+                    <div class="space-y-2" id="weather-protection-items">
+                        <div class="flex justify-between items-center p-2 bg-gray-100 rounded">
+                            <div>
+                                <div class="font-semibold">☂️ ร่มกันฝน</div>
+                                <div class="text-xs text-gray-600">ป้องกันฝน +20% ประสิทธิภาพ</div>
+                            </div>
+                            <button class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs transition-colors" data-weather="rainy" data-price="800">
+                                800 ฿
+                            </button>
+                        </div>
+                        <div class="flex justify-between items-center p-2 bg-gray-100 rounded">
+                            <div>
+                                <div class="font-semibold">🌪️ เสื้อกันพายุ</div>
+                                <div class="text-xs text-gray-600">ป้องกันพายุ +20% ประสิทธิภาพ</div>
+                            </div>
+                            <button class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs transition-colors" data-weather="stormy" data-price="1200">
+                                1,200 ฿
+                            </button>
+                        </div>
+                        <div class="flex justify-between items-center p-2 bg-gray-100 rounded">
+                            <div>
+                                <div class="font-semibold">🕶️ แว่นกันแสง</div>
+                                <div class="text-xs text-gray-600">ป้องกันแสงแดด +20% ประสิทธิภาพ</div>
+                            </div>
+                            <button class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs transition-colors" data-weather="sunny" data-price="600">
+                                600 ฿
+                            </button>
+                        </div>
+                        <div class="flex justify-between items-center p-2 bg-gray-100 rounded">
+                            <div>
+                                <div class="font-semibold">🌫️ หน้ากากกันหมอก</div>
+                                <div class="text-xs text-gray-600">ป้องกันหมอก +20% ประสิทธิภาพ</div>
+                            </div>
+                            <button class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs transition-colors" data-weather="foggy" data-price="900">
+                                900 ฿
+                            </button>
+                        </div>
+                        <div class="flex justify-between items-center p-2 bg-gray-100 rounded">
+                            <div>
+                                <div class="font-semibold">🧥 เสื้อกันหนาว</div>
+                                <div class="text-xs text-gray-600">ป้องกันความเย็น +20% ประสิทธิภาพ</div>
+                            </div>
+                            <button class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs transition-colors" data-weather="cold" data-price="1000">
+                                1,000 ฿
+                            </button>
+                        </div>
+                        <div class="flex justify-between items-center p-2 bg-gray-100 rounded">
+                            <div>
+                                <div class="font-semibold">❄️ เครื่องทำความเย็น</div>
+                                <div class="text-xs text-gray-600">ป้องกันความร้อน +20% ประสิทธิภาพ</div>
+                            </div>
+                            <button class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs transition-colors" data-weather="hot" data-price="1500">
+                                1,500 ฿
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ร้านค้าและอัพเกรด -->
+                <div class="game-container rounded-2xl p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">🛒 ร้านค้าและอัพเกรด</h3>
+                    <div class="space-y-2" id="shop-items">
+                        <div class="flex justify-between items-center p-2 bg-gray-100 rounded">
+                            <div>
+                                <div class="font-semibold">🔨 ค้อนไฟฟ้า</div>
+                                <div class="text-xs text-gray-600">เพิ่มความเร็วซ่อม +50%</div>
+                            </div>
+                            <button class="px-2 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-xs transition-colors" data-item="electric-hammer" data-price="2000">
+                                2,000 ฿
+                            </button>
+                        </div>
+                        <div class="flex justify-between items-center p-2 bg-gray-100 rounded">
+                            <div>
+                                <div class="font-semibold">🔍 เลนส์ขยาย</div>
+                                <div class="text-xs text-gray-600">หาความเสียหายได้ดีขึ้น</div>
+                            </div>
+                            <button class="px-2 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-xs transition-colors" data-item="magnifier" data-price="1500">
+                                1,500 ฿
+                            </button>
+                        </div>
+                        <div class="flex justify-between items-center p-2 bg-gray-100 rounded">
+                            <div>
+                                <div class="font-semibold">⚡ แบตเตอรี่พิเศษ</div>
+                                <div class="text-xs text-gray-600">พลังงานไม่หมด</div>
+                            </div>
+                            <button class="px-2 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-xs transition-colors" data-item="super-battery" data-price="5000">
+                                5,000 ฿
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- คู่มือแนะนำเกม -->
+                <div class="game-container rounded-2xl p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">📖 คู่มือแนะนำเกม</h3>
+                    <div class="space-y-2 max-h-48 overflow-y-auto" id="tutorial-guide">
+                        <button class="w-full text-left p-2 bg-blue-50 hover:bg-blue-100 rounded border-l-4 border-blue-400 transition-colors" onclick="game.showTutorial('basic')">
+                            <div class="font-semibold text-sm">🎯 การเล่นพื้นฐาน</div>
+                            <div class="text-xs text-gray-600">วิธีเริ่มต้นเล่นเกม</div>
+                        </button>
+                        <button class="w-full text-left p-2 bg-green-50 hover:bg-green-100 rounded border-l-4 border-green-400 transition-colors" onclick="game.showTutorial('tools')">
+                            <div class="font-semibold text-sm">🔧 เครื่องมือซ่อมราง</div>
+                            <div class="text-xs text-gray-600">รู้จักเครื่องมือแต่ละชนิด</div>
+                        </button>
+                        <button class="w-full text-left p-2 bg-yellow-50 hover:bg-yellow-100 rounded border-l-4 border-yellow-400 transition-colors" onclick="game.showTutorial('weather')">
+                            <div class="font-semibold text-sm">🌦️ สภาพอากาศ</div>
+                            <div class="text-xs text-gray-600">ผลกระทบของสภาพอากาศ</div>
+                        </button>
+                        <button class="w-full text-left p-2 bg-purple-50 hover:bg-purple-100 rounded border-l-4 border-purple-400 transition-colors" onclick="game.showTutorial('damage')">
+                            <div class="font-semibold text-sm">💥 ประเภทความเสียหาย</div>
+                            <div class="text-xs text-gray-600">รู้จักความเสียหายต่างๆ</div>
+                        </button>
+                        <button class="w-full text-left p-2 bg-pink-50 hover:bg-pink-100 rounded border-l-4 border-pink-400 transition-colors" onclick="game.showTutorial('tips')">
+                            <div class="font-semibold text-sm">💡 เทคนิคและเคล็ดลับ</div>
+                            <div class="text-xs text-gray-600">เล่นให้เก่งขึ้น</div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ข่าวสารและแจ้งเตือน -->
+                <div class="game-container rounded-2xl p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">📢 ข่าวสารและแจ้งเตือน</h3>
+                    <div class="space-y-2 max-h-48 overflow-y-auto" id="news-feed">
+                        <div class="notification text-sm p-2 bg-blue-50 rounded border-l-4 border-blue-400">
+                            🎮 ยินดีต้อนรับสู่เกมซ่อมรางรถไฟไทย!
+                        </div>
+                        <div class="notification text-sm p-2 bg-green-50 rounded border-l-4 border-green-400">
+                            💡 เริ่มต้นด้วยการสแกนหาความเสียหาย
+                        </div>
+                        <div class="notification text-sm p-2 bg-yellow-50 rounded border-l-4 border-yellow-400">
+                            🔧 เลือกเครื่องมือที่เหมาะสมสำหรับการซ่อม
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal ความสำเร็จ -->
+    <div class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50" id="achievement-modal">
+        <div class="game-container rounded-2xl p-8 max-w-md mx-4">
+            <div class="text-center">
+                <div class="achievement-badge w-20 h-20 rounded-full mx-auto mb-4 flex items-center justify-center">
+                    <div class="text-4xl" id="achievement-icon">🏆</div>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-800 mb-2" id="achievement-title">ความสำเร็จใหม่!</h2>
+                <p class="text-gray-600 mb-4" id="achievement-description">คุณได้รับความสำเร็จใหม่</p>
+                <div class="text-lg font-bold text-green-600 mb-4" id="achievement-reward">+500 ฿</div>
+                <button class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold transition-colors" id="close-achievement">
+                    รับรางวัล
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal เลื่อนระดับ -->
+    <div class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50" id="level-up-modal">
+        <div class="game-container rounded-2xl p-8 max-w-md mx-4">
+            <div class="text-center">
+                <div class="text-6xl mb-4 level-up-effect">🎉</div>
+                <h2 class="text-3xl font-bold text-gray-800 mb-2">เลื่อนระดับ!</h2>
+                <p class="text-xl text-blue-600 mb-4">ระดับ <span id="new-level">2</span></p>
+                <div class="space-y-2 mb-4">
+                    <p class="text-gray-600">คุณได้รับ:</p>
+                    <div class="text-lg font-bold text-green-600">💰 +1,000 ฿</div>
+                    <div class="text-lg font-bold text-blue-600">⚡ พลังงานเต็ม</div>
+                    <div class="text-lg font-bold text-purple-600">🔧 เครื่องมือใหม่</div>
+                </div>
+                <button class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold transition-colors" id="close-level-up">
+                    ยอดเยี่ยม!
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal คู่มือแนะนำ -->
+    <div class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50" id="tutorial-modal">
+        <div class="game-container rounded-2xl p-8 max-w-2xl mx-4 max-h-96 overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold text-gray-800" id="tutorial-title">📖 คู่มือแนะนำ</h2>
+                <button class="text-gray-500 hover:text-gray-700 text-2xl" id="close-tutorial">&times;</button>
+            </div>
+            <div id="tutorial-content" class="text-gray-700 space-y-4">
+                <!-- เนื้อหาคู่มือจะถูกใส่ที่นี่ -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal เกมจบ -->
+    <div class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50" id="game-over-modal">
+        <div class="game-container rounded-2xl p-8 max-w-lg mx-4">
+            <div class="text-center">
+                <div class="text-6xl mb-4">🏁</div>
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">สรุปผลการทำงาน</h2>
+                <div class="space-y-3 mb-6" id="final-stats">
+                    <!-- สถิติสุดท้ายจะถูกใส่ที่นี่ -->
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <button class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-bold transition-colors" id="play-again">
+                        🔄 เล่นใหม่
+                    </button>
+                    <button class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold transition-colors" id="share-score">
+                        📤 แชร์คะแนน
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class RailwayMaintenanceGame {
+            constructor() {
+                this.gameState = {
+                    money: 5000,
+                    level: 1,
+                    score: 0,
+                    experience: 0,
+                    experienceToNext: 100,
+                    energy: 100,
+                    repairsCompleted: 0,
+                    dailyRepairs: 0,
+                    streak: 0,
+                    
+                    // เครื่องมือและอุปกรณ์
+                    selectedTool: null,
+                    tools: {
+                        hammer: { name: 'ค้อนทุบราง', icon: '🔨', efficiency: 1.0, cost: 10, description: 'สำหรับทุบแก้ไขรอยแตกและรอยบิ่น' },
+                        wrench: { name: 'ประแจขันน็อต', icon: '🔧', efficiency: 1.2, cost: 15, description: 'ขันหรือคลายน็อตยึดราง' },
+                        welder: { name: 'เครื่องเชื่อมราง', icon: '⚡', efficiency: 1.5, cost: 25, description: 'เชื่อมต่อรางที่หักหรือแตก' },
+                        grinder: { name: 'เครื่องเจียรราง', icon: '⚙️', efficiency: 1.3, cost: 20, description: 'ขัดผิวรางให้เรียบและกำจัดสนิม' },
+                        drill: { name: 'สว่านเจาะราง', icon: '🪚', efficiency: 1.1, cost: 12, description: 'เจาะรูสำหรับน็อตใหม่' },
+                        scanner: { name: 'เครื่องสแกนราง', icon: '📡', efficiency: 2.0, cost: 5, description: 'ตรวจสอบความเสียหายภายใน' },
+                        railSaw: { name: 'เลื่อยตัดราง', icon: '🪚', efficiency: 1.4, cost: 30, description: 'ตัดรางที่เสียหายออก' },
+                        railLifter: { name: 'เครื่องยกราง', icon: '🏗️', efficiency: 1.6, cost: 35, description: 'ยกรางเพื่อซ่อมใต้ราง' },
+                        railBender: { name: 'เครื่องดัดราง', icon: '🔄', efficiency: 1.3, cost: 28, description: 'ดัดรางให้ตรง' },
+                        thermometer: { name: 'เครื่องวัดอุณหภูมิ', icon: '🌡️', efficiency: 1.1, cost: 8, description: 'วัดอุณหภูมิรางเพื่อความปลอดภัย' }
+                    },
+                    
+                    // อุปกรณ์ป้องกันสภาพอากาศ
+                    weatherProtection: {
+                        sunny: false,
+                        cloudy: false,
+                        rainy: false,
+                        stormy: false,
+                        foggy: false,
+                        hot: false,
+                        cold: false
+                    },
+                    
+                    // ความเสียหายและการซ่อมแซม
+                    damages: [],
+                    damageTypes: {
+                        crack: { name: 'รอยแตก', severity: 'minor', tool: 'hammer', reward: 100, icon: '💥' },
+                        loose: { name: 'น็อตหลวม', severity: 'minor', tool: 'wrench', reward: 80, icon: '🔩' },
+                        rust: { name: 'สนิม', severity: 'major', tool: 'grinder', reward: 150, icon: '🦠' },
+                        break: { name: 'หัก', severity: 'critical', tool: 'welder', reward: 300, icon: '💔' },
+                        hole: { name: 'รูรั่ว', severity: 'major', tool: 'drill', reward: 200, icon: '🕳️' },
+                        wear: { name: 'สึกหรอ', severity: 'minor', tool: 'grinder', reward: 120, icon: '⚫' }
+                    },
+                    
+                    // สภาพอากาศและสิ่งแวดล้อม
+                    weather: 'sunny',
+                    temperature: 32,
+                    gameTime: 8.0, // 8:00 AM
+                    
+                    // สถิติและความสำเร็จ
+                    achievements: [],
+                    qualityScore: 100,
+                    safetyLevel: 'ปลอดภัย',
+                    efficiency: 95,
+                    
+                    // อัพเกรดและไอเทม
+                    upgrades: {
+                        electricHammer: false,
+                        magnifier: false,
+                        superBattery: false
+                    }
+                };
+                
+                this.initializeGame();
+                this.setupEventListeners();
+                this.startGameLoop();
+            }
+            
+            initializeGame() {
+                this.addNews('🎮 ยินดีต้อนรับสู่เกมซ่อมรางรถไฟไทย!');
+                this.addNews('💡 เริ่มต้นด้วยการสแกนหาความเสียหาย');
+                this.addNews('🔧 เลือกเครื่องมือที่เหมาะสมสำหรับการซ่อม');
+                
+                this.generateInitialDamages();
+                this.updateAllDisplays();
+                this.updateWeather();
+            }
+            
+            setupEventListeners() {
+                // ปุ่มสแกน
+                document.getElementById('scan-btn').addEventListener('click', () => this.scanForDamages());
+                document.getElementById('full-scan-btn').addEventListener('click', () => this.fullSystemScan());
+                document.getElementById('quick-scan-btn').addEventListener('click', () => this.quickScan());
+                document.getElementById('deep-scan-btn').addEventListener('click', () => this.deepScan());
+                document.getElementById('thermal-scan-btn').addEventListener('click', () => this.thermalScan());
+                
+                // ปุ่มซ่อมอัตโนมัติ
+                document.getElementById('auto-repair-btn').addEventListener('click', () => this.autoRepair());
+                
+                // เครื่องมือ - ใช้ event delegation เพื่อให้แน่ใจว่าทำงาน
+                document.getElementById('tool-inventory').addEventListener('click', (e) => {
+                    const toolElement = e.target.closest('.repair-tool');
+                    if (toolElement && toolElement.dataset.tool) {
+                        this.selectTool(toolElement.dataset.tool);
+                    }
+                });
+                
+                // ร้านค้า
+                document.querySelectorAll('[data-item]').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const item = e.target.dataset.item;
+                        const price = parseInt(e.target.dataset.price);
+                        this.buyUpgrade(item, price);
+                    });
+                });
+                
+                // อุปกรณ์ป้องกันสภาพอากาศ
+                document.querySelectorAll('[data-weather]').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const weather = e.target.dataset.weather;
+                        const price = parseInt(e.target.dataset.price);
+                        this.buyWeatherProtection(weather, price);
+                    });
+                });
+                
+                // Modal
+                document.getElementById('close-achievement').addEventListener('click', () => this.closeAchievementModal());
+                document.getElementById('close-level-up').addEventListener('click', () => this.closeLevelUpModal());
+                document.getElementById('close-tutorial').addEventListener('click', () => this.closeTutorialModal());
+                document.getElementById('play-again').addEventListener('click', () => this.resetGame());
+                document.getElementById('share-score').addEventListener('click', () => this.shareScore());
+                
+                // คลิกที่พื้นที่รางรถไฟ
+                document.getElementById('rail-area').addEventListener('click', (e) => this.handleRailClick(e));
+            }
+            
+            generateInitialDamages() {
+                const damageCount = 3 + Math.floor(Math.random() * 3);
+                for (let i = 0; i < damageCount; i++) {
+                    this.generateRandomDamage();
+                }
+            }
+            
+            generateRandomDamage() {
+                const types = Object.keys(this.gameState.damageTypes);
+                const type = types[Math.floor(Math.random() * types.length)];
+                const damageInfo = this.gameState.damageTypes[type];
+                
+                const damage = {
+                    id: Date.now() + Math.random(),
+                    type: type,
+                    x: Math.random() * 80 + 10, // 10-90% ของความกว้าง
+                    y: Math.random() * 60 + 20, // 20-80% ของความสูง
+                    severity: damageInfo.severity,
+                    discovered: false,
+                    repaired: false,
+                    repairProgress: 0
+                };
+                
+                this.gameState.damages.push(damage);
+            }
+            
+            scanForDamages() {
+                if (this.gameState.energy < 10) {
+                    this.addNews('⚠️ พลังงานไม่เพียงพอสำหรับการสแกน!');
+                    return;
+                }
+                
+                this.gameState.energy -= 10;
+                this.addDiagnosticMessage('> เริ่มการสแกนหาความเสียหาย...');
+                
+                let discovered = 0;
+                this.gameState.damages.forEach(damage => {
+                    if (!damage.discovered && Math.random() < 0.7) {
+                        damage.discovered = true;
+                        discovered++;
+                        this.createDamageVisual(damage);
+                    }
+                });
+                
+                this.addDiagnosticMessage(`> พบความเสียหาย ${discovered} จุด`);
+                this.addNews(`🔍 สแกนเสร็จสิ้น พบความเสียหาย ${discovered} จุด`);
+                
+                if (discovered > 0) {
+                    this.gainExperience(discovered * 10);
+                }
+                
+                this.updateAllDisplays();
+            }
+            
+            fullSystemScan() {
+                if (this.gameState.energy < 30) {
+                    this.addNews('⚠️ พลังงานไม่เพียงพอสำหรับการสแกนเต็มระบบ!');
+                    return;
+                }
+                
+                this.gameState.energy -= 30;
+                this.addDiagnosticMessage('> เริ่มการสแกนเต็มระบบ...');
+                this.addDiagnosticMessage('> กำลังวิเคราะห์โครงสร้าง...');
+                
+                setTimeout(() => {
+                    let discovered = 0;
+                    this.gameState.damages.forEach(damage => {
+                        if (!damage.discovered) {
+                            damage.discovered = true;
+                            discovered++;
+                            this.createDamageVisual(damage);
+                        }
+                    });
+                    
+                    // สร้างความเสียหายใหม่
+                    for (let i = 0; i < 2; i++) {
+                        this.generateRandomDamage();
+                        const newDamage = this.gameState.damages[this.gameState.damages.length - 1];
+                        newDamage.discovered = true;
+                        this.createDamageVisual(newDamage);
+                        discovered++;
+                    }
+                    
+                    this.addDiagnosticMessage(`> สแกนเต็มระบบเสร็จสิ้น พบความเสียหาย ${discovered} จุด`);
+                    this.addNews(`🔍 สแกนเต็มระบบเสร็จสิ้น พบความเสียหาย ${discovered} จุด`);
+                    this.gainExperience(discovered * 15);
+                    this.updateAllDisplays();
+                }, 2000);
+            }
+            
+            quickScan() {
+                if (this.gameState.energy < 5) {
+                    this.addNews('⚠️ พลังงานไม่เพียงพอ!');
+                    return;
+                }
+                
+                this.gameState.energy -= 5;
+                this.addDiagnosticMessage('> สแกนด่วน...');
+                
+                const undiscovered = this.gameState.damages.filter(d => !d.discovered);
+                if (undiscovered.length > 0) {
+                    const damage = undiscovered[Math.floor(Math.random() * undiscovered.length)];
+                    damage.discovered = true;
+                    this.createDamageVisual(damage);
+                    this.addDiagnosticMessage('> พบความเสียหาย 1 จุด');
+                    this.addNews('🔍 สแกนด่วนพบความเสียหาย 1 จุด');
+                    this.gainExperience(5);
+                } else {
+                    this.addDiagnosticMessage('> ไม่พบความเสียหายใหม่');
+                }
+                
+                this.updateAllDisplays();
+            }
+            
+            deepScan() {
+                if (this.gameState.energy < 20) {
+                    this.addNews('⚠️ พลังงานไม่เพียงพอสำหรับการสแกนลึก!');
+                    return;
+                }
+                
+                this.gameState.energy -= 20;
+                this.addDiagnosticMessage('> เริ่มการสแกนลึก...');
+                this.addDiagnosticMessage('> วิเคราะห์โครงสร้างภายใน...');
+                
+                setTimeout(() => {
+                    // หาความเสียหายที่ซ่อนลึก
+                    for (let i = 0; i < 3; i++) {
+                        this.generateRandomDamage();
+                        const newDamage = this.gameState.damages[this.gameState.damages.length - 1];
+                        newDamage.discovered = true;
+                        newDamage.severity = 'critical'; // ความเสียหายลึกมักจะร้ายแรง
+                        this.createDamageVisual(newDamage);
+                    }
+                    
+                    this.addDiagnosticMessage('> พบความเสียหายลึก 3 จุด (ร้ายแรง)');
+                    this.addNews('🎯 สแกนลึกพบความเสียหายร้ายแรง 3 จุด!');
+                    this.gainExperience(45);
+                    this.updateAllDisplays();
+                }, 3000);
+            }
+            
+            thermalScan() {
+                if (this.gameState.energy < 15) {
+                    this.addNews('⚠️ พลังงานไม่เพียงพอสำหรับการสแกนความร้อน!');
+                    return;
+                }
+                
+                this.gameState.energy -= 15;
+                this.addDiagnosticMessage('> เริ่มการสแกนความร้อน...');
+                this.addDiagnosticMessage('> ตรวจจับจุดร้อนผิดปกติ...');
+                
+                setTimeout(() => {
+                    // อัพเดทอุณหภูมิ
+                    this.gameState.temperature = 28 + Math.random() * 10;
+                    
+                    // หาความเสียหายที่เกิดจากความร้อน
+                    const heatDamages = ['rust', 'wear'];
+                    for (let i = 0; i < 2; i++) {
+                        const damage = {
+                            id: Date.now() + Math.random(),
+                            type: heatDamages[Math.floor(Math.random() * heatDamages.length)],
+                            x: Math.random() * 80 + 10,
+                            y: Math.random() * 60 + 20,
+                            severity: 'major',
+                            discovered: true,
+                            repaired: false,
+                            repairProgress: 0
+                        };
+                        this.gameState.damages.push(damage);
+                        this.createDamageVisual(damage);
+                    }
+                    
+                    this.addDiagnosticMessage(`> อุณหภูมิ: ${this.gameState.temperature.toFixed(1)}°C`);
+                    this.addDiagnosticMessage('> พบความเสียหายจากความร้อน 2 จุด');
+                    this.addNews('🌡️ สแกนความร้อนพบความเสียหายจากความร้อน');
+                    this.gainExperience(30);
+                    this.updateAllDisplays();
+                }, 2500);
+            }
+            
+            createDamageVisual(damage) {
+                const damageArea = document.getElementById('damage-areas');
+                const damageElement = document.createElement('div');
+                const damageInfo = this.gameState.damageTypes[damage.type];
+                
+                damageElement.className = `damage-indicator absolute w-8 h-8 rounded-full flex items-center justify-center cursor-pointer damage-type-${damage.severity}`;
+                damageElement.style.left = `${damage.x}%`;
+                damageElement.style.top = `${damage.y}%`;
+                damageElement.innerHTML = `<span class="text-white font-bold text-lg">${damageInfo.icon}</span>`;
+                damageElement.dataset.damageId = damage.id;
+                damageElement.title = `${damageInfo.name} (${damage.severity})`;
+                
+                damageElement.addEventListener('click', () => this.repairDamage(damage.id));
+                
+                damageArea.appendChild(damageElement);
+            }
+            
+            selectTool(toolName) {
+                console.log('Selecting tool:', toolName); // Debug log
+                
+                if (!this.gameState.tools[toolName]) {
+                    console.error('Tool not found:', toolName);
+                    return;
+                }
+                
+                this.gameState.selectedTool = toolName;
+                
+                // อัพเดทการแสดงผล
+                document.querySelectorAll('.repair-tool').forEach(tool => {
+                    tool.classList.remove('selected');
+                });
+                
+                const selectedToolElement = document.querySelector(`[data-tool="${toolName}"]`);
+                if (selectedToolElement) {
+                    selectedToolElement.classList.add('selected');
+                }
+                
+                document.getElementById('selected-tool').textContent = this.gameState.tools[toolName].name;
+                
+                this.addNews(`🔧 เลือกเครื่องมือ: ${this.gameState.tools[toolName].name}`);
+                
+                // เพิ่มเอฟเฟกต์เสียง (ถ้าต้องการ)
+                this.addDiagnosticMessage(`> เลือกเครื่องมือ: ${this.gameState.tools[toolName].name}`);
+            }
+            
+            repairDamage(damageId) {
+                const damage = this.gameState.damages.find(d => d.id === damageId);
+                if (!damage || damage.repaired) return;
+                
+                if (!this.gameState.selectedTool) {
+                    this.addNews('⚠️ กรุณาเลือกเครื่องมือก่อนซ่อม!');
+                    this.showTutorial('selectTool');
+                    return;
+                }
+                
+                const damageInfo = this.gameState.damageTypes[damage.type];
+                const tool = this.gameState.tools[this.gameState.selectedTool];
+                
+                // ตรวจสอบพลังงาน
+                if (this.gameState.energy < tool.cost) {
+                    this.addNews('⚠️ พลังงานไม่เพียงพอสำหรับการซ่อม!');
+                    return;
+                }
+                
+                // ตรวจสอบสภาพอากาศ
+                const weatherEffect = this.getWeatherEffect();
+                if (weatherEffect < 0.8 && !this.gameState.weatherProtection[this.gameState.weather]) {
+                    this.addNews(`⚠️ สภาพอากาศไม่เหมาะสม! ต้องการอุปกรณ์ป้องกัน`);
+                    return;
+                }
+                
+                this.gameState.energy -= tool.cost;
+                
+                // คำนวณประสิทธิภาพการซ่อม
+                let efficiency = tool.efficiency;
+                if (damageInfo.tool === this.gameState.selectedTool) {
+                    efficiency *= 1.8; // โบนัสเครื่องมือที่เหมาะสม
+                    this.addNews(`🎯 ใช้เครื่องมือที่เหมาะสม! ประสิทธิภาพ +80%`);
+                }
+                
+                // ปรับตามสภาพอากาศ
+                efficiency *= weatherEffect;
+                
+                // ปรับตามอุปกรณ์ป้องกัน
+                if (this.gameState.weatherProtection[this.gameState.weather]) {
+                    efficiency *= 1.2;
+                }
+                
+                // เพิ่มความคืบหน้าการซ่อม
+                const progress = efficiency * 25;
+                damage.repairProgress += progress;
+                
+                // แสดงเอฟเฟกต์การซ่อม
+                this.createRepairEffect(damage, progress);
+                
+                if (damage.repairProgress >= 100) {
+                    // ซ่อมเสร็จสิ้น
+                    damage.repaired = true;
+                    this.gameState.repairsCompleted++;
+                    this.gameState.dailyRepairs++;
+                    
+                    // รับรางวัล
+                    let reward = Math.floor(damageInfo.reward * (1 + this.gameState.level * 0.1));
+                    
+                    // โบนัสสภาพอากาศ
+                    if (weatherEffect < 0.8) {
+                        reward *= 1.5; // โบนัสการซ่อมในสภาพอากาศเลวร้าย
+                        this.addNews(`🌟 โบนัสสภาพอากาศเลวร้าย +50%!`);
+                    }
+                    
+                    this.gameState.money += reward;
+                    this.gameState.score += reward;
+                    
+                    // ลบการแสดงผลความเสียหาย
+                    const damageElement = document.querySelector(`[data-damage-id="${damageId}"]`);
+                    if (damageElement) {
+                        damageElement.classList.add('repair-success');
+                        setTimeout(() => damageElement.remove(), 1000);
+                    }
+                    
+                    // แสดงเอฟเฟกต์
+                    this.showMoneyPopup(reward, damageElement);
+                    this.createSparkEffect(damageElement);
+                    this.createRepairCompleteEffect(damageElement);
+                    
+                    this.addNews(`✅ ซ่อม${damageInfo.name}เสร็จสิ้น รับ ${reward} บาท`);
+                    this.gainExperience(20 + (damage.severity === 'critical' ? 30 : damage.severity === 'major' ? 15 : 5));
+                    
+                    // ตรวจสอบความสำเร็จ
+                    this.checkAchievements();
+                } else {
+                    // ซ่อมยังไม่เสร็จ
+                    const damageElement = document.querySelector(`[data-damage-id="${damageId}"]`);
+                    if (damageElement) {
+                        damageElement.classList.add('repair-animation');
+                        setTimeout(() => damageElement.classList.remove('repair-animation'), 2000);
+                    }
+                    
+                    this.addNews(`🔧 กำลังซ่อม${damageInfo.name} (${Math.floor(damage.repairProgress)}%)`);
+                }
+                
+                this.updateAllDisplays();
+            }
+            
+            autoRepair() {
+                if (this.gameState.money < 500) {
+                    this.addNews('⚠️ เงินไม่เพียงพอสำหรับการซ่อมอัตโนมัติ (ต้องการ 500 บาท)');
+                    return;
+                }
+                
+                this.gameState.money -= 500;
+                
+                const discoveredDamages = this.gameState.damages.filter(d => d.discovered && !d.repaired);
+                if (discoveredDamages.length === 0) {
+                    this.addNews('ไม่มีความเสียหายที่ต้องซ่อม');
+                    return;
+                }
+                
+                this.addNews('🤖 เริ่มการซ่อมอัตโนมัติ...');
+                
+                let repairCount = 0;
+                discoveredDamages.forEach((damage, index) => {
+                    setTimeout(() => {
+                        damage.repaired = true;
+                        this.gameState.repairsCompleted++;
+                        this.gameState.dailyRepairs++;
+                        
+                        const damageInfo = this.gameState.damageTypes[damage.type];
+                        const reward = Math.floor(damageInfo.reward * 0.7); // ลดรางวัล 30% สำหรับการซ่อมอัตโนมัติ
+                        this.gameState.money += reward;
+                        this.gameState.score += reward;
+                        
+                        const damageElement = document.querySelector(`[data-damage-id="${damage.id}"]`);
+                        if (damageElement) {
+                            damageElement.classList.add('repair-success');
+                            setTimeout(() => damageElement.remove(), 1000);
+                        }
+                        
+                        repairCount++;
+                        if (repairCount === discoveredDamages.length) {
+                            this.addNews(`🤖 ซ่อมอัตโนมัติเสร็จสิ้น ซ่อมแล้ว ${repairCount} จุด`);
+                            this.gainExperience(repairCount * 10);
+                        }
+                        
+                        this.updateAllDisplays();
+                    }, index * 1000);
+                });
+            }
+            
+            handleRailClick(event) {
+                if (!this.gameState.selectedTool) return;
+                
+                const rect = event.currentTarget.getBoundingClientRect();
+                const x = ((event.clientX - rect.left) / rect.width) * 100;
+                const y = ((event.clientY - rect.top) / rect.height) * 100;
+                
+                // สร้างเอฟเฟกต์การใช้เครื่องมือ
+                this.createToolEffect(x, y);
+                
+                // ลดพลังงาน
+                const tool = this.gameState.tools[this.gameState.selectedTool];
+                if (this.gameState.energy >= tool.cost) {
+                    this.gameState.energy -= tool.cost;
+                    this.updateAllDisplays();
+                }
+            }
+            
+            createToolEffect(x, y) {
+                const railArea = document.getElementById('rail-area');
+                const effect = document.createElement('div');
+                effect.className = 'absolute w-4 h-4 bg-yellow-400 rounded-full animate-ping';
+                effect.style.left = `${x}%`;
+                effect.style.top = `${y}%`;
+                
+                railArea.appendChild(effect);
+                setTimeout(() => effect.remove(), 1000);
+            }
+            
+            createSparkEffect(element) {
+                if (!element) return;
+                
+                const rect = element.getBoundingClientRect();
+                const container = document.getElementById('particle-container');
+                
+                for (let i = 0; i < 5; i++) {
+                    const spark = document.createElement('div');
+                    spark.className = 'spark-effect';
+                    spark.style.left = `${rect.left + rect.width/2}px`;
+                    spark.style.top = `${rect.top + rect.height/2}px`;
+                    spark.style.setProperty('--spark-x', `${(Math.random() - 0.5) * 100}px`);
+                    spark.style.setProperty('--spark-y', `${-Math.random() * 50}px`);
+                    
+                    container.appendChild(spark);
+                    setTimeout(() => spark.remove(), 1000);
+                }
+            }
+            
+            showMoneyPopup(amount, element) {
+                const popup = document.createElement('div');
+                popup.className = 'money-popup fixed text-2xl font-bold text-green-500 pointer-events-none z-50';
+                popup.textContent = `+${amount} ฿`;
+                
+                if (element) {
+                    const rect = element.getBoundingClientRect();
+                    popup.style.left = `${rect.left + rect.width/2}px`;
+                    popup.style.top = `${rect.top}px`;
+                } else {
+                    popup.style.left = '50%';
+                    popup.style.top = '30%';
+                    popup.style.transform = 'translateX(-50%)';
+                }
+                
+                document.body.appendChild(popup);
+                setTimeout(() => popup.remove(), 2000);
+            }
+            
+            gainExperience(amount) {
+                this.gameState.experience += amount;
+                
+                if (this.gameState.experience >= this.gameState.experienceToNext) {
+                    this.levelUp();
+                }
+                
+                this.updateAllDisplays();
+            }
+            
+            levelUp() {
+                this.gameState.level++;
+                this.gameState.experience = 0;
+                this.gameState.experienceToNext = this.gameState.level * 100;
+                this.gameState.money += 1000;
+                this.gameState.energy = 100;
+                
+                // แสดง Modal เลื่อนระดับ
+                document.getElementById('new-level').textContent = this.gameState.level;
+                document.getElementById('level-up-modal').classList.remove('hidden');
+                document.getElementById('level-up-modal').classList.add('flex');
+                
+                this.addNews(`🎉 เลื่อนระดับเป็น ${this.gameState.level}!`);
+                
+                // ปลดล็อคเครื่องมือใหม่
+                if (this.gameState.level === 3) {
+                    this.addNews('🔓 ปลดล็อค: เครื่องเชื่อมไฟฟ้า');
+                } else if (this.gameState.level === 5) {
+                    this.addNews('🔓 ปลดล็อค: ระบบซ่อมอัตโนมัติขั้นสูง');
+                }
+            }
+            
+            checkAchievements() {
+                const achievements = [
+                    {
+                        id: 'first_repair',
+                        title: 'ช่างมือใหม่',
+                        description: 'ซ่อมความเสียหายครั้งแรก',
+                        condition: () => this.gameState.repairsCompleted >= 1,
+                        reward: 500,
+                        icon: '🔧'
+                    },
+                    {
+                        id: 'repair_master',
+                        title: 'ช่างเซียน',
+                        description: 'ซ่อมความเสียหาย 10 จุด',
+                        condition: () => this.gameState.repairsCompleted >= 10,
+                        reward: 1000,
+                        icon: '🏆'
+                    },
+                    {
+                        id: 'speed_demon',
+                        title: 'ช่างเร็ว',
+                        description: 'ซ่อม 5 จุดใน 1 นาที',
+                        condition: () => this.gameState.dailyRepairs >= 5,
+                        reward: 800,
+                        icon: '⚡'
+                    },
+                    {
+                        id: 'millionaire',
+                        title: 'เศรษฐี',
+                        description: 'มีเงิน 10,000 บาท',
+                        condition: () => this.gameState.money >= 10000,
+                        reward: 2000,
+                        icon: '💰'
+                    }
+                ];
+                
+                achievements.forEach(achievement => {
+                    if (!this.gameState.achievements.includes(achievement.id) && achievement.condition()) {
+                        this.gameState.achievements.push(achievement.id);
+                        this.showAchievement(achievement);
+                    }
+                });
+            }
+            
+            showAchievement(achievement) {
+                document.getElementById('achievement-icon').textContent = achievement.icon;
+                document.getElementById('achievement-title').textContent = achievement.title;
+                document.getElementById('achievement-description').textContent = achievement.description;
+                document.getElementById('achievement-reward').textContent = `+${achievement.reward} ฿`;
+                
+                document.getElementById('achievement-modal').classList.remove('hidden');
+                document.getElementById('achievement-modal').classList.add('flex');
+                
+                this.gameState.money += achievement.reward;
+                this.addNews(`🏆 ได้รับความสำเร็จ: ${achievement.title}`);
+            }
+            
+            buyUpgrade(item, price) {
+                if (this.gameState.money < price) {
+                    this.addNews(`⚠️ เงินไม่เพียงพอ ต้องการ ${price} บาท`);
+                    return;
+                }
+                
+                if (this.gameState.upgrades[item.replace('-', '')]) {
+                    this.addNews('⚠️ คุณมีไอเทมนี้แล้ว');
+                    return;
+                }
+                
+                this.gameState.money -= price;
+                this.gameState.upgrades[item.replace('-', '')] = true;
+                
+                const upgrades = {
+                    'electric-hammer': 'ค้อนไฟฟ้า - เพิ่มความเร็วซ่อม +50%',
+                    'magnifier': 'เลนส์ขยาย - หาความเสียหายได้ดีขึ้น',
+                    'super-battery': 'แบตเตอรี่พิเศษ - พลังงานไม่หมด'
+                };
+                
+                this.addNews(`✅ ซื้อ ${upgrades[item]} สำเร็จ!`);
+                
+                // ปิดการใช้งานปุ่ม
+                document.querySelector(`[data-item="${item}"]`).disabled = true;
+                document.querySelector(`[data-item="${item}"]`).textContent = 'ซื้อแล้ว';
+                document.querySelector(`[data-item="${item}"]`).classList.remove('bg-green-600', 'hover:bg-green-700');
+                document.querySelector(`[data-item="${item}"]`).classList.add('bg-gray-400');
+                
+                this.updateAllDisplays();
+            }
+            
+            buyWeatherProtection(weather, price) {
+                if (this.gameState.money < price) {
+                    this.addNews(`⚠️ เงินไม่เพียงพอ ต้องการ ${price} บาท`);
+                    return;
+                }
+                
+                if (this.gameState.weatherProtection[weather]) {
+                    this.addNews('⚠️ คุณมีอุปกรณ์นี้แล้ว');
+                    return;
+                }
+                
+                this.gameState.money -= price;
+                this.gameState.weatherProtection[weather] = true;
+                
+                const protections = {
+                    'rainy': '☂️ ร่มกันฝน',
+                    'stormy': '🌪️ เสื้อกันพายุ',
+                    'sunny': '🕶️ แว่นกันแสง',
+                    'foggy': '🌫️ หน้ากากกันหมอก',
+                    'cold': '🧥 เสื้อกันหนาว',
+                    'hot': '❄️ เครื่องทำความเย็น'
+                };
+                
+                this.addNews(`✅ ซื้อ ${protections[weather]} สำเร็จ!`);
+                this.addNews(`🛡️ ตอนนี้คุณป้องกันสภาพอากาศ${weather}ได้แล้ว`);
+                
+                // ปิดการใช้งานปุ่ม
+                const button = document.querySelector(`[data-weather="${weather}"]`);
+                if (button) {
+                    button.disabled = true;
+                    button.textContent = 'มีแล้ว';
+                    button.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+                    button.classList.add('bg-gray-400');
+                }
+                
+                this.updateAllDisplays();
+            }
+            
+            updateWeather() {
+                const weathers = [
+                    { type: 'sunny', icon: '☀️', name: 'แจ่มใส', effect: 1.0 },
+                    { type: 'cloudy', icon: '☁️', name: 'มีเมฆ', effect: 0.9 },
+                    { type: 'rainy', icon: '🌧️', name: 'ฝนตก', effect: 0.6 },
+                    { type: 'stormy', icon: '⛈️', name: 'พายุ', effect: 0.4 },
+                    { type: 'foggy', icon: '🌫️', name: 'หมอกหนา', effect: 0.7 },
+                    { type: 'hot', icon: '🔥', name: 'ร้อนจัด', effect: 0.8 },
+                    { type: 'cold', icon: '❄️', name: 'หนาวจัด', effect: 0.8 }
+                ];
+                
+                const weather = weathers[Math.floor(Math.random() * weathers.length)];
+                this.gameState.weather = weather.type;
+                
+                document.getElementById('weather-icon').textContent = weather.icon;
+                document.getElementById('weather-status').textContent = weather.name;
+                
+                // เอฟเฟกต์สภาพอากาศ
+                const weatherEffect = document.getElementById('weather-effect');
+                weatherEffect.className = 'weather-effect';
+                
+                if (weather.type === 'rainy' || weather.type === 'stormy') {
+                    weatherEffect.classList.add('rain-effect');
+                }
+                
+                // ปรับอุณหภูมิตามสภาพอากาศ
+                if (weather.type === 'hot') {
+                    this.gameState.temperature = 38 + Math.random() * 5;
+                } else if (weather.type === 'cold') {
+                    this.gameState.temperature = 15 + Math.random() * 5;
+                } else {
+                    this.gameState.temperature = 28 + Math.random() * 8;
+                }
+                
+                // แจ้งเตือนสภาพอากาศ
+                if (weather.effect < 0.8) {
+                    this.addNews(`🌦️ สภาพอากาศ${weather.name} ทำให้การซ่อมยากขึ้น!`);
+                    if (!this.gameState.weatherProtection[weather.type]) {
+                        this.addNews(`💡 แนะนำ: ซื้ออุปกรณ์ป้องกันสภาพอากาศ`);
+                    }
+                }
+            }
+            
+            getWeatherEffect() {
+                const weathers = {
+                    'sunny': 1.0,
+                    'cloudy': 0.9,
+                    'rainy': 0.6,
+                    'stormy': 0.4,
+                    'foggy': 0.7,
+                    'hot': 0.8,
+                    'cold': 0.8
+                };
+                return weathers[this.gameState.weather] || 1.0;
+            }
+            
+            showTutorial(type) {
+                const tutorials = {
+                    basic: {
+                        title: '🎯 การเล่นพื้นฐาน',
+                        content: `
+                            <div class="space-y-4">
+                                <div>
+                                    <h4 class="font-bold text-lg mb-2">🚀 เริ่มต้นเล่น</h4>
+                                    <p>1. กดปุ่ม "🔍 สแกนหาความเสียหาย" เพื่อค้นหาจุดที่ต้องซ่อม</p>
+                                    <p>2. เลือกเครื่องมือที่เหมาะสมจากคลังเครื่องมือ</p>
+                                    <p>3. คลิกที่จุดความเสียหายเพื่อซ่อม</p>
+                                    <p>4. รับเงินและประสบการณ์เมื่อซ่อมเสร็จ</p>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-lg mb-2">⌨️ ปุ่มลัด</h4>
+                                    <p>• ปุ่ม 1-0: เลือกเครื่องมือ</p>
+                                    <p>• Space: สแกนหาความเสียหาย</p>
+                                    <p>• R: ซ่อมอัตโนมัติ</p>
+                                </div>
+                            </div>
+                        `
+                    },
+                    tools: {
+                        title: '🔧 เครื่องมือซ่อมราง',
+                        content: `
+                            <div class="space-y-3">
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <h5 class="font-bold">🔨 ค้อนทุบราง</h5>
+                                        <p class="text-sm">ใช้ทุบแก้ไขรอยแตกและรอยบิ่นบนราง</p>
+                                    </div>
+                                    <div>
+                                        <h5 class="font-bold">🔧 ประแจขันน็อต</h5>
+                                        <p class="text-sm">ขันหรือคลายน็อตยึดราง</p>
+                                    </div>
+                                    <div>
+                                        <h5 class="font-bold">⚡ เครื่องเชื่อมราง</h5>
+                                        <p class="text-sm">เชื่อมต่อรางที่หักหรือแตกร้าวแรง</p>
+                                    </div>
+                                    <div>
+                                        <h5 class="font-bold">⚙️ เครื่องเจียรราง</h5>
+                                        <p class="text-sm">ขัดผิวรางให้เรียบและกำจัดสนิม</p>
+                                    </div>
+                                    <div>
+                                        <h5 class="font-bold">🪚 สว่านเจาะราง</h5>
+                                        <p class="text-sm">เจาะรูสำหรับน็อตใหม่</p>
+                                    </div>
+                                    <div>
+                                        <h5 class="font-bold">📡 เครื่องสแกนราง</h5>
+                                        <p class="text-sm">ตรวจสอบความเสียหายภายใน</p>
+                                    </div>
+                                </div>
+                                <div class="bg-yellow-50 p-3 rounded">
+                                    <p class="font-bold text-yellow-800">💡 เคล็ดลับ:</p>
+                                    <p class="text-yellow-700">ใช้เครื่องมือที่เหมาะสมกับประเภทความเสียหายจะได้โบนัสประสิทธิภาพ +80%!</p>
+                                </div>
+                            </div>
+                        `
+                    },
+                    weather: {
+                        title: '🌦️ สภาพอากาศ',
+                        content: `
+                            <div class="space-y-4">
+                                <div>
+                                    <h4 class="font-bold text-lg mb-2">🌤️ ประเภทสภาพอากาศ</h4>
+                                    <div class="grid grid-cols-2 gap-3">
+                                        <div>☀️ แจ่มใส: ประสิทธิภาพปกติ</div>
+                                        <div>☁️ มีเมฆ: ประสิทธิภาพ -10%</div>
+                                        <div>🌧️ ฝนตก: ประสิทธิภาพ -40%</div>
+                                        <div>⛈️ พายุ: ประสิทธิภาพ -60%</div>
+                                        <div>🌫️ หมอกหนา: ประสิทธิภาพ -30%</div>
+                                        <div>🔥 ร้อนจัด: ประสิทธิภาพ -20%</div>
+                                        <div>❄️ หนาวจัด: ประสิทธิภาพ -20%</div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-lg mb-2">🛡️ อุปกรณ์ป้องกัน</h4>
+                                    <p>ซื้ออุปกรณ์ป้องกันสภาพอากาศเพื่อเพิ่มประสิทธิภาพ +20%</p>
+                                    <p>• ☂️ ร่มกันฝน - ป้องกันฝน</p>
+                                    <p>• 🌪️ เสื้อกันพายุ - ป้องกันพายุ</p>
+                                    <p>• 🕶️ แว่นกันแสง - ป้องกันแสงแดด</p>
+                                </div>
+                                <div class="bg-blue-50 p-3 rounded">
+                                    <p class="font-bold text-blue-800">🌟 โบนัส:</p>
+                                    <p class="text-blue-700">ซ่อมในสภาพอากาศเลวร้ายจะได้รางวัลเพิ่ม +50%!</p>
+                                </div>
+                            </div>
+                        `
+                    },
+                    damage: {
+                        title: '💥 ประเภทความเสียหาย',
+                        content: `
+                            <div class="space-y-4">
+                                <div class="grid grid-cols-1 gap-3">
+                                    <div class="border-l-4 border-yellow-400 pl-3">
+                                        <h5 class="font-bold text-yellow-600">🟡 ความเสียหายเล็กน้อย (Minor)</h5>
+                                        <p>💥 รอยแตก - ใช้ค้อนทุบราง</p>
+                                        <p>🔩 น็อตหลวม - ใช้ประแจขันน็อต</p>
+                                        <p>⚫ สึกหรอ - ใช้เครื่องเจียรราง</p>
+                                    </div>
+                                    <div class="border-l-4 border-orange-400 pl-3">
+                                        <h5 class="font-bold text-orange-600">🟠 ความเสียหายปานกลาง (Major)</h5>
+                                        <p>🦠 สนิม - ใช้เครื่องเจียรราง</p>
+                                        <p>🕳️ รูรั่ว - ใช้สว่านเจาะราง</p>
+                                    </div>
+                                    <div class="border-l-4 border-red-400 pl-3">
+                                        <h5 class="font-bold text-red-600">🔴 ความเสียหายร้ายแรง (Critical)</h5>
+                                        <p>💔 รางหัก - ใช้เครื่องเชื่อมราง</p>
+                                    </div>
+                                </div>
+                                <div class="bg-red-50 p-3 rounded">
+                                    <p class="font-bold text-red-800">⚠️ คำเตือน:</p>
+                                    <p class="text-red-700">ความเสียหายร้ายแรงต้องซ่อมด่วน! ให้รางวัลสูงแต่ใช้พลังงานมาก</p>
+                                </div>
+                            </div>
+                        `
+                    },
+                    tips: {
+                        title: '💡 เทคนิคและเคล็ดลับ',
+                        content: `
+                            <div class="space-y-4">
+                                <div>
+                                    <h4 class="font-bold text-lg mb-2">🎯 เทคนิคการเล่น</h4>
+                                    <ul class="space-y-2">
+                                        <li>• ใช้เครื่องสแกนก่อนเครื่องมืออื่น เพื่อประหยัดพลังงาน</li>
+                                        <li>• เลือกเครื่องมือที่เหมาะสมเพื่อได้โบนัส +80%</li>
+                                        <li>• ซื้ออุปกรณ์ป้องกันสภาพอากาศเพื่อเพิ่มประสิทธิภาพ</li>
+                                        <li>• ซ่อมในสภาพอากาศเลวร้ายเพื่อได้โบนัสรางวัล</li>
+                                        <li>• ใช้การซ่อมอัตโนมัติเมื่อมีความเสียหายเยอะ</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-lg mb-2">💰 การจัดการเงิน</h4>
+                                    <ul class="space-y-2">
+                                        <li>• ซื้ออุปกรณ์ป้องกันสภาพอากาศก่อน</li>
+                                        <li>• อัพเกรดเครื่องมือเมื่อมีเงินเพียงพอ</li>
+                                        <li>• เก็บเงินไว้สำหรับการซ่อมอัตโนมัติในยามฉุกเฉิน</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-lg mb-2">⚡ การจัดการพลังงาน</h4>
+                                    <ul class="space-y-2">
+                                        <li>• พลังงานฟื้นฟูอัตโนมัติ 0.5% ต่อวินาที</li>
+                                        <li>• ใช้เครื่องสแกนที่ใช้พลังงานน้อย</li>
+                                        <li>• ซื้อแบตเตอรี่พิเศษเพื่อฟื้นฟูเร็วขึ้น</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        `
+                    },
+                    selectTool: {
+                        title: '🔧 เลือกเครื่องมือ',
+                        content: `
+                            <div class="text-center space-y-4">
+                                <div class="text-6xl">🔧</div>
+                                <h3 class="text-xl font-bold">กรุณาเลือกเครื่องมือก่อนซ่อม!</h3>
+                                <p>คลิกที่เครื่องมือในคลังเครื่องมือ หรือกดปุ่ม 1-0 บนคีย์บอร์ด</p>
+                                <div class="bg-blue-50 p-4 rounded">
+                                    <p class="font-bold text-blue-800">💡 เคล็ดลับ:</p>
+                                    <p class="text-blue-700">เลือกเครื่องมือที่เหมาะสมกับประเภทความเสียหายเพื่อได้ประสิทธิภาพสูงสุด!</p>
+                                </div>
+                            </div>
+                        `
+                    }
+                };
+                
+                const tutorial = tutorials[type];
+                if (tutorial) {
+                    document.getElementById('tutorial-title').textContent = tutorial.title;
+                    document.getElementById('tutorial-content').innerHTML = tutorial.content;
+                    document.getElementById('tutorial-modal').classList.remove('hidden');
+                    document.getElementById('tutorial-modal').classList.add('flex');
+                }
+            }
+            
+            closeTutorialModal() {
+                document.getElementById('tutorial-modal').classList.add('hidden');
+                document.getElementById('tutorial-modal').classList.remove('flex');
+            }
+            
+            createRepairEffect(damage, progress) {
+                const damageElement = document.querySelector(`[data-damage-id="${damage.id}"]`);
+                if (!damageElement) return;
+                
+                // สร้างเอฟเฟกต์ประกายไฟ
+                for (let i = 0; i < 3; i++) {
+                    const spark = document.createElement('div');
+                    spark.className = 'spark-effect';
+                    spark.style.position = 'absolute';
+                    spark.style.left = damageElement.style.left;
+                    spark.style.top = damageElement.style.top;
+                    spark.style.setProperty('--spark-x', `${(Math.random() - 0.5) * 60}px`);
+                    spark.style.setProperty('--spark-y', `${-Math.random() * 40}px`);
+                    
+                    document.getElementById('particle-container').appendChild(spark);
+                    setTimeout(() => spark.remove(), 1000);
+                }
+                
+                // แสดงความคืบหน้า
+                if (progress > 0) {
+                    const progressText = document.createElement('div');
+                    progressText.className = 'absolute text-xs font-bold text-white bg-blue-600 px-2 py-1 rounded';
+                    progressText.style.left = damageElement.style.left;
+                    progressText.style.top = `calc(${damageElement.style.top} - 30px)`;
+                    progressText.textContent = `${Math.floor(damage.repairProgress)}%`;
+                    
+                    document.getElementById('rail-area').appendChild(progressText);
+                    setTimeout(() => progressText.remove(), 2000);
+                }
+            }
+            
+            createRepairCompleteEffect(element) {
+                if (!element) return;
+                
+                // สร้างเอฟเฟกต์ดาวระเบิด
+                for (let i = 0; i < 8; i++) {
+                    const star = document.createElement('div');
+                    star.className = 'absolute text-yellow-400 text-lg';
+                    star.textContent = '⭐';
+                    star.style.left = element.style.left;
+                    star.style.top = element.style.top;
+                    star.style.animation = `star-burst 1.5s ease-out forwards`;
+                    star.style.setProperty('--angle', `${i * 45}deg`);
+                    
+                    document.getElementById('particle-container').appendChild(star);
+                    setTimeout(() => star.remove(), 1500);
+                }
+            }
+            
+            addNews(message) {
+                const newsFeed = document.getElementById('news-feed');
+                const newsItem = document.createElement('div');
+                newsItem.className = 'notification text-sm p-2 bg-blue-50 rounded border-l-4 border-blue-400';
+                
+                const time = new Date().toLocaleTimeString('th-TH');
+                newsItem.innerHTML = `<span class="text-gray-500">${time}</span> - ${message}`;
+                
+                newsFeed.insertBefore(newsItem, newsFeed.firstChild);
+                
+                // เก็บข่าวไว้แค่ 15 รายการ
+                while (newsFeed.children.length > 15) {
+                    newsFeed.removeChild(newsFeed.lastChild);
+                }
+            }
+            
+            addDiagnosticMessage(message) {
+                const output = document.getElementById('diagnostic-output');
+                const messageDiv = document.createElement('div');
+                messageDiv.textContent = message;
+                output.appendChild(messageDiv);
+                
+                // เลื่อนลงล่างสุด
+                output.scrollTop = output.scrollHeight;
+                
+                // เก็บข้อความไว้แค่ 20 บรรทัด
+                while (output.children.length > 20) {
+                    output.removeChild(output.firstChild);
+                }
+            }
+            
+            updateAllDisplays() {
+                // อัพเดทสถิติหลัก
+                document.getElementById('money').textContent = `${this.gameState.money.toLocaleString()} ฿`;
+                document.getElementById('level').textContent = this.gameState.level;
+                document.getElementById('score').textContent = this.gameState.score.toLocaleString();
+                document.getElementById('repairs-completed').textContent = this.gameState.repairsCompleted;
+                document.getElementById('energy').textContent = `${Math.max(0, this.gameState.energy)}%`;
+                document.getElementById('temperature').textContent = `${this.gameState.temperature.toFixed(1)}°C`;
+                
+                // อัพเดทแถบประสบการณ์
+                const expPercentage = (this.gameState.experience / this.gameState.experienceToNext) * 100;
+                document.getElementById('exp-bar').style.width = `${expPercentage}%`;
+                document.getElementById('exp-text').textContent = `${this.gameState.experience} / ${this.gameState.experienceToNext} EXP`;
+                
+                // อัพเดทเป้าหมาย
+                const discoveredDamages = this.gameState.damages.filter(d => d.discovered);
+                const repairedDamages = this.gameState.damages.filter(d => d.repaired);
+                
+                document.getElementById('damage-count').textContent = discoveredDamages.length;
+                document.getElementById('repaired-count').textContent = repairedDamages.length;
+                
+                // อัพเดทคุณภาพ
+                const qualityPercentage = Math.max(0, this.gameState.qualityScore - (this.gameState.repairsCompleted * 2));
+                document.getElementById('quality-score').textContent = `${qualityPercentage}%`;
+                document.getElementById('quality-percentage').textContent = `${qualityPercentage}%`;
+                
+                // อัพเดทเข็มมาตรวัดคุณภาพ
+                const needleRotation = (qualityPercentage / 100) * 180 - 90;
+                document.getElementById('quality-needle').style.transform = `translate(-50%, -100%) rotate(${needleRotation}deg)`;
+                
+                // อัพเดทสถิติอื่นๆ
+                document.getElementById('daily-repairs').textContent = this.gameState.dailyRepairs;
+                document.getElementById('streak').textContent = this.gameState.streak;
+                
+                // อัพเดทอันดับ
+                let rank = 'มือใหม่';
+                if (this.gameState.level >= 10) rank = 'ผู้เชี่ยวชาญ';
+                else if (this.gameState.level >= 7) rank = 'ช่างเซียน';
+                else if (this.gameState.level >= 5) rank = 'ช่างมืออาชีพ';
+                else if (this.gameState.level >= 3) rank = 'ช่างฝึกหัด';
+                
+                document.getElementById('rank').textContent = rank;
+                
+                // อัพเดทเวลา
+                const hours = Math.floor(this.gameState.gameTime);
+                const minutes = Math.floor((this.gameState.gameTime - hours) * 60);
+                document.getElementById('game-time').textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')} น.`;
+                
+                // ตรวจสอบพลังงาน
+                if (this.gameState.energy <= 0) {
+                    this.gameState.energy = 0;
+                    this.addNews('⚠️ พลังงานหมด! รอสักครู่เพื่อฟื้นฟู');
+                }
+                
+                // ตรวจสอบเงิน
+                if (this.gameState.money <= 0) {
+                    this.addNews('💸 เงินหมด! หาวิธีหาเงินเพิ่ม');
+                }
+            }
+            
+            startGameLoop() {
+                setInterval(() => {
+                    // ฟื้นฟูพลังงาน
+                    if (this.gameState.energy < 100) {
+                        this.gameState.energy += 0.5;
+                        if (this.gameState.upgrades.superBattery) {
+                            this.gameState.energy += 1; // ฟื้นฟูเร็วขึ้น
+                        }
+                    }
+                    
+                    // เพิ่มเวลา
+                    this.gameState.gameTime += 0.01; // 1 นาทีในเกม = 1 วินาทีจริง
+                    if (this.gameState.gameTime >= 24) {
+                        this.gameState.gameTime = 0;
+                        this.gameState.dailyRepairs = 0; // รีเซ็ตงานซ่อมรายวัน
+                        this.gameState.streak++; // เพิ่มสถิติต่อเนื่อง
+                    }
+                    
+                    // สร้างความเสียหายใหม่เป็นระยะ
+                    if (Math.random() < 0.002) { // 0.2% โอกาสต่อวินาที
+                        this.generateRandomDamage();
+                    }
+                    
+                    // เปลี่ยนสภาพอากาศ
+                    if (Math.random() < 0.001) { // 0.1% โอกาสต่อวินาที
+                        this.updateWeather();
+                    }
+                    
+                    this.updateAllDisplays();
+                }, 1000);
+                
+                // สร้างเอฟเฟกต์อนุภาค
+                setInterval(() => {
+                    this.createRandomParticles();
+                }, 2000);
+            }
+            
+            createRandomParticles() {
+                const container = document.getElementById('particle-container');
+                
+                for (let i = 0; i < 3; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'particle-effect';
+                    particle.style.left = `${Math.random() * 100}%`;
+                    particle.style.top = `${Math.random() * 100}%`;
+                    particle.style.setProperty('--random-x', `${(Math.random() - 0.5) * 200}px`);
+                    particle.style.setProperty('--random-y', `${-Math.random() * 150}px`);
+                    
+                    container.appendChild(particle);
+                    setTimeout(() => particle.remove(), 3000);
+                }
+            }
+            
+            closeAchievementModal() {
+                document.getElementById('achievement-modal').classList.add('hidden');
+                document.getElementById('achievement-modal').classList.remove('flex');
+            }
+            
+            closeLevelUpModal() {
+                document.getElementById('level-up-modal').classList.add('hidden');
+                document.getElementById('level-up-modal').classList.remove('flex');
+            }
+            
+            resetGame() {
+                // รีเซ็ตเกม
+                this.gameState = {
+                    money: 5000,
+                    level: 1,
+                    score: 0,
+                    experience: 0,
+                    experienceToNext: 100,
+                    energy: 100,
+                    repairsCompleted: 0,
+                    dailyRepairs: 0,
+                    streak: 0,
+                    selectedTool: null,
+                    tools: {
+                        hammer: { name: 'ค้อน', icon: '🔨', efficiency: 1.0, cost: 10 },
+                        wrench: { name: 'ประแจ', icon: '🔧', efficiency: 1.2, cost: 15 },
+                        welder: { name: 'เครื่องเชื่อม', icon: '⚡', efficiency: 1.5, cost: 25 },
+                        grinder: { name: 'เครื่องเจียร', icon: '⚙️', efficiency: 1.3, cost: 20 },
+                        drill: { name: 'สว่าน', icon: '🪚', efficiency: 1.1, cost: 12 },
+                        scanner: { name: 'เครื่องสแกน', icon: '📡', efficiency: 2.0, cost: 5 }
+                    },
+                    damages: [],
+                    damageTypes: {
+                        crack: { name: 'รอยแตก', severity: 'minor', tool: 'hammer', reward: 100, icon: '💥' },
+                        loose: { name: 'น็อตหลวม', severity: 'minor', tool: 'wrench', reward: 80, icon: '🔩' },
+                        rust: { name: 'สนิม', severity: 'major', tool: 'grinder', reward: 150, icon: '🦠' },
+                        break: { name: 'หัก', severity: 'critical', tool: 'welder', reward: 300, icon: '💔' },
+                        hole: { name: 'รูรั่ว', severity: 'major', tool: 'drill', reward: 200, icon: '🕳️' },
+                        wear: { name: 'สึกหรอ', severity: 'minor', tool: 'grinder', reward: 120, icon: '⚫' }
+                    },
+                    weather: 'sunny',
+                    temperature: 32,
+                    gameTime: 8.0,
+                    achievements: [],
+                    qualityScore: 100,
+                    safetyLevel: 'ปลอดภัย',
+                    efficiency: 95,
+                    upgrades: {
+                        electricHammer: false,
+                        magnifier: false,
+                        superBattery: false
+                    }
+                };
+                
+                // ล้างการแสดงผล
+                document.getElementById('damage-areas').innerHTML = '';
+                document.getElementById('news-feed').innerHTML = '';
+                document.getElementById('diagnostic-output').innerHTML = '';
+                document.getElementById('particle-container').innerHTML = '';
+                
+                // ซ่อน Modal
+                document.getElementById('game-over-modal').classList.add('hidden');
+                document.getElementById('game-over-modal').classList.remove('flex');
+                
+                // รีเซ็ตปุ่มร้านค้า
+                document.querySelectorAll('[data-item]').forEach(button => {
+                    button.disabled = false;
+                    button.classList.remove('bg-gray-400');
+                    button.classList.add('bg-green-600', 'hover:bg-green-700');
+                    
+                    const price = button.dataset.price;
+                    button.textContent = `${price} ฿`;
+                });
+                
+                // เริ่มเกมใหม่
+                this.initializeGame();
+            }
+            
+            shareScore() {
+                const message = `🔧 เกมซ่อมรางรถไฟไทย\n\n` +
+                              `💰 เงิน: ${this.gameState.money.toLocaleString()} บาท\n` +
+                              `⭐ ระดับ: ${this.gameState.level}\n` +
+                              `🏆 คะแนน: ${this.gameState.score.toLocaleString()}\n` +
+                              `🔧 งานซ่อม: ${this.gameState.repairsCompleted} จุด\n\n` +
+                              `มาเล่นกันเถอะ! 🚄`;
+                
+                if (navigator.share) {
+                    navigator.share({
+                        title: 'เกมซ่อมรางรถไฟไทย',
+                        text: message
+                    });
+                } else {
+                    // Fallback สำหรับเบราว์เซอร์ที่ไม่รองรับ
+                    navigator.clipboard.writeText(message).then(() => {
+                        this.addNews('📋 คัดลอกคะแนนไปยังคลิปบอร์ดแล้ว');
+                    });
+                }
+            }
+        }
+        
+        // เริ่มเกม
+        const game = new RailwayMaintenanceGame();
+        
+        // เพิ่มการควบคุมด้วยคีย์บอร์ด
+        document.addEventListener('keydown', (e) => {
+            switch(e.key) {
+                case '1': game.selectTool('hammer'); break;
+                case '2': game.selectTool('wrench'); break;
+                case '3': game.selectTool('welder'); break;
+                case '4': game.selectTool('grinder'); break;
+                case '5': game.selectTool('drill'); break;
+                case '6': game.selectTool('scanner'); break;
+                case ' ': e.preventDefault(); game.scanForDamages(); break;
+                case 'r': game.autoRepair(); break;
+            }
+        });
+        
+        // แสดงคำแนะนำการใช้คีย์บอร์ด
+        setTimeout(() => {
+            game.addNews('💡 เคล็ดลับ: ใช้ปุ่ม 1-6 เลือกเครื่องมือ, Space สแกน, R ซ่อมอัตโนมัติ');
+        }, 3000);
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97954cf2f18bee39',t:'MTc1NjkwMzA2OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

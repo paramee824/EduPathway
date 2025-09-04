@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ความถนัดด้านเทคโนโลยีสารสนเทศ (IT)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=PK+Maehongson+Round+Demo&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'PK Maehongson Round Demo', cursive;
+            background: linear-gradient(135deg, #f3f4f6, #e9ecef);
+            transition: background-color 0.3s ease;
+            background-image: url("P4.png");
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-attachment: fixed;
+            padding: 20px;
+            margin: 0 auto;
+            border-radius: 10px;
+            font-size: 16px;
+            font-family: 'PK Maehongson Round Demo', sans-serif;
+            line-height: 1.6;
+            color: #000000;
+            max-width: 100vw;
+            box-sizing: border-box;
+        }
+        .text-body {
+            font-family: 'PK Maehongson Round Demo', cursive;
+        }
+        .bg-card {
+            background: rgba(255, 255, 255, 0.9); /* ทำให้พื้นหลังโปร่งแสงเล็กน้อย */
+            border-radius: 2rem;
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.15), 0 10px 20px -5px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: fadeIn 1s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .text-gradient {
+            background-image: linear-gradient(to right, #3b82f6, #1d4ed8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-fill-color: transparent;
+        }
+        .btn-primary {
+            background: linear-gradient(45deg, #3b82f6, #1d4ed8);
+            box-shadow: 0 8px 25px -5px rgba(59, 130, 246, 0.5), 0 4px 6px -2px rgba(59, 130, 246, 0.25);
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 12px 30px -8px rgba(59, 130, 246, 0.7), 0 6px 12px -3px rgba(59, 130, 246, 0.4);
+        }
+        .btn-exit {
+            background: linear-gradient(45deg, #ef4444, #b91c1c);
+            box-shadow: 0 8px 25px -5px rgba(239, 68, 68, 0.5), 0 4px 6px -2px rgba(239, 68, 68, 0.25);
+            transition: all 0.3s ease;
+        }
+        .btn-exit:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 12px 30px -8px rgba(239, 68, 68, 0.7), 0 6px 12px -3px rgba(239, 68, 68, 0.4);
+        }
+        .btn-red {
+            background: linear-gradient(45deg, #ef4444, #b91c1c);
+            color: white;
+            box-shadow: 0 8px 25px -5px rgba(239, 68, 68, 0.5), 0 4px 6px -2px rgba(239, 68, 68, 0.25);
+            transition: all 0.3s ease;
+        }
+        .btn-red:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 12px 30px -8px rgba(239, 68, 68, 0.7), 0 6px 12px -3px rgba(239, 68, 68, 0.4);
+        }
+        input[type="radio"]:checked + label {
+            background: linear-gradient(to right, #3b82f6, #1d4ed8);
+            color: white;
+            border-color: #3b82f6;
+            transform: translateY(-4px);
+            box-shadow: 0 8px 15px -3px rgba(59, 130, 246, 0.5), 0 4px 6px -2px rgba(59, 130, 246, 0.25);
+        }
+        label {
+            transition: all 0.2s ease;
+        }
+        label:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .confetti-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+        }
+        .timer-glow {
+            box-shadow: 0 0 10px 5px #ce0000, 0 0 20px 10px #ce0000;
+            animation: pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse-glow {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8 min-h-screen flex items-center justify-center">
+
+    <!-- Splash Screen -->
+    <div id="splash-screen" class="min-h-screen flex items-center justify-center text-center w-full">
+        <div class="bg-card p-8 md:p-12 w-full max-w-xl animate-fadeIn">
+            <div class="mb-6">
+                <!-- SVG Icon for Engineering theme -->
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-24 w-24 mx-auto text-[#3b82f6] animate-bounce-slow">
+                    <path d="M11.625 21a.75.75 0 01-.871-.581l-6.321-14.5A.75.75 0 015.717 5h12.566a.75.75 0 01.623 1.094l-6.321 14.5a.75.75 0 01-.871.581zM14.653 2.946a.75.75 0 01.309-.327l5.665-3.929a.75.75 0 01.98.814l-5.665 3.929a.75.75 0 01-.98-.814zM4.347 2.946a.75.75 0 01-.309-.327L.373-1.31a.75.75 0 01.98-.814l5.665 3.929a.75.75 0 01-.98.814z" />
+                </svg>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-bold mb-4 text-gradient">ความถนัดด้านเทคโนโลยีสารสนเทศ (IT)</h1>
+            <p class="text-xl md:text-2xl text-gray-700 leading-relaxed mb-6">
+                มาค้นหาศักยภาพของคุณในด้านการคิดวิเคราะห์
+                และการแก้ปัญหาเชิงเทคนิค
+            </p>
+            <p class="text-lg md:text-xl text-gray-500 mb-8">ทั้งหมด 30 ข้อ</p>
+            <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 w-full">
+                <button id="startButton" class="flex-1 px-8 py-4 text-xl font-semibold text-white rounded-full transition duration-300 transform hover:scale-105 btn-primary">
+                    เริ่มต้นทำแบบทดสอบ
+                </button>
+                <button id="leaveButton" class="flex-1 px-8 py-4 text-xl font-semibold text-white rounded-full transition duration-300 transform hover:scale-105 btn-exit">
+                    ออกจากแบบทดสอบ
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Test Container -->
+    <div id="test-container" class="hidden min-h-screen flex items-center justify-center w-full">
+        <div class="bg-card p-8 md:p-12 w-full max-w-4xl">
+            <div id="progress-container" class="w-full h-3 bg-gray-200 rounded-full mb-6">
+                <div id="progress-bar" class="h-full bg-gradient-to-r from-[#1d4ed8] to-[#3b82f6] rounded-full transition-all duration-300" style="width: 0%;"></div>
+            </div>
+            
+            <div class="flex justify-between items-center mb-4 text-lg md:text-xl">
+                <p id="question-number" class="text-gray-500"></p>
+                <div id="timer" class="text-white bg-gradient-to-r from-[#ce0000] to-[#e64d4d] font-bold text-lg md:text-xl p-2 rounded-full border-2 border-transparent transition-all">
+                    60
+                </div>
+            </div>
+            
+            <h2 id="question-text" class="text-2xl md:text-3xl font-semibold mb-6 leading-relaxed"></h2>
+            
+            <div id="options-container" class="space-y-4">
+                <!-- Options will be dynamically inserted here -->
+            </div>
+            
+            <div class="mt-8 flex flex-col md:flex-row justify-between space-y-4 md:space-y-0 md:space-x-4">
+                <button id="prevButton" class="w-full md:w-auto px-6 py-3 text-lg font-medium rounded-full transform hover:scale-105 btn-red" disabled>
+                    &larr; ข้อก่อนหน้า
+                </button>
+                <button id="nextButton" class="w-full md:w-auto px-6 py-3 text-lg font-medium text-white rounded-full transform hover:scale-105 btn-primary">
+                    ข้อต่อไป &rarr;
+                </button>
+                <button id="submitButton" class="hidden w-full md:w-auto px-6 py-3 text-lg font-medium text-white bg-gradient-to-r from-[#3b82f6] to-[#1d4ed8] rounded-full hover:from-[#1d4ed8] hover:to-[#3b82f6] transition duration-300 transform hover:scale-105">
+                    ส่งคำตอบ
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Container -->
+    <div id="results-container" class="hidden min-h-screen flex items-center justify-center w-full">
+        <div class="bg-card p-8 md:p-12 w-full max-w-4xl">
+            <h2 class="text-3xl md:text-4xl font-bold text-center text-gradient mb-4">ผลการทดสอบ</h2>
+            <p class="text-center text-xl md:text-2xl text-gray-700 mb-6">
+                คะแนนของคุณคือ: <span id="score" class="font-bold text-2xl md:text-3xl text-[#3b82f6]"></span>
+            </p>
+            
+            <div id="guidance-section" class="mb-8">
+                <h3 class="text-2xl md:text-3xl font-bold mb-4 border-b-2 border-[#3b82f6] pb-2">แนวทางการศึกษาและอาชีพ</h3>
+                <p id="guidance-text" class="text-xl md:text-xl text-gray-700 leading-relaxed"></p>
+            </div>
+
+            <div id="recommended-majors" class="mt-8 text-center bg-gray-100 p-6 rounded-3xl shadow-lg">
+                <h3 class="text-2xl md:text-3xl font-bold text-gray-800 mb-4">สาขาที่แนะนำ</h3>
+                <p id="recommended-majors-text" class="mt-4 text-base md:text-lg text-gray-700">
+                </p>
+            </div>
+            
+            <div id="review-section">
+                <h3 class="text-2xl md:text-3xl font-bold mb-4 border-b-2 border-[#3b82f6] pb-2">สรุปคำตอบ</h3>
+                <div id="review-list" class="space-y-4">
+                    <!-- Review items will be dynamically inserted here -->
+                </div>
+            </div>
+
+            <div class="mt-8 flex justify-center space-x-4">
+                <button id="retakeButton" class="px-6 py-3 text-lg font-medium rounded-full transform hover:scale-105 btn-primary text-white">
+                    ทำแบบทดสอบอีกครั้ง
+                </button>
+                <button id="exitButton" class="px-6 py-3 text-lg font-medium rounded-full transform hover:scale-105 btn-exit text-white">
+                    ออกจากแบบทดสอบ
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for displaying messages -->
+    <div id="modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center">
+        <div class="bg-white p-8 rounded-lg shadow-2xl text-center w-full max-w-md transform scale-95 transition-transform duration-300">
+            <p id="modal-message" class="text-xl mb-4"></p>
+            <button id="modal-close-button" class="px-4 py-2 bg-gray-800 text-white rounded-md">ปิด</button>
+        </div>
+    </div>
+    
+    <script>
+        const questions = [
+            {
+                question: "ข้อใดคือการทำงานของ AI (ปัญญาประดิษฐ์) ที่ถูกต้อง?",
+                options: ["สร้างหุ่นยนต์เพื่อทำงานแทนมนุษย์", "การเลียนแบบกระบวนการคิดของสมองมนุษย์", "การเขียนโปรแกรมคอมพิวเตอร์ที่ซับซ้อน", "ถูกทุกข้อ"],
+                answer: "การเลียนแบบกระบวนการคิดของสมองมนุษย์",
+                explanation: "ปัญญาประดิษฐ์ (AI) คือแขนงหนึ่งของวิทยาการคอมพิวเตอร์ที่มุ่งเน้นการสร้างระบบที่สามารถเรียนรู้, เข้าใจ, และตัดสินใจได้คล้ายกับสมองของมนุษย์"
+            },
+            {
+                question: "ในการเขียนโปรแกรม คอมพิวเตอร์ 'Algorithm' หมายถึงอะไร?",
+                options: ["ภาษาคอมพิวเตอร์ที่ใช้เขียนโปรแกรม", "ชุดคำสั่งเพื่อแก้ไขปัญหา", "เครื่องมือสำหรับตรวจสอบโค้ด", "โปรแกรมที่ใช้รันโค้ด"],
+                answer: "ชุดคำสั่งเพื่อแก้ไขปัญหา",
+                explanation: "อัลกอริทึม (Algorithm) คือลำดับขั้นตอนหรือชุดคำสั่งที่กำหนดไว้เพื่อแก้ปัญหาหรือทำงานบางอย่างให้เสร็จสิ้น โดยเป็นหัวใจหลักในการสร้างโปรแกรม"
+            },
+            {
+                question: "ข้อใดคือความสำคัญของ 'Data Science'?",
+                options: ["การเก็บข้อมูลจากอินเทอร์เน็ต", "การวิเคราะห์ข้อมูลเพื่อหาความสัมพันธ์และสร้างแบบจำลอง", "การสร้างฐานข้อมูลขนาดใหญ่", "การเขียนโปรแกรมเพื่อสร้างแอปพลิเคชัน"],
+                answer: "การวิเคราะห์ข้อมูลเพื่อหาความสัมพันธ์และสร้างแบบจำลอง",
+                explanation: "วิทยาศาสตร์ข้อมูล (Data Science) มุ่งเน้นการใช้ข้อมูลเพื่อหา Insight หรือรูปแบบที่ซ่อนอยู่ ซึ่งนำไปสู่การตัดสินใจและการคาดการณ์ที่มีประสิทธิภาพ"
+            },
+            {
+                question: "ถ้าคุณต้องการสร้างเว็บไซต์ คุณควรเลือกภาษาโปรแกรมใดเป็นอันดับแรก?",
+                options: ["Python", "Java", "HTML", "C++"],
+                answer: "HTML",
+                explanation: "HTML (Hypertext Markup Language) เป็นภาษาพื้นฐานที่ใช้ในการสร้างโครงสร้างของเว็บไซต์ ซึ่งเป็นสิ่งแรกที่ต้องเรียนรู้ก่อนที่จะเพิ่มลูกเล่นด้วยภาษาอื่นๆ"
+            },
+            {
+                question: "ข้อใดคือความสำคัญของ 'การออกแบบวงจรไฟฟ้า'?",
+                options: ["ทำให้เครื่องใช้ไฟฟ้ามีขนาดเล็กลง", "ช่วยลดการใช้พลังงาน", "กำหนดการทำงานของอุปกรณ์อิเล็กทรอนิกส์", "ถูกทุกข้อ"],
+                answer: "กำหนดการทำงานของอุปกรณ์อิเล็กทรอนิกส์",
+                explanation: "การออกแบบวงจรไฟฟ้าเป็นหัวใจสำคัญที่กำหนดว่าอุปกรณ์อิเล็กทรอนิกส์แต่ละส่วนจะทำงานร่วมกันอย่างไร เพื่อให้ได้ฟังก์ชันตามที่ต้องการ"
+            },
+            {
+                question: "เมื่อคุณใช้คำสั่ง 'print()' ในภาษา Python คุณกำลังทำอะไร?",
+                options: ["พิมพ์เอกสาร", "แสดงผลข้อความออกทางหน้าจอ", "สร้างตัวแปรใหม่", "ลบข้อมูล"],
+                answer: "แสดงผลข้อความออกทางหน้าจอ",
+                explanation: "คำสั่ง 'print()' ในภาษา Python เป็นคำสั่งพื้นฐานที่ใช้ในการแสดงผลลัพธ์ของข้อมูลออกไปยังคอนโซลหรือหน้าจอ เพื่อให้ผู้ใช้เห็นผลการทำงานของโปรแกรม"
+            },
+            {
+                question: " 'Robot' (หุ่นยนต์) ในงานวิศวกรรมมักถูกนำไปใช้เพื่ออะไร?",
+                options: ["สร้างความบันเทิง", "เพิ่มประสิทธิภาพและลดความผิดพลาดในการผลิต", "ทำงานที่อันตรายหรือไม่สามารถทำได้ด้วยมนุษย์", "ถูกทุกข้อ"],
+                answer: "ถูกทุกข้อ",
+                explanation: "หุ่นยนต์สามารถทำงานที่ซ้ำซาก, อันตราย, หรือต้องการความแม่นยำสูงได้ ซึ่งช่วยเพิ่มประสิทธิภาพการผลิตและความปลอดภัยในการทำงาน"
+            },
+            {
+                question: "ข้อใดคือหน้าที่ของ 'Internet of Things (IoT)'?",
+                options: ["เชื่อมต่อคอมพิวเตอร์เข้ากับอินเทอร์เน็ต", "สร้างเครือข่ายอุปกรณ์ที่สามารถสื่อสารกันได้", "การส่งข้อมูลขนาดใหญ่ผ่านอินเทอร์เน็ต", "การจัดเก็บข้อมูลบนคลาวด์"],
+                answer: "สร้างเครือข่ายอุปกรณ์ที่สามารถสื่อสารกันได้",
+                explanation: "IoT คือการเชื่อมต่ออุปกรณ์ต่างๆ เข้าด้วยกันผ่านเครือข่ายอินเทอร์เน็ต เพื่อให้สามารถสื่อสารและแลกเปลี่ยนข้อมูลกันเองได้โดยไม่ต้องผ่านการสั่งการจากมนุษย์"
+            },
+            {
+                question: " 'Big Data' หมายถึงอะไร?",
+                options: ["ข้อมูลที่มีขนาดใหญ่มากและซับซ้อน", "การจัดเก็บข้อมูลในฐานข้อมูล", "การวิเคราะห์ข้อมูลทางสถิติ", "ข้อมูลที่ใช้สำหรับธุรกิจ"],
+                answer: "ข้อมูลที่มีขนาดใหญ่มากและซับซ้อน",
+                explanation: "Big Data หมายถึงชุดข้อมูลที่มีขนาดใหญ่, มีความหลากหลาย, และมีการเปลี่ยนแปลงอย่างรวดเร็ว ซึ่งต้องใช้เทคโนโลยีเฉพาะในการจัดเก็บและวิเคราะห์"
+            },
+            {
+                question: " 'Coding' (การเขียนโค้ด) มีความสำคัญอย่างไร?",
+                options: ["ช่วยให้เข้าใจการทำงานของคอมพิวเตอร์", "ฝึกการคิดอย่างมีเหตุผลและเป็นระบบ", "สามารถสร้างนวัตกรรมใหม่ๆ", "ถูกทุกข้อ"],
+                answer: "ถูกทุกข้อ",
+                explanation: "การเขียนโค้ดเป็นทักษะที่ช่วยฝึกฝนการคิดเชิงตรรกะ, การแก้ปัญหา และเป็นเครื่องมือสำคัญในการสร้างสรรค์นวัตกรรมในยุคดิจิทัล"
+            },
+            {
+                question: "ข้อใดคือความแตกต่างระหว่าง 'Hardware' และ 'Software'?",
+                options: ["Hardware คือชิ้นส่วนที่จับต้องได้ ส่วน Software คือโปรแกรมที่ทำงานอยู่บน Hardware", "Hardware คือโปรแกรม ส่วน Software คือตัวเครื่อง", "ไม่มีข้อแตกต่าง", "Hardware ใช้สำหรับคอมพิวเตอร์ตั้งโต๊ะ ส่วน Software ใช้สำหรับมือถือ"],
+                answer: "Hardware คือชิ้นส่วนที่จับต้องได้ ส่วน Software คือโปรแกรมที่ทำงานอยู่บน Hardware",
+                explanation: "Hardware คือส่วนประกอบทางกายภาพของคอมพิวเตอร์ที่สามารถจับต้องได้ เช่น CPU, RAM, Hard drive ในขณะที่ Software คือชุดคำสั่งและโปรแกรมที่ทำให้ Hardware ทำงานได้"
+            },
+            {
+                question: "ในงานวิศวกรรมโยธา 'โครงสร้าง' มีความสำคัญอย่างไร?",
+                options: ["ความสวยงาม", "ความแข็งแรงและความปลอดภัย", "ความรวดเร็วในการก่อสร้าง", "ต้นทุนที่ถูกที่สุด"],
+                answer: "ความแข็งแรงและความปลอดภัย",
+                explanation: "วิศวกรโยธาต้องออกแบบและวิเคราะห์โครงสร้างเพื่อให้มั่นใจว่าสิ่งก่อสร้างจะมีความแข็งแรง, มั่นคง, และปลอดภัยต่อการใช้งานในระยะยาว"
+            },
+            {
+                question: "ข้อใดคือหน้าที่หลักของ 'Microcontroller'?",
+                options: ["ประมวลผลข้อมูลขนาดใหญ่", "ควบคุมการทำงานของอุปกรณ์อิเล็กทรอนิกส์ขนาดเล็ก", "สร้างแอปพลิเคชันบนมือถือ", "จัดเก็บข้อมูล"],
+                answer: "ควบคุมการทำงานของอุปกรณ์อิเล็กทรอนิกส์ขนาดเล็ก",
+                explanation: "Microcontroller คือคอมพิวเตอร์ขนาดเล็กที่ออกแบบมาเพื่อควบคุมการทำงานของอุปกรณ์อิเล็กทรอนิกส์โดยเฉพาะ เช่นในเครื่องซักผ้า, รถยนต์ หรืออุปกรณ์ IoT ต่างๆ"
+            },
+            {
+                question: "การใช้พลังงานทางเลือก (Renewable Energy) มีประโยชน์อย่างไร?",
+                options: ["ช่วยลดมลพิษ", "ไม่ทำให้ทรัพยากรธรรมชาติร่อยหรอ", "ช่วยลดค่าใช้จ่ายในระยะยาว", "ถูกทุกข้อ"],
+                answer: "ถูกทุกข้อ",
+                explanation: "พลังงานทางเลือก เช่น พลังงานแสงอาทิตย์, พลังงานลม มีข้อดีหลายอย่าง ทั้งในด้านสิ่งแวดล้อมและเศรษฐศาสตร์"
+            },
+            {
+                question: "ในกระบวนการผลิตรถยนต์ 'Robotics' ถูกนำมาใช้เพื่ออะไร?",
+                options: ["การทาสีรถ", "การประกอบชิ้นส่วนที่ต้องการความแม่นยำสูง", "การตรวจสอบคุณภาพ", "ถูกทุกข้อ"],
+                answer: "ถูกทุกข้อ",
+                explanation: "หุ่นยนต์ถูกนำมาใช้ในโรงงานผลิตรถยนต์เพื่อเพิ่มความแม่นยำ, ความรวดเร็ว, และความปลอดภัยในทุกขั้นตอนการผลิต"
+            },
+            {
+                question: "หากคุณต้องการสร้าง 'แอปพลิเคชันบนมือถือ' คุณควรใช้ภาษาโปรแกรมใด?",
+                options: ["HTML", "Python", "Java หรือ Swift", "C++"],
+                answer: "Java หรือ Swift",
+                explanation: "Java เป็นภาษาที่ใช้ในการพัฒนาแอปพลิเคชันสำหรับ Android ส่วน Swift เป็นภาษาหลักในการพัฒนาแอปพลิเคชันสำหรับ iOS"
+            },
+            {
+                question: " 'โครงข่ายประสาทเทียม' (Neural Network) เป็นส่วนหนึ่งของอะไร?",
+                options: ["Data Science", "Machine Learning", "Software Development", "ถูกทุกข้อ"],
+                answer: "Machine Learning",
+                explanation: "โครงข่ายประสาทเทียมเป็นเทคนิคในแขนง Machine Learning ที่เลียนแบบการทำงานของสมองมนุษย์ เพื่อใช้ในการจดจำและจัดหมวดหมู่ข้อมูลที่ซับซ้อน"
+            },
+            {
+                question: "ข้อใดคือหน้าที่ของ 'วิศวกรไฟฟ้า'?",
+                options: ["ออกแบบอาคารและสะพาน", "ออกแบบและควบคุมระบบไฟฟ้า", "เขียนโปรแกรมคอมพิวเตอร์", "วิเคราะห์ข้อมูลขนาดใหญ่"],
+                answer: "ออกแบบและควบคุมระบบไฟฟ้า",
+                explanation: "วิศวกรไฟฟ้ามีหน้าที่ออกแบบ, พัฒนา, และบำรุงรักษาระบบและอุปกรณ์ที่เกี่ยวข้องกับพลังงานไฟฟ้าและการสื่อสาร"
+            },
+            {
+                question: " 'Cloud Computing' มีประโยชน์อย่างไร?",
+                options: ["ช่วยประหยัดพื้นที่จัดเก็บข้อมูลในเครื่อง", "ช่วยให้เข้าถึงข้อมูลได้จากทุกที่", "ช่วยลดค่าใช้จ่ายในการลงทุนด้านฮาร์ดแวร์", "ถูกทุกข้อ"],
+                answer: "ถูกทุกข้อ",
+                explanation: "Cloud Computing ช่วยให้ผู้ใช้สามารถจัดเก็บและเข้าถึงข้อมูล, ซอฟต์แวร์, และทรัพยากรคอมพิวเตอร์ผ่านอินเทอร์เน็ตได้ ทำให้มีความยืดหยุ่นและประหยัดค่าใช้จ่าย"
+            },
+            {
+                question: "ในการทำงาน 'โปรเจกต์' ทางด้านเทคนิค คุณควรเริ่มต้นจากอะไร?",
+                options: ["เริ่มเขียนโค้ดทันที", "หาข้อมูลและวางแผนการทำงาน", "หาคนช่วย", "ซื้ออุปกรณ์ที่ทันสมัยที่สุด"],
+                answer: "หาข้อมูลและวางแผนการทำงาน",
+                explanation: "การวางแผนที่ดีเป็นรากฐานสำคัญของความสำเร็จในโปรเจกต์เชิงเทคนิค เพราะช่วยให้สามารถจัดการทรัพยากรและแก้ไขปัญหาได้อย่างมีประสิทธิภาพ"
+            },
+            {
+                question: "ข้อใดคือคุณสมบัติของ 'การเป็นนักพัฒนาซอฟต์แวร์' ที่ดี?",
+                options: ["เก่งคณิตศาสตร์", "เรียนรู้อย่างต่อเนื่องและแก้ปัญหาเฉพาะหน้าได้", "ทำงานคนเดียวเก่ง", "ทำงานตามคำสั่งได้ดี"],
+                answer: "เรียนรู้อย่างต่อเนื่องและแก้ปัญหาเฉพาะหน้าได้",
+                explanation: "โลกของเทคโนโลยีเปลี่ยนแปลงอย่างรวดเร็ว การเรียนรู้สิ่งใหม่ๆ และความสามารถในการแก้ปัญหาที่ซับซ้อนเป็นสิ่งจำเป็นสำหรับนักพัฒนาซอฟต์แวร์"
+            },
+            {
+                question: "ในวิศวกรรมเครื่องกล 'การออกแบบ' มีความสำคัญอย่างไร?",
+                options: ["ทำให้เครื่องจักรสวยงาม", "ทำให้เครื่องจักรมีประสิทธิภาพและปลอดภัย", "ทำให้เครื่องจักรมีขนาดเล็ก", "ถูกทุกข้อ"],
+                answer: "ทำให้เครื่องจักรมีประสิทธิภาพและปลอดภัย",
+                explanation: "วิศวกรเครื่องกลต้องออกแบบเพื่อให้เครื่องจักรสามารถทำงานได้อย่างมีประสิทธิภาพสูงสุดและมีความปลอดภัยต่อผู้ใช้งาน"
+            },
+            {
+                question: "ข้อใดคือหลักการของ 'Circular Economy'?",
+                options: ["การผลิตและบริโภคแบบครั้งเดียวทิ้ง", "การนำทรัพยากรกลับมาใช้ใหม่ให้เกิดประโยชน์สูงสุด", "การใช้พลังงานจากฟอสซิล", "การลดจำนวนพนักงาน"],
+                answer: "การนำทรัพยากรกลับมาใช้ใหม่ให้เกิดประโยชน์สูงสุด",
+                explanation: "Circular Economy หรือเศรษฐกิจหมุนเวียน คือแนวคิดที่มุ่งเน้นการใช้ทรัพยากรอย่างคุ้มค่าสูงสุด โดยการนำกลับมาใช้ใหม่, ซ่อมแซม, หรือรีไซเคิล"
+            },
+            {
+                question: " 'การจัดการโครงการ' (Project Management) มีประโยชน์อย่างไรในงานเทคนิค?",
+                options: ["ช่วยให้ทำงานเสร็จเร็ว", "ช่วยควบคุมงบประมาณและเวลา", "ช่วยให้ทีมทำงานร่วมกันได้อย่างมีประสิทธิภาพ", "ถูกทุกข้อ"],
+                answer: "ถูกทุกข้อ",
+                explanation: "การจัดการโครงการที่ดีช่วยให้โปรเจกต์ดำเนินไปอย่างราบรื่นและบรรลุเป้าหมายที่ตั้งไว้ โดยมีการควบคุมปัจจัยสำคัญต่างๆ อย่างเป็นระบบ"
+            },
+            {
+                question: "หากคุณต้องการสร้าง 'เกมคอมพิวเตอร์' คุณควรเรียนรู้เกี่ยวกับอะไร?",
+                options: ["การออกแบบตัวละคร", "การเขียนโปรแกรมเกม, ฟิสิกส์, และกราฟิก", "การตลาด", "การสร้างเว็บไซต์"],
+                answer: "การเขียนโปรแกรมเกม, ฟิสิกส์, และกราฟิก",
+                explanation: "การพัฒนาเกมต้องอาศัยทักษะที่หลากหลาย ทั้งการเขียนโค้ด, การจำลองฟิสิกส์, และการสร้างภาพกราฟิก"
+            },
+            {
+                question: "การเลือกใช้วัสดุในการก่อสร้างมีผลต่ออะไร?",
+                options: ["ความสวยงาม", "ความแข็งแรงและทนทาน", "ต้นทุน", "ถูกทุกข้อ"],
+                answer: "ถูกทุกข้อ",
+                explanation: "การเลือกใช้วัสดุที่เหมาะสมจะส่งผลต่อคุณภาพ, ความปลอดภัย, และต้นทุนของโครงการโดยรวม"
+            },
+            {
+                question: "ข้อใดคือความสำคัญของ 'การคิดเชิงตรรกะ' (Logical Thinking) ในงานเทคนิค?",
+                options: ["ช่วยให้ตัดสินใจได้เร็ว", "ช่วยในการวิเคราะห์และแก้ปัญหาได้อย่างมีเหตุผล", "ช่วยให้ทำงานกับคนอื่นได้ดี", "ช่วยให้ทำงานเสร็จเร็ว"],
+                answer: "ช่วยในการวิเคราะห์และแก้ปัญหาได้อย่างมีเหตุผล",
+                explanation: "การคิดเชิงตรรกะช่วยให้สามารถแยกแยะปัญหาออกเป็นส่วนย่อยๆ และหาทางแก้ไขได้อย่างเป็นระบบ"
+            },
+            {
+                question: "เมื่อเกิดปัญหาทางเทคนิคในระบบคอมพิวเตอร์ คุณควรทำอย่างไรเป็นอันดับแรก?",
+                options: ["แจ้งผู้จัดการ", "ลองแก้ไขด้วยตนเอง", "ค้นหาข้อมูลในอินเทอร์เน็ต", "ถอดปลั๊กออกทันที"],
+                answer: "ค้นหาข้อมูลในอินเทอร์เน็ต",
+                explanation: "การค้นหาข้อมูลในอินเทอร์เน็ตเป็นขั้นตอนแรกที่รวดเร็วและมีประสิทธิภาพในการหาทางแก้ไขปัญหาทั่วไปทางเทคนิค"
+            },
+            {
+                question: "ข้อใดคือความท้าทายของ 'Cyber Security'?",
+                options: ["การจัดการข้อมูล", "การปกป้องระบบจากภัยคุกคามทางไซเบอร์", "การพัฒนาซอฟต์แวร์", "การสร้างเครือข่าย"],
+                answer: "การปกป้องระบบจากภัยคุกคามทางไซเบอร์",
+                explanation: "Cyber Security มุ่งเน้นการป้องกันระบบคอมพิวเตอร์และข้อมูลจากผู้ไม่หวังดีและการโจมตีทางไซเบอร์"
+            },
+            {
+                question: "ข้อใดคือความหมายของ 'วิศวกรรมการผลิต'?",
+                options: ["การออกแบบผลิตภัณฑ์", "การวางแผนและควบคุมกระบวนการผลิต", "การตลาดผลิตภัณฑ์", "การขายผลิตภัณฑ์"],
+                answer: "การวางแผนและควบคุมกระบวนการผลิต",
+                explanation: "วิศวกรรมการผลิตมีหน้าที่ในการปรับปรุงและจัดการกระบวนการผลิต เพื่อให้ได้ผลิตภัณฑ์ที่มีคุณภาพสูงในต้นทุนและเวลาที่เหมาะสม"
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let userAnswers = [];
+        let timerInterval;
+        let timeRemaining = 60;
+        const totalTime = questions.length * 60;
+        let isModalOpen = false;
+
+        const startButton = document.getElementById('startButton');
+        const leaveButtonSplash = document.getElementById('leaveButton');
+        const splashScreen = document.getElementById('splash-screen');
+        const testContainer = document.getElementById('test-container');
+        const resultsContainer = document.getElementById('results-container');
+        const questionTextElement = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const nextButton = document.getElementById('nextButton');
+        const prevButton = document.getElementById('prevButton');
+        const submitButton = document.getElementById('submitButton');
+        const questionNumberElement = document.getElementById('question-number');
+        const progressBar = document.getElementById('progress-bar');
+        const scoreElement = document.getElementById('score');
+        const guidanceTextElement = document.getElementById('guidance-text');
+        const recommendedMajorsTextElement = document.getElementById('recommended-majors-text');
+        const reviewList = document.getElementById('review-list');
+        const retakeButton = document.getElementById('retakeButton');
+        const exitButton = document.getElementById('exitButton');
+        const timerElement = document.getElementById('timer');
+        const modal = document.getElementById('modal');
+        const modalMessage = document.getElementById('modal-message');
+        const modalCloseButton = document.getElementById('modal-close-button');
+
+        function showModal(message) {
+            if (isModalOpen) return;
+            modalMessage.textContent = message;
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            isModalOpen = true;
+        }
+
+        function hideModal() {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            isModalOpen = false;
+        }
+
+        modalCloseButton.addEventListener('click', hideModal);
+
+        function startTimer() {
+            timerElement.textContent = timeRemaining;
+            timerElement.classList.remove('timer-glow');
+            
+            clearInterval(timerInterval);
+
+            timerInterval = setInterval(() => {
+                timeRemaining--;
+                timerElement.textContent = timeRemaining;
+
+                if (timeRemaining <= 10) {
+                    timerElement.classList.add('timer-glow');
+                } else {
+                    timerElement.classList.remove('timer-glow');
+                }
+
+                if (timeRemaining <= 0) {
+                    clearInterval(timerInterval);
+                    handleTimeUp();
+                }
+            }, 1000);
+        }
+
+        function handleTimeUp() {
+            if (currentQuestionIndex < questions.length - 1) {
+                userAnswers[currentQuestionIndex] = "ไม่มีคำตอบ";
+                currentQuestionIndex++;
+                showQuestion(currentQuestionIndex);
+                resetTimer();
+                showModal("หมดเวลาแล้ว! คำตอบของคุณสำหรับข้อนี้ถูกข้ามไป");
+            } else {
+                calculateScore();
+            }
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            timeRemaining = 60;
+            startTimer();
+        }
+
+        function showQuestion(index) {
+            const question = questions[index];
+            questionTextElement.textContent = question.question;
+            optionsContainer.innerHTML = '';
+            
+            questionNumberElement.textContent = `ข้อที่ ${index + 1} จาก ${questions.length}`;
+
+            question.options.forEach(option => {
+                const optionWrapper = document.createElement('div');
+                const radioInput = document.createElement('input');
+                radioInput.type = 'radio';
+                radioInput.name = 'answer';
+                radioInput.value = option;
+                radioInput.id = `option-${option.replace(/\s/g, '-')}`;
+                radioInput.className = 'hidden';
+
+                const label = document.createElement('label');
+                label.htmlFor = `option-${option.replace(/\s/g, '-')}`;
+                label.textContent = option;
+                label.className = `block cursor-pointer px-6 py-4 text-lg md:text-xl rounded-full border-2 border-gray-300 transition-colors duration-300 text-gray-800 hover:bg-gray-100 hover:border-gray-400`;
+
+                if (userAnswers[index] === option) {
+                    radioInput.checked = true;
+                }
+
+                radioInput.addEventListener('change', (e) => {
+                    userAnswers[index] = e.target.value;
+                });
+
+                optionWrapper.appendChild(radioInput);
+                optionWrapper.appendChild(label);
+                optionsContainer.appendChild(optionWrapper);
+            });
+
+            prevButton.disabled = index === 0;
+            if (index === questions.length - 1) {
+                nextButton.classList.add('hidden');
+                submitButton.classList.remove('hidden');
+            } else {
+                nextButton.classList.remove('hidden');
+                submitButton.classList.add('hidden');
+            }
+            
+            const progress = ((index + 1) / questions.length) * 100;
+            progressBar.style.width = `${progress}%`;
+        }
+        
+        nextButton.addEventListener('click', () => {
+            if (currentQuestionIndex < questions.length - 1) {
+                const selectedOption = optionsContainer.querySelector('input[name="answer"]:checked');
+                userAnswers[currentQuestionIndex] = selectedOption ? selectedOption.value : null;
+                currentQuestionIndex++;
+                showQuestion(currentQuestionIndex);
+                resetTimer();
+            }
+        });
+
+        prevButton.addEventListener('click', () => {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                showQuestion(currentQuestionIndex);
+                resetTimer();
+            }
+        });
+
+        function calculateScore() {
+            let correctAnswers = 0;
+            questions.forEach((question, index) => {
+                const userAnswer = userAnswers[index];
+                if (userAnswer === question.answer) {
+                    correctAnswers++;
+                }
+            });
+            score = correctAnswers;
+            showResults();
+        }
+
+        submitButton.addEventListener('click', () => {
+            const selectedOption = optionsContainer.querySelector('input[name="answer"]:checked');
+            userAnswers[currentQuestionIndex] = selectedOption ? selectedOption.value : null;
+            clearInterval(timerInterval);
+            calculateScore();
+        });
+
+        function showResults() {
+            testContainer.classList.add('hidden');
+            resultsContainer.classList.remove('hidden');
+            scoreElement.textContent = `${score} / ${questions.length}`;
+
+            const percentage = (score / questions.length) * 100;
+            let guidanceMessage = "";
+            let recommendedMajorsMessage = "";
+
+            if (percentage >= 80) {
+                guidanceMessage = "เยี่ยมมาก! คุณมีความถนัดด้านเทคนิคและวิศวกรรมสูงมาก คุณมีทักษะการคิดวิเคราะห์และแก้ปัญหาเชิงตรรกะที่ยอดเยี่ยม ซึ่งเป็นรากฐานที่แข็งแกร่งสำหรับสายอาชีพนี้";
+                recommendedMajorsMessage = `จากคะแนนของคุณ (${score}/${questions.length}) คุณเหมาะสมอย่างยิ่งสำหรับสาขา <span class="font-bold text-blue-600">วิศวกรรมศาสตร์</span>, <span class="font-bold text-blue-600">วิทยาการคอมพิวเตอร์</span>, และ <span class="font-bold text-blue-600">เทคโนโลยีสารสนเทศ</span>`;
+                confetti({
+                    particleCount: 150,
+                    spread: 180,
+                    origin: { y: 0.6 }
+                });
+            } else if (percentage >= 50) {
+                guidanceMessage = "ดีมาก! คุณมีความเข้าใจพื้นฐานที่ดีในงานเทคนิคและวิศวกรรม การพัฒนาทักษะด้านการแก้ปัญหาและการคิดเชิงระบบจะช่วยให้คุณแข็งแกร่งขึ้น";
+                recommendedMajorsMessage = `คะแนนของคุณ (${score}/${questions.length}) แสดงว่าคุณมีความสนใจในสายงานนี้ ลองพิจารณาสาขา <span class="font-bold text-blue-600">วิศวกรรมศาสตร์</span> และ <span class="font-bold text-blue-600">วิทยาการคอมพิวเตอร์</span> และพัฒนาทักษะที่เกี่ยวข้องเพิ่มเติมนะครับ`;
+            } else {
+                guidanceMessage = "ไม่ต้องกังวลไปครับ! แบบทดสอบนี้เป็นเพียงส่วนหนึ่งในการสำรวจตัวเอง หากคุณมีความสนใจในสาขานี้จริง คุณสามารถพัฒนาความถนัดด้านเทคนิคได้ด้วยการฝึกฝนอย่างต่อเนื่อง";
+                recommendedMajorsMessage = `คะแนนของคุณ (${score}/${questions.length}) แสดงว่านี่อาจไม่ใช่ความถนัดหลักของคุณในตอนนี้ แต่ถ้าคุณยังสนใจในสายงานนี้ ควรเน้นการศึกษาและฝึกฝนทักษะด้าน <span class="font-bold text-blue-600">การคิดเชิงตรรกะ</span>, <span class="font-bold text-blue-600">การแก้ปัญหา</span>, และ <span class="font-bold text-blue-600">การเขียนโค้ด</span> เพื่อเพิ่มศักยภาพของตัวเองครับ`;
+            }
+
+            guidanceTextElement.innerHTML = guidanceMessage;
+            recommendedMajorsTextElement.innerHTML = recommendedMajorsMessage;
+
+            reviewList.innerHTML = '';
+            questions.forEach((question, index) => {
+                const userAnswer = userAnswers[index];
+                const isCorrect = userAnswer === question.answer;
+                const reviewItem = document.createElement('div');
+                reviewItem.className = `p-4 rounded-xl border ${isCorrect ? 'border-blue-400 bg-blue-50' : 'border-red-400 bg-red-50'}`;
+                reviewItem.innerHTML = `
+                    <div class="flex items-center space-x-2 mb-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 ${isCorrect ? 'text-blue-600' : 'text-red-600'}">
+                            ${isCorrect
+                                ? `<path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd" />`
+                                : `<path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm-1.72 6.97a.75.75 0 10-1.06 1.06L10.94 12l-1.72 1.72a.75.75 0 101.06 1.06L12 13.06l1.72 1.72a.75.75 0 101.06-1.06L13.06 12l1.72-1.72a.75.75 0 10-1.06-1.06L12 10.94l-1.72-1.72z" clip-rule="evenodd" />`}
+                        </svg>
+                        <p class="font-semibold text-lg md:text-xl">ข้อที่ ${index + 1}: ${question.question}</p>
+                    </div>
+                    <p class="mb-1 text-base md:text-lg">
+                        <span class="font-medium">คำตอบของคุณ:</span> <span class="${isCorrect ? 'text-blue-600' : 'text-red-600'} font-bold">${userAnswer || 'ไม่ได้ตอบ'}</span>
+                    </p>
+                    <p class="text-base md:text-lg">
+                        <span class="font-medium">คำตอบที่ถูกต้อง:</span> <span class="text-gray-800 font-bold">${question.answer}</span>
+                    </p>
+                    ${question.explanation ? `<p class="mt-2 text-sm md:text-base text-gray-600"><strong>เหตุผล:</strong> ${question.explanation}</p>` : ''}
+                `;
+                reviewList.appendChild(reviewItem);
+            });
+        }
+
+        startButton.addEventListener('click', () => {
+            splashScreen.classList.add('hidden');
+            testContainer.classList.remove('hidden');
+            userAnswers = Array(questions.length).fill(null);
+            currentQuestionIndex = 0;
+            showQuestion(currentQuestionIndex);
+            resetTimer();
+        });
+
+        retakeButton.addEventListener('click', () => {
+            resultsContainer.classList.add('hidden');
+            splashScreen.classList.remove('hidden');
+        });
+
+        leaveButtonSplash.addEventListener('click', () => {
+            window.location.href = 'index.html';
+        });
+
+        exitButton.addEventListener('click', () => {
+            window.location.href = 'index.html';
+        });
+    </script>
+</body>
+</html>

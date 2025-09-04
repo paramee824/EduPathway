@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ภารกิจช่างเขียนแบบ - Technical Drawing Quest</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Kanit', sans-serif;
+        }
+        
+        .blueprint-bg {
+            background-image: 
+                linear-gradient(rgba(59, 130, 246, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(59, 130, 246, 0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        
+        .gear-rotate {
+            animation: rotate 4s linear infinite;
+        }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .mission-complete {
+            animation: missionPulse 0.8s ease-in-out;
+        }
+        
+        @keyframes missionPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .correct-flash {
+            animation: correctFlash 0.6s ease-out;
+        }
+        
+        .wrong-flash {
+            animation: wrongFlash 0.6s ease-out;
+        }
+        
+        @keyframes correctFlash {
+            0% { background-color: rgba(34, 197, 94, 0); }
+            50% { background-color: rgba(34, 197, 94, 0.3); }
+            100% { background-color: rgba(34, 197, 94, 0); }
+        }
+        
+        @keyframes wrongFlash {
+            0% { background-color: rgba(239, 68, 68, 0); }
+            50% { background-color: rgba(239, 68, 68, 0.3); }
+            100% { background-color: rgba(239, 68, 68, 0); }
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-white min-h-screen blueprint-bg">
+    <!-- Welcome Screen -->
+    <div id="welcomeScreen" class="min-h-screen flex items-center justify-center p-4">
+        <div class="max-w-2xl mx-auto text-center">
+            <div class="mb-8">
+                <div class="flex justify-center items-center gap-4 mb-6">
+                    <svg class="w-16 h-16 text-blue-400 gear-rotate" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.22,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.22,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.68 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z"/>
+                    </svg>
+                    <h1 class="text-5xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-yellow-400 bg-clip-text text-transparent">
+                        ภารกิจช่างเขียนแบบ
+                    </h1>
+                </div>
+                <p class="text-xl text-gray-300 mb-8">เริ่มต้นการผจญภัยในโลกของการเขียนแบบเครื่องกล</p>
+                
+                <div class="bg-slate-800 rounded-xl p-6 mb-8 text-left">
+                    <h3 class="text-2xl font-semibold mb-4 text-center text-yellow-400">🎯 กติกาการเล่น</h3>
+                    <div class="space-y-3 text-gray-300">
+                        <p>• <span class="text-blue-400 font-semibold">5 ภารกิจหลัก</span> แต่ละภารกิจมี 4 ด่าน</p>
+                        <p>• <span class="text-green-400 font-semibold">ตอบถูก +25 คะแนน</span> ตอบผิด +0 คะแนน</p>
+                        <p>• <span class="text-purple-400 font-semibold">จบแต่ละภารกิจ</span> จะมีการแจ้งเตือนและสรุปผล</p>
+                        <p>• <span class="text-yellow-400 font-semibold">คะแนนรวม 500</span> เต็ม = ช่างเขียนแบบมืออาชีพ</p>
+                        <p>• <span class="text-red-400 font-semibold">เวลาจำกัด</span> 30 วินาทีต่อคำถาม</p>
+                    </div>
+                </div>
+            </div>
+            
+            <button onclick="startGame()" class="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 px-12 py-4 rounded-xl text-xl font-bold transition-all transform hover:scale-105 shadow-lg">
+                🚀 เริ่มภารกิจ
+            </button>
+        </div>
+    </div>
+
+    <!-- Game Screen -->
+    <div id="gameScreen" class="hidden min-h-screen p-4">
+        <div class="max-w-4xl mx-auto">
+            <!-- Header -->
+            <div class="bg-slate-800 rounded-xl p-4 mb-6">
+                <div class="flex justify-between items-center mb-4">
+                    <div class="flex items-center gap-4">
+                        <div class="text-2xl font-bold text-blue-400">ภารกิจที่ <span id="currentMission">1</span></div>
+                        <div class="text-lg text-gray-300" id="missionName">-</div>
+                    </div>
+                    <div class="flex items-center gap-6">
+                        <div class="text-yellow-400 font-bold">คะแนน: <span id="totalScore">0</span></div>
+                        <div class="text-red-400 font-bold">เวลา: <span id="timer">30</span>s</div>
+                    </div>
+                </div>
+                
+                <!-- Progress Bar -->
+                <div class="w-full bg-slate-700 rounded-full h-3">
+                    <div class="bg-gradient-to-r from-blue-500 to-purple-500 h-3 rounded-full transition-all duration-300" id="progressBar" style="width: 0%"></div>
+                </div>
+                <div class="text-center mt-2 text-sm text-gray-400">
+                    ด่านที่ <span id="currentQuestion">1</span> จาก <span id="totalQuestions">4</span>
+                </div>
+            </div>
+
+            <!-- Question Area -->
+            <div class="bg-slate-800 rounded-xl p-8 mb-6">
+                <div class="text-center mb-6">
+                    <div class="text-6xl mb-4" id="questionIcon">🔧</div>
+                    <h2 class="text-2xl font-bold mb-4" id="questionTitle">คำถาม</h2>
+                    <div id="questionContent" class="text-lg text-gray-300"></div>
+                </div>
+                
+                <div id="visualContent" class="text-center mb-6"></div>
+            </div>
+
+            <!-- Options -->
+            <div id="optionsArea" class="grid md:grid-cols-2 gap-4 mb-6"></div>
+        </div>
+    </div>
+
+    <!-- Mission Complete Screen -->
+    <div id="missionCompleteScreen" class="hidden min-h-screen flex items-center justify-center p-4">
+        <div class="max-w-2xl mx-auto text-center">
+            <div class="bg-slate-800 rounded-xl p-8 mission-complete">
+                <div class="text-8xl mb-6" id="completeEmoji">🎉</div>
+                <h2 class="text-4xl font-bold mb-4" id="completeTitle">ภารกิจสำเร็จ!</h2>
+                <div class="text-xl mb-6" id="completeMessage">คุณผ่านภารกิจที่ 1 แล้ว</div>
+                
+                <div class="bg-slate-700 rounded-lg p-6 mb-6">
+                    <div class="grid grid-cols-2 gap-6">
+                        <div>
+                            <div class="text-3xl font-bold text-yellow-400" id="missionScore">100</div>
+                            <div class="text-gray-300">คะแนนภารกิจนี้</div>
+                        </div>
+                        <div>
+                            <div class="text-3xl font-bold text-blue-400" id="cumulativeScore">100</div>
+                            <div class="text-gray-300">คะแนนรวม</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-8" id="missionFeedback"></div>
+                
+                <button id="nextMissionBtn" onclick="nextMission()" class="bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 px-8 py-3 rounded-lg font-bold transition-all">
+                    ภารกิจต่อไป →
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Final Results Screen -->
+    <div id="finalResultsScreen" class="hidden min-h-screen flex items-center justify-center p-4">
+        <div class="max-w-2xl mx-auto text-center">
+            <div class="bg-slate-800 rounded-xl p-8">
+                <div class="text-8xl mb-6" id="finalEmoji">🏆</div>
+                <h2 class="text-4xl font-bold mb-4">ภารกิจทั้งหมดเสร็จสิ้น!</h2>
+                
+                <div class="text-6xl font-bold mb-4" id="finalTotalScore">500</div>
+                <div class="text-2xl mb-6" id="finalRank">ช่างเขียนแบบมืออาชีพ</div>
+                <div class="text-lg text-gray-300 mb-8" id="finalDescription"></div>
+                
+                <div class="grid grid-cols-5 gap-4 mb-8" id="missionBreakdown"></div>
+                
+                <button onclick="restartGame()" class="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 px-8 py-3 rounded-lg font-bold transition-all">
+                    เล่นใหม่
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentMissionIndex = 0;
+        let currentQuestionIndex = 0;
+        let totalScore = 0;
+        let missionScores = [];
+        let timeLeft = 30;
+        let timerInterval;
+        let selectedAnswer = null;
+
+        const missions = [
+            {
+                name: "วิเคราะห์สัญลักษณ์เทคนิค",
+                icon: "🔍",
+                description: "ทดสอบความเข้าใจสัญลักษณ์มาตรฐานในการเขียนแบบ",
+                questions: [
+                    {
+                        title: "สัญลักษณ์ใดแสดงความหยาบผิว Ra 3.2?",
+                        icon: "📐",
+                        visual: `<div class="text-4xl">∇∇∇</div>`,
+                        options: ["Ra 1.6", "Ra 3.2", "Ra 6.3", "Ra 12.5"],
+                        correct: 1,
+                        explanation: "สัญลักษณ์ ∇∇∇ แสดงความหยาบผิว Ra 3.2 ตามมาตรฐาน"
+                    },
+                    {
+                        title: "สัญลักษณ์การเชื่อมแบบใดใช้สำหรับเชื่อมทะลุ?",
+                        icon: "⚡",
+                        visual: `<div class="text-4xl">⟂</div>`,
+                        options: ["เชื่อมมุม", "เชื่อมทะลุ", "เชื่อมติด", "เชื่อมจุด"],
+                        correct: 1,
+                        explanation: "สัญลักษณ์ ⟂ แสดงการเชื่อมทะลุ (Full Penetration Weld)"
+                    },
+                    {
+                        title: "GD&T สัญลักษณ์ ⊕ หมายถึงอะไร?",
+                        icon: "🎯",
+                        visual: `<div class="text-4xl">⊕</div>`,
+                        options: ["ความตรง", "ความเรียบ", "ตำแหน่งแท้", "ความกลม"],
+                        correct: 2,
+                        explanation: "สัญลักษณ์ ⊕ แสดง True Position ในระบบ GD&T"
+                    },
+                    {
+                        title: "สัญลักษณ์ M20×2.5 หมายถึงอะไร?",
+                        icon: "🔩",
+                        visual: `<div class="text-2xl font-mono">M20×2.5</div>`,
+                        options: ["เกลียวใน ขนาด 20mm ระยะ 2.5mm", "เกลียวนอก ขนาด 20mm ระยะ 2.5mm", "รูขนาด 20mm ลึก 2.5mm", "แท่งขนาด 20mm ยาว 2.5mm"],
+                        correct: 1,
+                        explanation: "M20×2.5 คือเกลียวเมตริกขนาด 20mm ระยะห่างเกลียว 2.5mm"
+                    }
+                ]
+            },
+            {
+                name: "คำนวณมิติและขนาด",
+                icon: "📏",
+                description: "ทดสอบการอ่านและคำนวณมิติจากแบบเขียน",
+                questions: [
+                    {
+                        title: "จากแบบ หากเส้นผ่านศูนย์กลางคือ Ø40 รัศมีเท่าไร?",
+                        icon: "⭕",
+                        visual: `<div class="text-3xl">Ø40</div>`,
+                        options: ["R15", "R20", "R25", "R30"],
+                        correct: 1,
+                        explanation: "รัศมี = เส้นผ่านศูนย์กลาง ÷ 2 = 40 ÷ 2 = 20mm"
+                    },
+                    {
+                        title: "ชิ้นงานยาว 150mm ต้องการหารเป็น 6 ส่วนเท่ากัน แต่ละส่วนยาวเท่าไร?",
+                        icon: "📐",
+                        visual: `<div class="text-2xl">150mm ÷ 6 = ?</div>`,
+                        options: ["20mm", "25mm", "30mm", "35mm"],
+                        correct: 1,
+                        explanation: "150 ÷ 6 = 25mm ต่อส่วน"
+                    },
+                    {
+                        title: "แผ่นเหล็กหนา 8mm ต้องการเจาะรู Ø12 ควรใช้ดอกเจาะขนาดใด?",
+                        icon: "🔧",
+                        visual: `<div class="text-3xl">8mm → Ø12</div>`,
+                        options: ["Ø10mm", "Ø11mm", "Ø12mm", "Ø13mm"],
+                        correct: 2,
+                        explanation: "เจาะรู Ø12 ใช้ดอกเจาะ Ø12mm พอดี"
+                    },
+                    {
+                        title: "การเซาะร่องกว้าง 5mm ลึก 3mm ต้องใช้เครื่องมือใด?",
+                        icon: "🔪",
+                        visual: `<div class="text-2xl">5mm × 3mm</div>`,
+                        options: ["End Mill Ø3mm", "End Mill Ø5mm", "End Mill Ø6mm", "End Mill Ø8mm"],
+                        correct: 1,
+                        explanation: "ร่องกว้าง 5mm ใช้ End Mill Ø5mm หรือเล็กกว่า"
+                    }
+                ]
+            },
+            {
+                name: "วิเคราะห์กระบวนการผลิต",
+                icon: "⚙️",
+                description: "เรียงลำดับขั้นตอนการผลิตให้ถูกต้อง",
+                questions: [
+                    {
+                        title: "เรียงลำดับการผลิตชิ้นงานกลึง",
+                        icon: "🔄",
+                        visual: `<div class="text-lg text-gray-400">ลากเพื่อเรียงลำดับ</div>`,
+                        options: ["ตัดวัสดุตามขนาด", "กลึงหยาบ", "กลึงละเอียด", "ตรวจสอบขนาด"],
+                        correct: [0, 1, 2, 3],
+                        explanation: "ลำดับ: ตัดวัสดุ → กลึงหยาบ → กลึงละเอียด → ตรวจสอบ"
+                    },
+                    {
+                        title: "เรียงลำดับการเจาะรูที่มีเกลียว",
+                        icon: "🔩",
+                        visual: `<div class="text-lg text-gray-400">ขั้นตอนการทำเกลียว</div>`,
+                        options: ["เจาะรูนำ", "เจาะรูใหญ่", "ต๊าปเกลียว", "ตรวจสอบเกลียว"],
+                        correct: [0, 1, 2, 3],
+                        explanation: "ลำดับ: เจาะรูนำ → เจาะรูใหญ่ → ต๊าปเกลียว → ตรวจสอบ"
+                    },
+                    {
+                        title: "เรียงลำดับการเชื่อมชิ้นงาน",
+                        icon: "⚡",
+                        visual: `<div class="text-lg text-gray-400">กระบวนการเชื่อม</div>`,
+                        options: ["เตรียมผิวงาน", "จับยึดชิ้นงาน", "เชื่อมตามแบบ", "ตรวจสอบรอยเชื่อม"],
+                        correct: [0, 1, 2, 3],
+                        explanation: "ลำดับ: เตรียมผิว → จับยึด → เชื่อม → ตรวจสอบ"
+                    },
+                    {
+                        title: "เรียงลำดับการควบคุมคุณภาพ",
+                        icon: "✅",
+                        visual: `<div class="text-lg text-gray-400">QC Process</div>`,
+                        options: ["วางแผนตรวจสอบ", "ตรวจสอบระหว่างผลิต", "ตรวจสอบสินค้าสำเร็จ", "บันทึกผลการตรวจ"],
+                        correct: [0, 1, 2, 3],
+                        explanation: "ลำดับ: วางแผน → ตรวจระหว่างผลิต → ตรวจสินค้าสำเร็จ → บันทึก"
+                    }
+                ]
+            },
+            {
+                name: "แปลงมุมมองแบบ 2D-3D",
+                icon: "📐",
+                description: "ทดสอบการเชื่อมโยงระหว่างแบบ 2D และวัตถุ 3D",
+                questions: [
+                    {
+                        title: "วัตถุรูปทรงกระบอกจะแสดงเป็นอะไรในมุมมองด้านบน?",
+                        icon: "🥫",
+                        visual: `<div class="text-4xl">🥫</div>`,
+                        options: ["สี่เหลี่ยม", "วงกลม", "สามเหลี่ยม", "รูปไข่"],
+                        correct: 1,
+                        explanation: "ทรงกระบอกมองจากด้านบนจะเป็นวงกลม"
+                    },
+                    {
+                        title: "ชิ้นงานรูป L มองจากด้านหน้าจะเห็นอะไร?",
+                        icon: "📐",
+                        visual: `<div class="text-4xl">⌐</div>`,
+                        options: ["เส้นตรง", "รูป L", "สี่เหลี่ยม", "รูป T"],
+                        correct: 1,
+                        explanation: "มองจากด้านหน้าจะเห็นรูปร่าง L ชัดเจน"
+                    },
+                    {
+                        title: "รูทะลุในชิ้นงานจะแสดงด้วยเส้นประเภทใด?",
+                        icon: "⭕",
+                        visual: `<div class="text-3xl">○</div>`,
+                        options: ["เส้นทึบ", "เส้นประ", "เส้นจุด", "เส้นกึ่งกลาง"],
+                        correct: 0,
+                        explanation: "รูทะลุแสดงด้วยเส้นทึบ (Visible Line)"
+                    },
+                    {
+                        title: "การแสดงหน้าตัดใช้เส้นประเภทใด?",
+                        icon: "✂️",
+                        visual: `<div class="text-3xl">╱╱╱</div>`,
+                        options: ["เส้นทึบ", "เส้นประ", "เส้นแฮทช์", "เส้นกึ่งกลาง"],
+                        correct: 2,
+                        explanation: "หน้าตัดแสดงด้วยเส้นแฮทช์ (Hatch Line)"
+                    }
+                ]
+            },
+            {
+                name: "ตรวจสอบข้อผิดพลาดในแบบ",
+                icon: "🔍",
+                description: "หาจุดผิดพลาดและข้อบกพร่องในแบบเขียน",
+                questions: [
+                    {
+                        title: "แบบนี้มีข้อผิดพลาดอะไร? (ขาดมิติความยาว)",
+                        icon: "📏",
+                        visual: `<div class="text-2xl">□ ← ไม่มีมิติ</div>`,
+                        options: ["ขาดมิติความยาว", "ขาดสัญลักษณ์", "เส้นไม่ตรง", "ไม่มีข้อผิดพลาด"],
+                        correct: 0,
+                        explanation: "แบบขาดการระบุมิติความยาวที่สำคัญ"
+                    },
+                    {
+                        title: "การใส่มิตินี้ผิดอย่างไร? (มิติซ้ำซ้อน)",
+                        icon: "📐",
+                        visual: `<div class="text-lg">50mm ← → 50mm</div>`,
+                        options: ["มิติไม่ถูกต้อง", "มิติซ้ำซ้อน", "ตำแหน่งผิด", "ไม่มีปัญหา"],
+                        correct: 1,
+                        explanation: "ไม่ควรใส่มิติซ้ำในตำแหน่งเดียวกัน"
+                    },
+                    {
+                        title: "สัญลักษณ์นี้ใช้ผิดหรือไม่? (ใช้ Ø กับสี่เหลี่ยม)",
+                        icon: "⚠️",
+                        visual: `<div class="text-2xl">□ Ø20</div>`,
+                        options: ["ใช้ถูกต้อง", "ใช้ผิด - Ø ใช้กับวงกลม", "ขาดข้อมูล", "ตำแหน่งผิด"],
+                        correct: 1,
+                        explanation: "สัญลักษณ์ Ø ใช้กับวงกลมเท่านั้น ไม่ใช่สี่เหลี่ยม"
+                    },
+                    {
+                        title: "เส้นในแบบนี้มีปัญหาอะไร? (เส้นซ้อนทับ)",
+                        icon: "📝",
+                        visual: `<div class="text-2xl">═══</div>`,
+                        options: ["เส้นบาง", "เส้นหนา", "เส้นซ้อนทับ", "เส้นขาด"],
+                        correct: 2,
+                        explanation: "เส้นซ้อนทับกันทำให้อ่านแบบยาก ควรแยกให้ชัด"
+                    }
+                ]
+            }
+        ];
+
+        function startGame() {
+            document.getElementById('welcomeScreen').classList.add('hidden');
+            document.getElementById('gameScreen').classList.remove('hidden');
+            
+            currentMissionIndex = 0;
+            currentQuestionIndex = 0;
+            totalScore = 0;
+            missionScores = [];
+            
+            startMission();
+        }
+
+        function startMission() {
+            const mission = missions[currentMissionIndex];
+            document.getElementById('currentMission').textContent = currentMissionIndex + 1;
+            document.getElementById('missionName').textContent = mission.name;
+            document.getElementById('totalQuestions').textContent = mission.questions.length;
+            
+            currentQuestionIndex = 0;
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const mission = missions[currentMissionIndex];
+            const question = mission.questions[currentQuestionIndex];
+            
+            // Reset timer
+            timeLeft = 30;
+            clearInterval(timerInterval);
+            startTimer();
+            
+            // Update progress
+            const progress = ((currentQuestionIndex + 1) / mission.questions.length) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+            document.getElementById('currentQuestion').textContent = currentQuestionIndex + 1;
+            
+            // Show question
+            document.getElementById('questionIcon').textContent = question.icon;
+            document.getElementById('questionTitle').textContent = question.title;
+            document.getElementById('questionContent').textContent = '';
+            document.getElementById('visualContent').innerHTML = question.visual || '';
+            
+            // Show options
+            const optionsArea = document.getElementById('optionsArea');
+            
+            if (Array.isArray(question.correct)) {
+                // Drag and drop question
+                optionsArea.className = 'space-y-3';
+                optionsArea.innerHTML = question.options.map((option, index) => 
+                    `<div class="bg-slate-700 p-4 rounded-lg cursor-move hover:bg-slate-600 transition-all" 
+                          draggable="true" data-index="${index}">
+                        ${index + 1}. ${option}
+                    </div>`
+                ).join('');
+                setupDragAndDrop();
+            } else {
+                // Multiple choice
+                optionsArea.className = 'grid md:grid-cols-2 gap-4';
+                optionsArea.innerHTML = question.options.map((option, index) => 
+                    `<button class="bg-slate-700 hover:bg-slate-600 p-4 rounded-lg transition-all text-left" 
+                            onclick="selectAnswer(${index})">
+                        ${option}
+                    </button>`
+                ).join('');
+            }
+            
+            selectedAnswer = null;
+        }
+
+        function selectAnswer(answerIndex) {
+            if (selectedAnswer !== null) return;
+            
+            clearInterval(timerInterval);
+            selectedAnswer = answerIndex;
+            
+            const mission = missions[currentMissionIndex];
+            const question = mission.questions[currentQuestionIndex];
+            const isCorrect = answerIndex === question.correct;
+            
+            // Visual feedback
+            const buttons = document.querySelectorAll('#optionsArea button');
+            buttons.forEach((button, index) => {
+                button.disabled = true;
+                if (index === question.correct) {
+                    button.classList.add('bg-green-600', 'correct-flash');
+                } else if (index === answerIndex && !isCorrect) {
+                    button.classList.add('bg-red-600', 'wrong-flash');
+                }
+            });
+            
+            if (isCorrect) {
+                totalScore += 25;
+                document.getElementById('totalScore').textContent = totalScore;
+            }
+            
+            setTimeout(() => {
+                nextQuestion();
+            }, 2000);
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            
+            if (currentQuestionIndex >= missions[currentMissionIndex].questions.length) {
+                completeMission();
+            } else {
+                showQuestion();
+            }
+        }
+
+        function completeMission() {
+            clearInterval(timerInterval);
+            
+            const missionScore = (selectedAnswer !== null ? 25 : 0) * missions[currentMissionIndex].questions.length;
+            missionScores.push(missionScore);
+            
+            document.getElementById('gameScreen').classList.add('hidden');
+            document.getElementById('missionCompleteScreen').classList.remove('hidden');
+            
+            // Show mission complete info
+            document.getElementById('completeTitle').textContent = `ภารกิจที่ ${currentMissionIndex + 1} สำเร็จ!`;
+            document.getElementById('completeMessage').textContent = `คุณผ่าน "${missions[currentMissionIndex].name}" แล้ว`;
+            document.getElementById('missionScore').textContent = missionScore;
+            document.getElementById('cumulativeScore').textContent = totalScore;
+            
+            // Feedback based on score
+            let feedback = '';
+            if (missionScore === 100) {
+                feedback = '🌟 เยี่ยมมาก! คะแนนเต็ม';
+                document.getElementById('completeEmoji').textContent = '🏆';
+            } else if (missionScore >= 75) {
+                feedback = '👍 ดีมาก! เกือบเต็ม';
+                document.getElementById('completeEmoji').textContent = '🎉';
+            } else if (missionScore >= 50) {
+                feedback = '👌 ผ่านเกณฑ์ ต้องพัฒนาต่อ';
+                document.getElementById('completeEmoji').textContent = '😊';
+            } else {
+                feedback = '💪 ต้องฝึกฝนเพิ่มเติม';
+                document.getElementById('completeEmoji').textContent = '📚';
+            }
+            
+            document.getElementById('missionFeedback').innerHTML = `<div class="text-lg text-yellow-400">${feedback}</div>`;
+            
+            // Check if all missions complete
+            if (currentMissionIndex >= missions.length - 1) {
+                document.getElementById('nextMissionBtn').textContent = 'ดูผลรวม';
+                document.getElementById('nextMissionBtn').onclick = showFinalResults;
+            }
+        }
+
+        function nextMission() {
+            currentMissionIndex++;
+            
+            document.getElementById('missionCompleteScreen').classList.add('hidden');
+            document.getElementById('gameScreen').classList.remove('hidden');
+            
+            startMission();
+        }
+
+        function showFinalResults() {
+            document.getElementById('missionCompleteScreen').classList.add('hidden');
+            document.getElementById('finalResultsScreen').classList.remove('hidden');
+            
+            // Calculate final rank
+            let rank, emoji, description;
+            if (totalScore >= 450) {
+                rank = 'ช่างเขียนแบบมืออาชีพ';
+                emoji = '🏆';
+                description = 'ยอดเยี่ยม! คุณมีความเชี่ยวชาญในการเขียนแบบเครื่องกลระดับสูง';
+            } else if (totalScore >= 350) {
+                rank = 'ช่างเขียนแบบชำนาญ';
+                emoji = '🥇';
+                description = 'ดีมาก! คุณมีทักษะการเขียนแบบที่แข็งแกร่ง';
+            } else if (totalScore >= 250) {
+                rank = 'ช่างเขียนแบบปานกลาง';
+                emoji = '🥈';
+                description = 'ดี! คุณมีพื้นฐานที่ดี ควรพัฒนาต่อ';
+            } else {
+                rank = 'ช่างเขียนแบบมือใหม่';
+                emoji = '🥉';
+                description = 'ต้องฝึกฝนเพิ่มเติม แนะนำให้ศึกษาเพิ่ม';
+            }
+            
+            document.getElementById('finalEmoji').textContent = emoji;
+            document.getElementById('finalTotalScore').textContent = totalScore;
+            document.getElementById('finalRank').textContent = rank;
+            document.getElementById('finalDescription').textContent = description;
+            
+            // Show mission breakdown
+            const breakdown = document.getElementById('missionBreakdown');
+            breakdown.innerHTML = missions.map((mission, index) => 
+                `<div class="bg-slate-700 p-3 rounded-lg text-center">
+                    <div class="text-2xl mb-1">${mission.icon}</div>
+                    <div class="text-sm text-gray-300">${mission.name}</div>
+                    <div class="text-lg font-bold text-yellow-400">${missionScores[index] || 0}</div>
+                </div>`
+            ).join('');
+        }
+
+        function restartGame() {
+            document.getElementById('finalResultsScreen').classList.add('hidden');
+            document.getElementById('welcomeScreen').classList.remove('hidden');
+            
+            currentMissionIndex = 0;
+            currentQuestionIndex = 0;
+            totalScore = 0;
+            missionScores = [];
+        }
+
+        function startTimer() {
+            document.getElementById('timer').textContent = timeLeft;
+            
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timer').textContent = timeLeft;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    // Auto select wrong answer when time runs out
+                    if (selectedAnswer === null) {
+                        selectAnswer(-1); // Wrong answer
+                    }
+                }
+            }, 1000);
+        }
+
+        function setupDragAndDrop() {
+            let draggedElement = null;
+            const items = document.querySelectorAll('[draggable="true"]');
+            
+            items.forEach(item => {
+                item.addEventListener('dragstart', (e) => {
+                    draggedElement = e.target;
+                    e.target.style.opacity = '0.5';
+                });
+                
+                item.addEventListener('dragend', (e) => {
+                    e.target.style.opacity = '1';
+                });
+                
+                item.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                });
+                
+                item.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    if (draggedElement !== e.target) {
+                        // Swap elements
+                        const draggedHTML = draggedElement.innerHTML;
+                        const draggedIndex = draggedElement.dataset.index;
+                        
+                        draggedElement.innerHTML = e.target.innerHTML;
+                        draggedElement.dataset.index = e.target.dataset.index;
+                        
+                        e.target.innerHTML = draggedHTML;
+                        e.target.dataset.index = draggedIndex;
+                        
+                        checkOrder();
+                    }
+                });
+            });
+        }
+
+        function checkOrder() {
+            const items = document.querySelectorAll('[draggable="true"]');
+            const currentOrder = Array.from(items).map(item => parseInt(item.dataset.index));
+            const mission = missions[currentMissionIndex];
+            const question = mission.questions[currentQuestionIndex];
+            
+            if (JSON.stringify(currentOrder) === JSON.stringify(question.correct)) {
+                clearInterval(timerInterval);
+                selectedAnswer = 0; // Correct
+                totalScore += 25;
+                document.getElementById('totalScore').textContent = totalScore;
+                
+                items.forEach(item => {
+                    item.classList.add('bg-green-600', 'correct-flash');
+                    item.draggable = false;
+                });
+                
+                setTimeout(() => {
+                    nextQuestion();
+                }, 2000);
+            }
+        }
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'977af7df63675805',t:'MTc1NjYyNjk1NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

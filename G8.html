@@ -1,0 +1,1327 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀 Mechatronics Adventure: ภารกิจนักวิศวกรอนาคต</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Kanit', sans-serif;
+        }
+        
+        .mission-card {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .mission-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .mission-card:hover::before {
+            left: 100%;
+        }
+        
+        .mission-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+        }
+        
+        .assistant {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #ffd700;
+            border-radius: 50%;
+            animation: particle 2s linear infinite;
+        }
+        
+        @keyframes particle {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+        }
+        
+        .success-animation {
+            animation: successPulse 1s ease-in-out;
+        }
+        
+        @keyframes successPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); background-color: rgba(34, 197, 94, 0.2); }
+            100% { transform: scale(1); }
+        }
+        
+        .hologram {
+            background: linear-gradient(45deg, rgba(0,255,255,0.1), rgba(255,0,255,0.1));
+            border: 2px solid rgba(0,255,255,0.3);
+            box-shadow: 0 0 20px rgba(0,255,255,0.2);
+        }
+        
+        .neon-text {
+            text-shadow: 0 0 10px currentColor;
+        }
+        
+        .draggable-enhanced {
+            cursor: grab;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .draggable-enhanced:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+        
+        .draggable-enhanced:active {
+            cursor: grabbing;
+            transform: scale(0.95);
+        }
+        
+        .drop-zone-enhanced {
+            border: 3px dashed #4a5568;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .drop-zone-enhanced.drag-over {
+            border-color: #48bb78;
+            background: radial-gradient(circle, rgba(72,187,120,0.1) 0%, transparent 70%);
+            transform: scale(1.02);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 min-h-screen text-white overflow-x-hidden">
+    <!-- Particle Background -->
+    <div id="particles" class="fixed inset-0 pointer-events-none z-0"></div>
+
+    <!-- Start Screen -->
+    <div id="startScreen" class="container mx-auto px-4 py-8 relative z-10">
+        <div class="text-center mb-12">
+            <div class="text-8xl mb-6">🚀</div>
+            <h1 class="text-6xl font-bold mb-4 neon-text bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
+                MECHATRONICS ADVENTURE
+            </h1>
+            <p class="text-2xl mb-8 opacity-90">ภารกิจนักวิศวกรอนาคต</p>
+            <div class="bg-gray-800 bg-opacity-50 rounded-2xl p-8 max-w-4xl mx-auto mb-8">
+                <h2 class="text-3xl font-bold mb-6 text-yellow-400">🎯 กติกาการเล่น</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
+                    <div class="bg-blue-600 bg-opacity-30 rounded-lg p-4">
+                        <h3 class="font-semibold mb-2">🎮 วิธีเล่น</h3>
+                        <ul class="text-sm space-y-1 opacity-90">
+                            <li>• ทำภารกิจ 5 ด่านตามลำดับ</li>
+                            <li>• แต่ละด่านมีตัวช่วยแนะนำ</li>
+                            <li>• ได้คะแนนตามความสามารถ</li>
+                            <li>• ดูผลประเมินเป็นกราฟ</li>
+                        </ul>
+                    </div>
+                    <div class="bg-purple-600 bg-opacity-30 rounded-lg p-4">
+                        <h3 class="font-semibold mb-2">🏆 เป้าหมาย</h3>
+                        <ul class="text-sm space-y-1 opacity-90">
+                            <li>• ค้นพบความถนัดของคุณ</li>
+                            <li>• เรียนรู้เมคคาทรอนิกส์</li>
+                            <li>• สนุกกับการแก้ปัญหา</li>
+                            <li>• วางแผนอนาคตการงาน</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <button onclick="startAdventure()" class="bg-gradient-to-r from-green-500 to-blue-600 hover:from-green-600 hover:to-blue-700 px-12 py-4 rounded-full text-2xl font-bold transform hover:scale-105 transition-all duration-300 shadow-2xl">
+                🚀 เริ่มการผจญภัย
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Game Container -->
+    <div id="gameContainer" class="hidden container mx-auto px-4 py-6 relative z-10">
+        <!-- Header with Progress -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold mb-4 neon-text">🎮 Mechatronics Adventure</h1>
+            <div class="bg-gray-800 rounded-full h-6 mb-4 overflow-hidden">
+                <div id="progressBar" class="bg-gradient-to-r from-green-400 via-blue-500 to-purple-600 h-6 rounded-full transition-all duration-1000 relative" style="width: 0%">
+                    <div class="absolute inset-0 bg-white bg-opacity-20 animate-pulse"></div>
+                </div>
+            </div>
+            <div class="text-lg">ภารกิจที่ <span id="currentMission">1</span> จาก 5</div>
+        </div>
+
+        <!-- Mission Selection -->
+        <div id="missionSelection" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            <div class="mission-card rounded-2xl p-6 text-center cursor-pointer relative" onclick="startMission('factory')">
+                <div class="text-6xl mb-4">🏭</div>
+                <h3 class="text-xl font-semibold mb-2">ภารกิจโรงงานอัจฉริยะ</h3>
+                <p class="text-sm opacity-80 mb-4">สร้างสายการผลิตอัตโนมัติ</p>
+                <div class="bg-white bg-opacity-20 rounded-lg py-2">
+                    <span class="text-sm">🔧 ทักษะกลไก + ระบบ</span>
+                </div>
+                <div id="mission1Status" class="absolute top-2 right-2 text-2xl hidden">✅</div>
+            </div>
+
+            <div class="mission-card rounded-2xl p-6 text-center cursor-pointer relative" onclick="startMission('robot')">
+                <div class="text-6xl mb-4">🤖</div>
+                <h3 class="text-xl font-semibold mb-2">ภารกิจหุ่นยนต์กู้ภัย</h3>
+                <p class="text-sm opacity-80 mb-4">ควบคุมหุ่นยนต์ในสถานการณ์ฉุกเฉิน</p>
+                <div class="bg-white bg-opacity-20 rounded-lg py-2">
+                    <span class="text-sm">⚡ ทักษะไฟฟ้า + ควบคุม</span>
+                </div>
+                <div id="mission2Status" class="absolute top-2 right-2 text-2xl hidden">✅</div>
+            </div>
+
+            <div class="mission-card rounded-2xl p-6 text-center cursor-pointer relative" onclick="startMission('space')">
+                <div class="text-6xl mb-4">🛰️</div>
+                <h3 class="text-xl font-semibold mb-2">ภารกิจสถานีอวกาศ</h3>
+                <p class="text-sm opacity-80 mb-4">เขียนโปรแกรมระบบชีวิต</p>
+                <div class="bg-white bg-opacity-20 rounded-lg py-2">
+                    <span class="text-sm">💻 ทักษะโปรแกรม + AI</span>
+                </div>
+                <div id="mission3Status" class="absolute top-2 right-2 text-2xl hidden">✅</div>
+            </div>
+
+            <div class="mission-card rounded-2xl p-6 text-center cursor-pointer relative" onclick="startMission('city')">
+                <div class="text-6xl mb-4">🌆</div>
+                <h3 class="text-xl font-semibold mb-2">ภารกิจเมืองอัจฉริยะ</h3>
+                <p class="text-sm opacity-80 mb-4">แก้ไขระบบจราจรขัดข้อง</p>
+                <div class="bg-white bg-opacity-20 rounded-lg py-2">
+                    <span class="text-sm">🔍 ทักษะแก้ปัญหา + IoT</span>
+                </div>
+                <div id="mission4Status" class="absolute top-2 right-2 text-2xl hidden">✅</div>
+            </div>
+
+            <div class="mission-card rounded-2xl p-6 text-center cursor-pointer relative" onclick="startMission('future')">
+                <div class="text-6xl mb-4">🌟</div>
+                <h3 class="text-xl font-semibold mb-2">ภารกิจอนาคตกาล</h3>
+                <p class="text-sm opacity-80 mb-4">ออกแบบระบบแห่งอนาคต</p>
+                <div class="bg-white bg-opacity-20 rounded-lg py-2">
+                    <span class="text-sm">🚀 ทักษะบูรณาการทั้งหมด</span>
+                </div>
+                <div id="mission5Status" class="absolute top-2 right-2 text-2xl hidden">✅</div>
+            </div>
+
+            <div class="mission-card rounded-2xl p-6 text-center cursor-pointer bg-gradient-to-r from-yellow-500 to-orange-500" onclick="showResults()">
+                <div class="text-6xl mb-4">📊</div>
+                <h3 class="text-xl font-semibold mb-2">ผลการประเมิน</h3>
+                <p class="text-sm opacity-80 mb-4">ดูกราฟความสามารถ</p>
+                <div class="bg-white bg-opacity-20 rounded-lg py-2">
+                    <span class="text-sm">⭐ วิเคราะห์ผล</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mission Area -->
+        <div id="missionArea" class="hidden">
+            <!-- Factory Mission -->
+            <div id="factoryMission" class="hidden bg-gray-800 bg-opacity-50 rounded-2xl p-8">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-3xl font-bold">🏭 ภารกิจโรงงานอัจฉริยะ</h2>
+                    <div class="assistant text-4xl">🤖</div>
+                </div>
+                
+                <div class="bg-blue-900 bg-opacity-50 rounded-lg p-4 mb-6">
+                    <h3 class="font-semibold text-blue-300 mb-2">🎯 ภารกิจ</h3>
+                    <p class="text-blue-200">สร้างสายการผลิตที่สามารถคัดแยกสินค้าตามสี และนับจำนวนได้อัตโนมัติ</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="hologram rounded-lg p-6">
+                        <h3 class="text-xl font-semibold mb-4">🔧 ส่วนประกอบ</h3>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="draggable-enhanced bg-gradient-to-r from-blue-600 to-blue-700 p-4 rounded-lg text-center" draggable="true" data-component="conveyor">
+                                <div class="text-3xl mb-2">🔄</div>
+                                <div class="text-sm">สายพาน</div>
+                            </div>
+                            <div class="draggable-enhanced bg-gradient-to-r from-green-600 to-green-700 p-4 rounded-lg text-center" draggable="true" data-component="camera">
+                                <div class="text-3xl mb-2">📷</div>
+                                <div class="text-sm">กล้องตรวจจับ</div>
+                            </div>
+                            <div class="draggable-enhanced bg-gradient-to-r from-purple-600 to-purple-700 p-4 rounded-lg text-center" draggable="true" data-component="sorter">
+                                <div class="text-3xl mb-2">🔀</div>
+                                <div class="text-sm">ตัวคัดแยก</div>
+                            </div>
+                            <div class="draggable-enhanced bg-gradient-to-r from-red-600 to-red-700 p-4 rounded-lg text-center" draggable="true" data-component="counter">
+                                <div class="text-3xl mb-2">🔢</div>
+                                <div class="text-sm">ตัวนับ</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="hologram rounded-lg p-6">
+                        <h3 class="text-xl font-semibold mb-4">🏭 สายการผลิต</h3>
+                        <div class="bg-gray-700 rounded-lg p-4 min-h-80">
+                            <div class="grid grid-cols-2 gap-4 h-full">
+                                <div class="drop-zone-enhanced rounded-lg p-4 text-center flex flex-col justify-center" data-position="input">
+                                    <div class="text-gray-400">📥 จุดป้อนสินค้า</div>
+                                </div>
+                                <div class="drop-zone-enhanced rounded-lg p-4 text-center flex flex-col justify-center" data-position="detection">
+                                    <div class="text-gray-400">👁️ จุดตรวจจับ</div>
+                                </div>
+                                <div class="drop-zone-enhanced rounded-lg p-4 text-center flex flex-col justify-center" data-position="sorting">
+                                    <div class="text-gray-400">🔀 จุดคัดแยก</div>
+                                </div>
+                                <div class="drop-zone-enhanced rounded-lg p-4 text-center flex flex-col justify-center" data-position="counting">
+                                    <div class="text-gray-400">📊 จุดนับจำนวน</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="factoryResult" class="mt-6 text-center hidden">
+                    <div class="text-6xl mb-4">🎉</div>
+                    <div class="text-2xl font-bold text-green-400 mb-4">สายการผลิตทำงานได้แล้ว!</div>
+                    <div class="bg-green-900 bg-opacity-50 rounded-lg p-4 mb-4">
+                        <div class="text-lg">ผลิตภัณฑ์: 🔴 25 ชิ้น | 🔵 30 ชิ้น | 🟡 20 ชิ้น</div>
+                    </div>
+                </div>
+
+                <div class="flex justify-between mt-8">
+                    <button id="factoryHintBtn" onclick="getHint('factory')" class="bg-yellow-600 hover:bg-yellow-700 px-6 py-2 rounded-lg">💡 ขอคำใบ้ (2/2)</button>
+                    <button onclick="backToMissions()" class="bg-gray-600 hover:bg-gray-700 px-6 py-2 rounded-lg">🔙 กลับ</button>
+                </div>
+            </div>
+
+            <!-- Robot Mission -->
+            <div id="robotMission" class="hidden bg-gray-800 bg-opacity-50 rounded-2xl p-8">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-3xl font-bold">🤖 ภารกิจหุ่นยนต์กู้ภัย</h2>
+                    <div class="assistant text-4xl">🚁</div>
+                </div>
+                
+                <div class="bg-red-900 bg-opacity-50 rounded-lg p-4 mb-6">
+                    <h3 class="font-semibold text-red-300 mb-2">🚨 สถานการณ์ฉุกเฉิน</h3>
+                    <p class="text-red-200">อาคารเกิดเพลิงไหม้! ควบคุมหุ่นยนต์กู้ภัยให้เข้าไปช่วยเหลือผู้ประสบภัย</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="hologram rounded-lg p-6">
+                        <h3 class="text-xl font-semibold mb-4">🎮 ระบบควบคุม</h3>
+                        <div class="bg-gray-700 rounded-lg p-4 mb-4">
+                            <div class="text-center mb-4">
+                                <div class="text-6xl mb-2">🤖</div>
+                                <div class="text-sm">หุ่นยนต์กู้ภัย</div>
+                            </div>
+                            <div class="grid grid-cols-3 gap-2">
+                                <button onclick="moveRobot('up')" class="bg-blue-600 hover:bg-blue-700 p-3 rounded">⬆️</button>
+                                <div></div>
+                                <button onclick="activateRescue()" class="bg-red-600 hover:bg-red-700 p-3 rounded text-xs">🚨 กู้ภัย</button>
+                                <button onclick="moveRobot('left')" class="bg-blue-600 hover:bg-blue-700 p-3 rounded">⬅️</button>
+                                <button onclick="moveRobot('down')" class="bg-blue-600 hover:bg-blue-700 p-3 rounded">⬇️</button>
+                                <button onclick="moveRobot('right')" class="bg-blue-600 hover:bg-blue-700 p-3 rounded">➡️</button>
+                            </div>
+                        </div>
+                        <div class="bg-gray-700 rounded-lg p-4">
+                            <h4 class="font-semibold mb-2">📊 สถานะ</h4>
+                            <div class="space-y-2 text-sm">
+                                <div>🔋 แบตเตอรี่: <span id="battery">100%</span></div>
+                                <div>🌡️ อุณหภูมิ: <span id="temperature">25°C</span></div>
+                                <div>👥 ผู้รอดชีวิต: <span id="survivors">0/3</span></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="hologram rounded-lg p-6">
+                        <h3 class="text-xl font-semibold mb-4">🏢 แผนที่อาคาร</h3>
+                        <div id="buildingMap" class="bg-gray-700 rounded-lg p-4 grid grid-cols-5 gap-1 min-h-80">
+                            <!-- Building map will be generated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+
+                <div id="robotResult" class="mt-6 text-center hidden"></div>
+
+                <div class="flex justify-between mt-8">
+                    <button id="robotHintBtn" onclick="getHint('robot')" class="bg-yellow-600 hover:bg-yellow-700 px-6 py-2 rounded-lg">💡 ขอคำใบ้ (2/2)</button>
+                    <button onclick="backToMissions()" class="bg-gray-600 hover:bg-gray-700 px-6 py-2 rounded-lg">🔙 กลับ</button>
+                </div>
+            </div>
+
+            <!-- Space Mission -->
+            <div id="spaceMission" class="hidden bg-gray-800 bg-opacity-50 rounded-2xl p-8">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-3xl font-bold">🛰️ ภารกิจสถานีอวกาศ</h2>
+                    <div class="assistant text-4xl">👨‍🚀</div>
+                </div>
+                
+                <div class="bg-purple-900 bg-opacity-50 rounded-lg p-4 mb-6">
+                    <h3 class="font-semibold text-purple-300 mb-2">🌌 ภารกิจ</h3>
+                    <p class="text-purple-200">เขียนโปรแกรม AI ควบคุมระบบชีวิตบนสถานีอวกาศให้ทำงานอัตโนมัติ</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="hologram rounded-lg p-6">
+                        <h3 class="text-xl font-semibold mb-4">💻 เขียนโปรแกรม</h3>
+                        <div class="bg-gray-900 rounded-lg p-4 font-mono text-sm">
+                            <div class="text-green-400 mb-2">// ระบบควบคุมสถานีอวกาศ</div>
+                            <div class="mb-4">
+                                <select id="oxygenCondition" class="bg-gray-700 text-white p-2 rounded w-full mb-2">
+                                    <option value="">เลือกเงื่อนไข O2</option>
+                                    <option value="low">IF O2 < 18%</option>
+                                    <option value="normal">IF O2 >= 18%</option>
+                                    <option value="high">IF O2 > 25%</option>
+                                </select>
+                                <select id="oxygenAction" class="bg-gray-700 text-white p-2 rounded w-full">
+                                    <option value="">เลือกการทำงาน</option>
+                                    <option value="increase">เพิ่ม O2</option>
+                                    <option value="decrease">ลด O2</option>
+                                    <option value="maintain">รักษาระดับ</option>
+                                </select>
+                            </div>
+                            <div class="mb-4">
+                                <select id="tempCondition" class="bg-gray-700 text-white p-2 rounded w-full mb-2">
+                                    <option value="">เลือกเงื่อนไข อุณหภูมิ</option>
+                                    <option value="cold">IF Temp < 20°C</option>
+                                    <option value="normal">IF 20°C <= Temp <= 25°C</option>
+                                    <option value="hot">IF Temp > 25°C</option>
+                                </select>
+                                <select id="tempAction" class="bg-gray-700 text-white p-2 rounded w-full">
+                                    <option value="">เลือกการทำงาน</option>
+                                    <option value="heat">เปิดฮีตเตอร์</option>
+                                    <option value="cool">เปิดแอร์</option>
+                                    <option value="maintain">รักษาอุณหภูมิ</option>
+                                </select>
+                            </div>
+                            <button onclick="runSpaceProgram()" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded w-full">▶️ รันโปรแกรม</button>
+                        </div>
+                    </div>
+                    
+                    <div class="hologram rounded-lg p-6">
+                        <h3 class="text-xl font-semibold mb-4">🛰️ สถานีอวกาศ</h3>
+                        <div class="bg-gray-700 rounded-lg p-4">
+                            <div class="grid grid-cols-2 gap-4 mb-4">
+                                <div class="bg-blue-900 rounded p-3 text-center">
+                                    <div class="text-2xl mb-1">💨</div>
+                                    <div class="text-sm">ออกซิเจน</div>
+                                    <div id="oxygenLevel" class="text-lg font-bold">20%</div>
+                                </div>
+                                <div class="bg-red-900 rounded p-3 text-center">
+                                    <div class="text-2xl mb-1">🌡️</div>
+                                    <div class="text-sm">อุณหภูมิ</div>
+                                    <div id="temperatureLevel" class="text-lg font-bold">22°C</div>
+                                </div>
+                            </div>
+                            <div class="bg-gray-600 rounded-lg p-4">
+                                <h4 class="font-semibold mb-2">👨‍🚀 สถานะลูกเรือ</h4>
+                                <div id="crewStatus" class="text-sm">
+                                    <div>😊 ลูกเรือ 1: ปกติ</div>
+                                    <div>😊 ลูกเรือ 2: ปกติ</div>
+                                    <div>😊 ลูกเรือ 3: ปกติ</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="spaceResult" class="mt-6 text-center hidden"></div>
+
+                <div class="flex justify-between mt-8">
+                    <button id="spaceHintBtn" onclick="getHint('space')" class="bg-yellow-600 hover:bg-yellow-700 px-6 py-2 rounded-lg">💡 ขอคำใบ้ (2/2)</button>
+                    <button onclick="backToMissions()" class="bg-gray-600 hover:bg-gray-700 px-6 py-2 rounded-lg">🔙 กลับ</button>
+                </div>
+            </div>
+
+            <!-- City Mission -->
+            <div id="cityMission" class="hidden bg-gray-800 bg-opacity-50 rounded-2xl p-8">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-3xl font-bold">🌆 ภารกิจเมืองอัจฉริยะ</h2>
+                    <div class="assistant text-4xl">🚦</div>
+                </div>
+                
+                <div class="bg-orange-900 bg-opacity-50 rounded-lg p-4 mb-6">
+                    <h3 class="font-semibold text-orange-300 mb-2">⚠️ ปัญหา</h3>
+                    <p class="text-orange-200">ระบบจราจรอัจฉริยะขัดข้อง! วิเคราะห์ปัญหาและแก้ไขให้การจราจรกลับมาเป็นปกติ</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="hologram rounded-lg p-6">
+                        <h3 class="text-xl font-semibold mb-4">🔍 วิเคราะห์ปัญหา</h3>
+                        <div class="space-y-4">
+                            <div class="bg-red-900 bg-opacity-50 rounded-lg p-4">
+                                <h4 class="font-semibold text-red-300 mb-2">🚨 อาการที่พบ</h4>
+                                <ul class="text-sm text-red-200 space-y-1">
+                                    <li>• ไฟจราจรกะพริบผิดปกติ</li>
+                                    <li>• เซนเซอร์ตรวจจับรถไม่ทำงาน</li>
+                                    <li>• ระบบสื่อสารขาดหาย</li>
+                                    <li>• รถติดหนาแน่น</li>
+                                </ul>
+                            </div>
+                            <div class="bg-gray-700 rounded-lg p-4">
+                                <h4 class="font-semibold mb-3">🛠️ เลือกวิธีแก้ไข</h4>
+                                <div class="space-y-2">
+                                    <button onclick="selectSolution('sensor')" class="w-full text-left bg-blue-600 hover:bg-blue-700 p-3 rounded">
+                                        🔧 ซ่อมเซนเซอร์ตรวจจับ
+                                    </button>
+                                    <button onclick="selectSolution('network')" class="w-full text-left bg-green-600 hover:bg-green-700 p-3 rounded">
+                                        📡 รีเซ็ตระบบเครือข่าย
+                                    </button>
+                                    <button onclick="selectSolution('traffic')" class="w-full text-left bg-purple-600 hover:bg-purple-700 p-3 rounded">
+                                        🚦 ปรับโปรแกรมไฟจราจร
+                                    </button>
+                                    <button onclick="selectSolution('manual')" class="w-full text-left bg-yellow-600 hover:bg-yellow-700 p-3 rounded">
+                                        👮 เปลี่ยนเป็นควบคุมด้วยคน
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="hologram rounded-lg p-6">
+                        <h3 class="text-xl font-semibold mb-4">🗺️ แผนที่จราจร</h3>
+                        <div class="bg-gray-700 rounded-lg p-4">
+                            <div id="trafficMap" class="grid grid-cols-3 gap-2 mb-4">
+                                <div class="bg-gray-600 p-2 rounded text-center">🏢</div>
+                                <div class="bg-yellow-600 p-2 rounded text-center" id="light1">🚦</div>
+                                <div class="bg-gray-600 p-2 rounded text-center">🏢</div>
+                                <div class="bg-yellow-600 p-2 rounded text-center" id="light2">🚦</div>
+                                <div class="bg-red-600 p-2 rounded text-center">🚗🚗🚗</div>
+                                <div class="bg-yellow-600 p-2 rounded text-center" id="light3">🚦</div>
+                                <div class="bg-gray-600 p-2 rounded text-center">🏢</div>
+                                <div class="bg-yellow-600 p-2 rounded text-center" id="light4">🚦</div>
+                                <div class="bg-gray-600 p-2 rounded text-center">🏢</div>
+                            </div>
+                            <div class="text-sm">
+                                <div class="mb-2">🔴 แดง: รถติด | 🟡 เหลือง: ไฟจราจร</div>
+                                <div>📊 ความหนาแน่น: <span id="trafficDensity">85%</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="cityResult" class="mt-6 text-center hidden"></div>
+
+                <div class="flex justify-between mt-8">
+                    <button id="cityHintBtn" onclick="getHint('city')" class="bg-yellow-600 hover:bg-yellow-700 px-6 py-2 rounded-lg">💡 ขอคำใบ้ (2/2)</button>
+                    <button onclick="backToMissions()" class="bg-gray-600 hover:bg-gray-700 px-6 py-2 rounded-lg">🔙 กลับ</button>
+                </div>
+            </div>
+
+            <!-- Future Mission -->
+            <div id="futureMission" class="hidden bg-gray-800 bg-opacity-50 rounded-2xl p-8">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-3xl font-bold">🌟 ภารกิจอนาคตกาล</h2>
+                    <div class="assistant text-4xl">🔮</div>
+                </div>
+                
+                <div class="bg-indigo-900 bg-opacity-50 rounded-lg p-4 mb-6">
+                    <h3 class="font-semibold text-indigo-300 mb-2">🚀 ภารกิจสุดท้าย</h3>
+                    <p class="text-indigo-200">ออกแบบระบบเมคคาทรอนิกส์แห่งอนาคต ที่รวมทุกทักษะที่คุณได้เรียนรู้</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="hologram rounded-lg p-6">
+                        <h3 class="text-xl font-semibold mb-4">🎯 เลือกโปรเจค</h3>
+                        <div class="space-y-4">
+                            <button onclick="selectProject('medical')" class="w-full text-left bg-gradient-to-r from-green-600 to-blue-600 p-4 rounded-lg">
+                                <div class="font-semibold">🏥 หุ่นยนต์แพทย์</div>
+                                <div class="text-sm opacity-80">ผ่าตัดด้วยความแม่นยำสูง</div>
+                            </button>
+                            <button onclick="selectProject('environment')" class="w-full text-left bg-gradient-to-r from-green-600 to-teal-600 p-4 rounded-lg">
+                                <div class="font-semibold">🌱 ระบบเกษตรอัจฉริยะ</div>
+                                <div class="text-sm opacity-80">ปลูกพืชอัตโนมัติประหยัดน้ำ</div>
+                            </button>
+                            <button onclick="selectProject('exploration')" class="w-full text-left bg-gradient-to-r from-purple-600 to-pink-600 p-4 rounded-lg">
+                                <div class="font-semibold">🚀 ยานสำรวจดาวเคราะห์</div>
+                                <div class="text-sm opacity-80">สำรวจดาวอังคารอัตโนมัติ</div>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="hologram rounded-lg p-6">
+                        <h3 class="text-xl font-semibold mb-4">🛠️ ออกแบบระบบ</h3>
+                        <div id="designArea" class="bg-gray-700 rounded-lg p-4 min-h-64">
+                            <div class="text-center text-gray-400 mt-20">
+                                เลือกโปรเจคเพื่อเริ่มออกแบบ
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="futureResult" class="mt-6 text-center hidden"></div>
+
+                <div class="flex justify-between mt-8">
+                    <button id="futureHintBtn" onclick="getHint('future')" class="bg-yellow-600 hover:bg-yellow-700 px-6 py-2 rounded-lg">💡 ขอคำใบ้ (2/2)</button>
+                    <button onclick="backToMissions()" class="bg-gray-600 hover:bg-gray-700 px-6 py-2 rounded-lg">🔙 กลับ</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Area -->
+        <div id="resultsArea" class="hidden">
+            <div class="bg-gray-800 bg-opacity-50 rounded-2xl p-8">
+                <h2 class="text-3xl font-bold mb-8 text-center neon-text">📊 ผลการประเมินความสามารถ</h2>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                    <div class="hologram rounded-lg p-6">
+                        <h3 class="text-xl font-semibold mb-4">📈 กราฟความสามารถ</h3>
+                        <canvas id="skillChart" width="400" height="300"></canvas>
+                    </div>
+                    
+                    <div class="hologram rounded-lg p-6">
+                        <h3 class="text-xl font-semibold mb-4">🎯 วิเคราะห์ผล</h3>
+                        <div id="analysisResult" class="space-y-4">
+                            <!-- Analysis will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="recommendation" class="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl p-8 text-center">
+                    <h3 class="text-2xl font-bold mb-4">🌟 คำแนะนำสำหรับคุณ</h3>
+                    <div id="recommendationText" class="text-lg mb-6"></div>
+                    <div id="careerPath" class="bg-white bg-opacity-20 rounded-lg p-4">
+                        <h4 class="font-semibold mb-2">🚀 เส้นทางการงานที่แนะนำ</h4>
+                        <div id="careerSuggestions"></div>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-8">
+                    <button onclick="resetAdventure()" class="bg-blue-600 hover:bg-blue-700 px-8 py-3 rounded-lg mr-4 text-lg">🔄 เริ่มใหม่</button>
+                    <button onclick="backToMissions()" class="bg-gray-600 hover:bg-gray-700 px-8 py-3 rounded-lg text-lg">🔙 กลับเมนู</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Game State
+        let gameState = {
+            currentMission: 1,
+            completedMissions: new Set(),
+            scores: {
+                mechanical: 0,
+                electrical: 0,
+                programming: 0,
+                integration: 0,
+                problemSolving: 0
+            },
+            missionResults: {},
+            hintsUsed: {
+                factory: 0,
+                robot: 0,
+                space: 0,
+                city: 0,
+                future: 0
+            }
+        };
+
+        // Mission-specific hints
+        const missionHints = {
+            factory: [
+                "🔧 คำใบ้ที่ 1: เริ่มจากการลากสายพาน (🔄) ไปวางที่จุดป้อนสินค้า เพื่อให้สินค้าเคลื่อนที่เข้าสู่ระบบ",
+                "🔧 คำใบ้ที่ 2: ใช้กล้องตรวจจับ (📷) วางที่จุดตรวจจับ เพื่อสแกนสีของสินค้า จากนั้นใช้ตัวคัดแยก (🔀) และตัวนับ (🔢) ตามลำดับ"
+            ],
+            robot: [
+                "🤖 คำใบ้ที่ 1: ใช้ปุ่มลูกศรเพื่อเคลื่อนที่หุ่นยนต์ไปหาผู้ประสบภัย (👤) ที่อยู่ในช่องสีแดง แล้วกดปุ่ม 'กู้ภัย' เมื่ออยู่ตำแหน่งเดียวกัน",
+                "🤖 คำใบ้ที่ 2: หลีกเลี่ยงช่องไฟไหม้ (🔥) สีส้ม และระวังแบตเตอรี่ที่จะหมดเมื่อเคลื่อนที่ ต้องช่วยผู้ประสบภัยทั้ง 3 คนให้ครบ"
+            ],
+            space: [
+                "🛰️ คำใบ้ที่ 1: เลือกเงื่อนไข 'IF O2 < 18%' และการทำงาน 'เพิ่ม O2' เพื่อรักษาระดับออกซิเจนให้ปลอดภัย",
+                "🛰️ คำใบ้ที่ 2: สำหรับอุณหภูมิ ถ้าเย็นเกินไป (< 20°C) ให้เปิดฮีตเตอร์ ถ้าร้อนเกินไป (> 25°C) ให้เปิดแอร์ เพื่อรักษาสภาพแวดล้อมให้เหมาะสม"
+            ],
+            city: [
+                "🌆 คำใบ้ที่ 1: อ่านอาการที่พบให้ดี - ไฟจราจรกะพริบผิดปกติ แต่เซนเซอร์ยังทำงาน แสดงว่าปัญหาอยู่ที่การสื่อสาร",
+                "🌆 คำใบ้ที่ 2: เลือก 'รีเซ็ตระบบเครือข่าย' เพราะปัญหาคือระบบสื่อสารขาดหาย ทำให้ไฟจราจรไม่ได้รับสัญญาณควบคุม"
+            ],
+            future: [
+                "🌟 คำใบ้ที่ 1: เลือกโปรเจคที่คุณสนใจ แล้วดูว่าแต่ละส่วนประกอบทำงานร่วมกันอย่างไร เช่น หุ่นยนต์แพทย์ต้องมีแขนกล + AI + เซนเซอร์",
+                "🌟 คำใบ้ที่ 2: คิดถึงการบูรณาการ - ระบบเกษตรต้องเชื่อมโยงเซนเซอร์ดิน, ระบบรดน้ำ, ควบคุมอุณหภูมิ และแอปมือถือเข้าด้วยกัน"
+            ]
+        };
+
+        // Initialize particles
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 2 + 's';
+                particle.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        function startAdventure() {
+            document.getElementById('startScreen').classList.add('hidden');
+            document.getElementById('gameContainer').classList.remove('hidden');
+            createParticles();
+        }
+
+        function startMission(missionType) {
+            document.getElementById('missionSelection').classList.add('hidden');
+            document.getElementById('missionArea').classList.remove('hidden');
+            
+            // Hide all missions
+            document.querySelectorAll('#missionArea > div').forEach(div => div.classList.add('hidden'));
+            
+            // Show selected mission
+            document.getElementById(missionType + 'Mission').classList.remove('hidden');
+            
+            // Initialize mission-specific functionality
+            if (missionType === 'factory') {
+                initFactoryMission();
+            } else if (missionType === 'robot') {
+                initRobotMission();
+            }
+        }
+
+        function initFactoryMission() {
+            const draggables = document.querySelectorAll('.draggable-enhanced');
+            const dropZones = document.querySelectorAll('.drop-zone-enhanced');
+            
+            draggables.forEach(draggable => {
+                draggable.addEventListener('dragstart', handleDragStart);
+            });
+            
+            dropZones.forEach(zone => {
+                zone.addEventListener('dragover', handleDragOver);
+                zone.addEventListener('drop', handleFactoryDrop);
+                zone.addEventListener('dragenter', handleDragEnter);
+                zone.addEventListener('dragleave', handleDragLeave);
+            });
+        }
+
+        function handleDragStart(e) {
+            e.dataTransfer.setData('text/plain', e.target.dataset.component);
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+        }
+
+        function handleDragEnter(e) {
+            e.target.classList.add('drag-over');
+        }
+
+        function handleDragLeave(e) {
+            e.target.classList.remove('drag-over');
+        }
+
+        function handleFactoryDrop(e) {
+            e.preventDefault();
+            e.target.classList.remove('drag-over');
+            
+            const component = e.dataTransfer.getData('text/plain');
+            const position = e.target.dataset.position;
+            
+            const correctPlacements = {
+                input: 'conveyor',
+                detection: 'camera',
+                sorting: 'sorter',
+                counting: 'counter'
+            };
+            
+            if (correctPlacements[position] === component) {
+                const icons = {
+                    conveyor: '🔄',
+                    camera: '📷',
+                    sorter: '🔀',
+                    counter: '🔢'
+                };
+                
+                e.target.innerHTML = `<div class="text-3xl">${icons[component]}</div>`;
+                e.target.classList.add('success-animation');
+                
+                setTimeout(() => e.target.classList.remove('success-animation'), 1000);
+                
+                // Check if factory is complete
+                checkFactoryCompletion();
+            }
+        }
+
+        function checkFactoryCompletion() {
+            const dropZones = document.querySelectorAll('.drop-zone-enhanced');
+            const completed = Array.from(dropZones).every(zone => 
+                zone.innerHTML.includes('text-3xl')
+            );
+            
+            if (completed) {
+                setTimeout(() => {
+                    document.getElementById('factoryResult').classList.remove('hidden');
+                    gameState.scores.mechanical += 30;
+                    gameState.scores.integration += 20;
+                    gameState.completedMissions.add('factory');
+                    document.getElementById('mission1Status').classList.remove('hidden');
+                    updateProgress();
+                    showMissionComplete('factory');
+                }, 1000);
+            }
+        }
+
+        function initRobotMission() {
+            const map = document.getElementById('buildingMap');
+            map.innerHTML = '';
+            
+            // Create 5x5 building map
+            for (let i = 0; i < 25; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'bg-gray-600 p-2 rounded text-center text-xs';
+                
+                if (i === 0) {
+                    cell.innerHTML = '🤖';
+                    cell.id = 'robotPosition';
+                    cell.className += ' bg-blue-600';
+                } else if ([6, 12, 18].includes(i)) {
+                    cell.innerHTML = '👤';
+                    cell.className += ' bg-red-600';
+                } else if ([4, 9, 14, 19, 24].includes(i)) {
+                    cell.innerHTML = '🔥';
+                    cell.className += ' bg-orange-600';
+                } else {
+                    cell.innerHTML = '⬜';
+                }
+                
+                map.appendChild(cell);
+            }
+            
+            gameState.robotPosition = 0;
+            gameState.rescuedCount = 0;
+        }
+
+        function moveRobot(direction) {
+            const currentPos = gameState.robotPosition;
+            let newPos = currentPos;
+            
+            switch (direction) {
+                case 'up': newPos = currentPos - 5; break;
+                case 'down': newPos = currentPos + 5; break;
+                case 'left': newPos = currentPos - 1; break;
+                case 'right': newPos = currentPos + 1; break;
+            }
+            
+            if (newPos >= 0 && newPos < 25) {
+                // Update robot position
+                document.getElementById('buildingMap').children[currentPos].innerHTML = '⬜';
+                document.getElementById('buildingMap').children[currentPos].className = 'bg-gray-600 p-2 rounded text-center text-xs';
+                
+                document.getElementById('buildingMap').children[newPos].innerHTML = '🤖';
+                document.getElementById('buildingMap').children[newPos].className = 'bg-blue-600 p-2 rounded text-center text-xs';
+                
+                gameState.robotPosition = newPos;
+                
+                // Update battery
+                const battery = parseInt(document.getElementById('battery').textContent);
+                document.getElementById('battery').textContent = Math.max(0, battery - 2) + '%';
+            }
+        }
+
+        function activateRescue() {
+            const pos = gameState.robotPosition;
+            const cell = document.getElementById('buildingMap').children[pos];
+            
+            if ([6, 12, 18].includes(pos) && cell.innerHTML === '🤖') {
+                gameState.rescuedCount++;
+                document.getElementById('survivors').textContent = `${gameState.rescuedCount}/3`;
+                
+                if (gameState.rescuedCount === 3) {
+                    setTimeout(() => {
+                        document.getElementById('robotResult').innerHTML = `
+                            <div class="text-6xl mb-4">🎉</div>
+                            <div class="text-2xl font-bold text-green-400">ภารกิจสำเร็จ! ช่วยผู้ประสบภัยครบทุกคน</div>
+                        `;
+                        document.getElementById('robotResult').classList.remove('hidden');
+                        gameState.scores.electrical += 25;
+                        gameState.scores.problemSolving += 25;
+                        gameState.completedMissions.add('robot');
+                        document.getElementById('mission2Status').classList.remove('hidden');
+                        updateProgress();
+                        showMissionComplete('robot');
+                    }, 500);
+                }
+            }
+        }
+
+        function runSpaceProgram() {
+            const oxygenCondition = document.getElementById('oxygenCondition').value;
+            const oxygenAction = document.getElementById('oxygenAction').value;
+            const tempCondition = document.getElementById('tempCondition').value;
+            const tempAction = document.getElementById('tempAction').value;
+            
+            let score = 0;
+            let feedback = [];
+            
+            // Check oxygen logic
+            if (oxygenCondition === 'low' && oxygenAction === 'increase') {
+                score += 25;
+                feedback.push('✅ ตรรกะออกซิเจนถูกต้อง');
+            } else {
+                feedback.push('❌ ตรรกะออกซิเจนไม่เหมาะสม');
+            }
+            
+            // Check temperature logic
+            if ((tempCondition === 'cold' && tempAction === 'heat') || 
+                (tempCondition === 'hot' && tempAction === 'cool')) {
+                score += 25;
+                feedback.push('✅ ตรรกะอุณหภูมิถูกต้อง');
+            } else {
+                feedback.push('❌ ตรรกะอุณหภูมิไม่เหมาะสม');
+            }
+            
+            if (score === 50) {
+                document.getElementById('spaceResult').innerHTML = `
+                    <div class="text-6xl mb-4">🌟</div>
+                    <div class="text-2xl font-bold text-green-400 mb-4">โปรแกรมทำงานสมบูรณ์!</div>
+                    <div class="bg-green-900 bg-opacity-50 rounded-lg p-4">
+                        ${feedback.join('<br>')}
+                    </div>
+                `;
+                gameState.scores.programming += 30;
+                gameState.scores.integration += 20;
+                gameState.completedMissions.add('space');
+                document.getElementById('mission3Status').classList.remove('hidden');
+                updateProgress();
+                showMissionComplete('space');
+            } else {
+                document.getElementById('spaceResult').innerHTML = `
+                    <div class="text-4xl mb-4">⚠️</div>
+                    <div class="text-xl text-yellow-400 mb-4">โปรแกรมยังไม่สมบูรณ์</div>
+                    <div class="bg-yellow-900 bg-opacity-50 rounded-lg p-4">
+                        ${feedback.join('<br>')}
+                    </div>
+                `;
+            }
+            
+            document.getElementById('spaceResult').classList.remove('hidden');
+        }
+
+        function selectSolution(solution) {
+            let result = '';
+            let success = false;
+            
+            switch (solution) {
+                case 'sensor':
+                    result = '⚠️ เซนเซอร์ทำงานปกติ ไม่ใช่สาเหตุหลัก';
+                    break;
+                case 'network':
+                    result = '✅ ถูกต้อง! ปัญหาอยู่ที่ระบบเครือข่ายขัดข้อง';
+                    success = true;
+                    break;
+                case 'traffic':
+                    result = '⚠️ โปรแกรมไฟจราจรปกติ แต่ไม่ได้รับสัญญาณ';
+                    break;
+                case 'manual':
+                    result = '❌ ไม่แก้ปัญหาที่ต้นเหตุ เป็นแค่วิธีชั่วคราว';
+                    break;
+            }
+            
+            document.getElementById('cityResult').innerHTML = `
+                <div class="text-4xl mb-4">${success ? '🎉' : '⚠️'}</div>
+                <div class="text-xl ${success ? 'text-green-400' : 'text-yellow-400'} mb-4">${result}</div>
+            `;
+            document.getElementById('cityResult').classList.remove('hidden');
+            
+            if (success) {
+                gameState.scores.problemSolving += 30;
+                gameState.scores.integration += 20;
+                gameState.completedMissions.add('city');
+                document.getElementById('mission4Status').classList.remove('hidden');
+                updateProgress();
+                showMissionComplete('city');
+            }
+        }
+
+        function selectProject(project) {
+            const designArea = document.getElementById('designArea');
+            let content = '';
+            
+            switch (project) {
+                case 'medical':
+                    content = `
+                        <div class="text-center">
+                            <div class="text-4xl mb-4">🏥</div>
+                            <h4 class="font-semibold mb-4">หุ่นยนต์แพทย์</h4>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="bg-blue-600 p-3 rounded">
+                                    <div class="text-2xl mb-1">🦾</div>
+                                    <div class="text-sm">แขนกลแม่นยำ</div>
+                                </div>
+                                <div class="bg-green-600 p-3 rounded">
+                                    <div class="text-2xl mb-1">👁️</div>
+                                    <div class="text-sm">ระบบมองเห็น AI</div>
+                                </div>
+                                <div class="bg-purple-600 p-3 rounded">
+                                    <div class="text-2xl mb-1">🧠</div>
+                                    <div class="text-sm">AI วินิจฉัย</div>
+                                </div>
+                                <div class="bg-red-600 p-3 rounded">
+                                    <div class="text-2xl mb-1">📊</div>
+                                    <div class="text-sm">เซนเซอร์ชีวิต</div>
+                                </div>
+                            </div>
+                            <button onclick="completeFutureMission('medical')" class="mt-4 bg-green-600 hover:bg-green-700 px-4 py-2 rounded">
+                                ✅ ยืนยันการออกแบบ
+                            </button>
+                        </div>
+                    `;
+                    break;
+                case 'environment':
+                    content = `
+                        <div class="text-center">
+                            <div class="text-4xl mb-4">🌱</div>
+                            <h4 class="font-semibold mb-4">ระบบเกษตรอัจฉริยะ</h4>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="bg-green-600 p-3 rounded">
+                                    <div class="text-2xl mb-1">💧</div>
+                                    <div class="text-sm">ระบบรดน้ำอัตโนมัติ</div>
+                                </div>
+                                <div class="bg-blue-600 p-3 rounded">
+                                    <div class="text-2xl mb-1">🌡️</div>
+                                    <div class="text-sm">ควบคุมอุณหภูมิ</div>
+                                </div>
+                                <div class="bg-yellow-600 p-3 rounded">
+                                    <div class="text-2xl mb-1">☀️</div>
+                                    <div class="text-sm">ปรับแสงแดด</div>
+                                </div>
+                                <div class="bg-purple-600 p-3 rounded">
+                                    <div class="text-2xl mb-1">📱</div>
+                                    <div class="text-sm">แอปควบคุม</div>
+                                </div>
+                            </div>
+                            <button onclick="completeFutureMission('environment')" class="mt-4 bg-green-600 hover:bg-green-700 px-4 py-2 rounded">
+                                ✅ ยืนยันการออกแบบ
+                            </button>
+                        </div>
+                    `;
+                    break;
+                case 'exploration':
+                    content = `
+                        <div class="text-center">
+                            <div class="text-4xl mb-4">🚀</div>
+                            <h4 class="font-semibold mb-4">ยานสำรวจดาวเคราะห์</h4>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="bg-red-600 p-3 rounded">
+                                    <div class="text-2xl mb-1">🔋</div>
+                                    <div class="text-sm">พลังงานแสงอาทิตย์</div>
+                                </div>
+                                <div class="bg-blue-600 p-3 rounded">
+                                    <div class="text-2xl mb-1">📡</div>
+                                    <div class="text-sm">สื่อสารระยะไกล</div>
+                                </div>
+                                <div class="bg-green-600 p-3 rounded">
+                                    <div class="text-2xl mb-1">🔬</div>
+                                    <div class="text-sm">เครื่องมือวิเคราะห์</div>
+                                </div>
+                                <div class="bg-purple-600 p-3 rounded">
+                                    <div class="text-2xl mb-1">🤖</div>
+                                    <div class="text-sm">AI นำทาง</div>
+                                </div>
+                            </div>
+                            <button onclick="completeFutureMission('exploration')" class="mt-4 bg-green-600 hover:bg-green-700 px-4 py-2 rounded">
+                                ✅ ยืนยันการออกแบบ
+                            </button>
+                        </div>
+                    `;
+                    break;
+            }
+            
+            designArea.innerHTML = content;
+        }
+
+        function completeFutureMission(project) {
+            document.getElementById('futureResult').innerHTML = `
+                <div class="text-6xl mb-4">🌟</div>
+                <div class="text-2xl font-bold text-green-400 mb-4">ออกแบบสำเร็จ!</div>
+                <div class="bg-green-900 bg-opacity-50 rounded-lg p-4">
+                    <div class="text-lg">คุณได้สร้างระบบเมคคาทรอนิกส์แห่งอนาคตที่ยอดเยี่ยม!</div>
+                </div>
+            `;
+            document.getElementById('futureResult').classList.remove('hidden');
+            
+            gameState.scores.mechanical += 20;
+            gameState.scores.electrical += 20;
+            gameState.scores.programming += 20;
+            gameState.scores.integration += 30;
+            gameState.scores.problemSolving += 20;
+            gameState.completedMissions.add('future');
+            document.getElementById('mission5Status').classList.remove('hidden');
+            updateProgress();
+            showMissionComplete('future');
+        }
+
+        function getHint(missionType) {
+            // Check if hints are available
+            if (gameState.hintsUsed[missionType] >= 2) {
+                alert('❌ คุณใช้คำใบ้ครบ 2 ครั้งแล้วสำหรับภารกิจนี้');
+                return;
+            }
+            
+            // Get the appropriate hint
+            const hintIndex = gameState.hintsUsed[missionType];
+            const hint = missionHints[missionType][hintIndex];
+            
+            // Show hint in a modal
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            modal.innerHTML = `
+                <div class="bg-gray-800 rounded-2xl p-8 text-center max-w-lg mx-4">
+                    <div class="text-4xl mb-4">💡</div>
+                    <h3 class="text-xl font-bold mb-4">คำใบ้</h3>
+                    <p class="text-lg mb-6 text-left">${hint}</p>
+                    <button onclick="this.parentElement.parentElement.remove()" class="bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-lg">
+                        เข้าใจแล้ว
+                    </button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            // Update hint count
+            gameState.hintsUsed[missionType]++;
+            
+            // Update button text
+            const remainingHints = 2 - gameState.hintsUsed[missionType];
+            const button = document.getElementById(missionType + 'HintBtn');
+            if (remainingHints > 0) {
+                button.textContent = `💡 ขอคำใบ้ (${remainingHints}/2)`;
+            } else {
+                button.textContent = '💡 คำใบ้หมดแล้ว';
+                button.disabled = true;
+                button.className = 'bg-gray-500 px-6 py-2 rounded-lg cursor-not-allowed';
+            }
+        }
+
+        function showMissionComplete(missionType) {
+            setTimeout(() => {
+                const modal = document.createElement('div');
+                modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+                modal.innerHTML = `
+                    <div class="bg-gray-800 rounded-2xl p-8 text-center max-w-md mx-4">
+                        <div class="text-6xl mb-4">🎉</div>
+                        <h3 class="text-2xl font-bold mb-4">ภารกิจสำเร็จ!</h3>
+                        <p class="mb-6">คุณได้ผ่านภารกิจ ${getMissionName(missionType)} แล้ว</p>
+                        <div class="flex gap-4 justify-center">
+                            <button onclick="this.parentElement.parentElement.parentElement.remove(); nextMission()" class="bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-lg">
+                                ➡️ ภารกิจต่อไป
+                            </button>
+                            <button onclick="this.parentElement.parentElement.parentElement.remove(); backToMissions()" class="bg-gray-600 hover:bg-gray-700 px-6 py-2 rounded-lg">
+                                📋 ดูภารกิจทั้งหมด
+                            </button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+            }, 2000);
+        }
+
+        function getMissionName(missionType) {
+            const names = {
+                factory: 'โรงงานอัจฉริยะ',
+                robot: 'หุ่นยนต์กู้ภัย',
+                space: 'สถานีอวกาศ',
+                city: 'เมืองอัจฉริยะ',
+                future: 'อนาคตกาล'
+            };
+            return names[missionType];
+        }
+
+        function nextMission() {
+            gameState.currentMission++;
+            updateProgress();
+            backToMissions();
+        }
+
+        function updateProgress() {
+            const progress = (gameState.completedMissions.size / 5) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+            document.getElementById('currentMission').textContent = Math.min(gameState.currentMission, 5);
+        }
+
+        function backToMissions() {
+            document.getElementById('missionArea').classList.add('hidden');
+            document.getElementById('resultsArea').classList.add('hidden');
+            document.getElementById('missionSelection').classList.remove('hidden');
+        }
+
+        function showResults() {
+            document.getElementById('missionSelection').classList.add('hidden');
+            document.getElementById('resultsArea').classList.remove('hidden');
+            
+            // Create skill chart
+            createSkillChart();
+            
+            // Generate analysis
+            generateAnalysis();
+        }
+
+        function createSkillChart() {
+            const ctx = document.getElementById('skillChart').getContext('2d');
+            
+            new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['กลไก', 'ไฟฟ้า', 'โปรแกรม', 'แก้ปัญหา', 'บูรณาการ'],
+                    datasets: [{
+                        label: 'ความสามารถ',
+                        data: [
+                            Math.min(gameState.scores.mechanical, 100),
+                            Math.min(gameState.scores.electrical, 100),
+                            Math.min(gameState.scores.programming, 100),
+                            Math.min(gameState.scores.problemSolving, 100),
+                            Math.min(gameState.scores.integration, 100)
+                        ],
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 2,
+                        pointBackgroundColor: 'rgba(54, 162, 235, 1)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgba(54, 162, 235, 1)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: 'white'
+                            }
+                        }
+                    },
+                    scales: {
+                        r: {
+                            angleLines: {
+                                color: 'rgba(255, 255, 255, 0.3)'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.3)'
+                            },
+                            pointLabels: {
+                                color: 'white',
+                                font: {
+                                    size: 14
+                                }
+                            },
+                            ticks: {
+                                color: 'white',
+                                backdropColor: 'transparent'
+                            },
+                            min: 0,
+                            max: 100
+                        }
+                    }
+                }
+            });
+        }
+
+        function generateAnalysis() {
+            const scores = gameState.scores;
+            const maxScore = Math.max(...Object.values(scores));
+            const topSkills = Object.keys(scores).filter(skill => scores[skill] === maxScore);
+            
+            const skillNames = {
+                mechanical: 'กลไก',
+                electrical: 'ไฟฟ้า-อิเล็กทรอนิกส์',
+                programming: 'การเขียนโปรแกรม',
+                problemSolving: 'การแก้ปัญหา',
+                integration: 'การบูรณาการระบบ'
+            };
+            
+            const recommendations = {
+                mechanical: {
+                    text: '🔧 คุณมีความถนัดด้านกลไกและการประกอบ! เหมาะกับงานออกแบบเครื่องจักรและระบบกลไก',
+                    careers: ['วิศวกรเครื่องกล', 'นักออกแบบผลิตภัณฑ์', 'ช่างเทคนิคเครื่องจักร']
+                },
+                electrical: {
+                    text: '⚡ คุณมีความสามารถด้านไฟฟ้าและอิเล็กทรอนิกส์! เหมาะกับงานวงจรควบคุมและระบบไฟฟ้า',
+                    careers: ['วิศวกรไฟฟ้า', 'ช่างเทคนิคอิเล็กทรอนิกส์', 'นักพัฒนาฮาร์ดแวร์']
+                },
+                programming: {
+                    text: '💻 คุณเก่งด้านการเขียนโปรแกรม! เหมาะกับงาน PLC และระบบควบคุมอัตโนมัติ',
+                    careers: ['โปรแกรมเมอร์ PLC', 'วิศวกรระบบอัตโนมัติ', 'นักพัฒนาซอฟต์แวร์ควบคุม']
+                },
+                problemSolving: {
+                    text: '🔍 คุณมีทักษะการแก้ปัญหาที่ยอดเยี่ยม! เหมาะกับงานบำรุงรักษาและวิเคราะห์ระบบ',
+                    careers: ['วิศวกรบำรุงรักษา', 'นักวิเคราะห์ระบบ', 'ช่างเทคนิคแก้ไขปัญหา']
+                },
+                integration: {
+                    text: '🔗 คุณมีความสามารถในการบูรณาการระบบ! เหมาะกับงานที่ต้องเชื่อมโยงหลายศาสตร์',
+                    careers: ['วิศวกรเมคคาทรอนิกส์', 'ผู้จัดการโครงการเทคนิค', 'นักออกแบบระบบอัจฉริยะ']
+                }
+            };
+            
+            const topSkill = topSkills[0];
+            const recommendation = recommendations[topSkill];
+            
+            document.getElementById('analysisResult').innerHTML = `
+                <div class="bg-blue-900 bg-opacity-50 rounded-lg p-4">
+                    <h4 class="font-semibold mb-2">🏆 จุดแข็งของคุณ</h4>
+                    <p>${skillNames[topSkill]} (${scores[topSkill]} คะแนน)</p>
+                </div>
+                <div class="bg-green-900 bg-opacity-50 rounded-lg p-4">
+                    <h4 class="font-semibold mb-2">📈 พัฒนาการ</h4>
+                    <p>ผ่านภารกิจ ${gameState.completedMissions.size}/5 ภารกิจ</p>
+                </div>
+                <div class="bg-purple-900 bg-opacity-50 rounded-lg p-4">
+                    <h4 class="font-semibold mb-2">⭐ คะแนนรวม</h4>
+                    <p>${Object.values(scores).reduce((a, b) => a + b, 0)} คะแนน</p>
+                </div>
+            `;
+            
+            document.getElementById('recommendationText').textContent = recommendation.text;
+            document.getElementById('careerSuggestions').innerHTML = recommendation.careers
+                .map(career => `<div class="bg-white bg-opacity-10 rounded px-3 py-1 m-1 inline-block">${career}</div>`)
+                .join('');
+        }
+
+        function resetAdventure() {
+            gameState = {
+                currentMission: 1,
+                completedMissions: new Set(),
+                scores: {
+                    mechanical: 0,
+                    electrical: 0,
+                    programming: 0,
+                    integration: 0,
+                    problemSolving: 0
+                },
+                missionResults: {},
+                hintsUsed: {
+                    factory: 0,
+                    robot: 0,
+                    space: 0,
+                    city: 0,
+                    future: 0
+                }
+            };
+            
+            // Reset UI
+            document.querySelectorAll('[id$="Status"]').forEach(status => status.classList.add('hidden'));
+            
+            // Reset hint buttons
+            ['factory', 'robot', 'space', 'city', 'future'].forEach(mission => {
+                const button = document.getElementById(mission + 'HintBtn');
+                if (button) {
+                    button.textContent = '💡 ขอคำใบ้ (2/2)';
+                    button.disabled = false;
+                    button.className = 'bg-yellow-600 hover:bg-yellow-700 px-6 py-2 rounded-lg';
+                }
+            });
+            
+            updateProgress();
+            backToMissions();
+        }
+
+        // Initialize the game
+        document.addEventListener('DOMContentLoaded', function() {
+            createParticles();
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'977b24cb731e45bd',t:'MTc1NjYyODc5NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

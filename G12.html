@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎮 เกมสำหรับสาขาบัญชี</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap');
+        
+        body {
+            font-family: 'Sarabun', sans-serif;
+        }
+        
+        .calculator-btn {
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .calculator-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        
+        .calculator-btn:active {
+            transform: translateY(0);
+        }
+        
+        .game-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border: 2px solid #dee2e6;
+            transition: all 0.3s ease;
+        }
+        
+        .game-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .slide-in {
+            animation: slideIn 0.5s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(-100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .correct-answer {
+            background: linear-gradient(45deg, #28a745, #20c997);
+            color: white;
+        }
+        
+        .wrong-answer {
+            background: linear-gradient(45deg, #dc3545, #e54c4e);
+            color: white;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <!-- Header -->
+    <div class="bg-gradient-to-r from-blue-600 to-blue-800 text-white p-6 shadow-lg">
+        <div class="max-w-6xl mx-auto">
+            <h1 class="text-3xl font-bold text-center mb-2">🎮 เกมสำหรับสาขาบัญชี</h1>
+            <p class="text-center text-blue-100">ฝึกทักษะการคำนวณและความรู้ทางบัญชีผ่านเกมสนุกๆ</p>
+        </div>
+    </div>
+
+    <!-- Score Display -->
+    <div class="max-w-6xl mx-auto p-4">
+        <div class="bg-white rounded-lg shadow-md p-4 mb-6">
+            <div class="flex justify-between items-center">
+                <div class="text-lg font-semibold text-gray-700">
+                    คะแนนรวม: <span id="totalScore" class="text-2xl font-bold text-blue-600">0</span>
+                </div>
+                <div class="text-sm text-gray-500">
+                    เกมที่เล่นแล้ว: <span id="gamesPlayed">0</span>/5
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Selection -->
+    <div id="gameSelection" class="max-w-6xl mx-auto p-4">
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Game 1: Quick Math -->
+            <div class="game-card rounded-lg p-6 cursor-pointer" onclick="startGame('quickMath')">
+                <div class="text-center">
+                    <div class="text-4xl mb-4">🧮</div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">เกมบวกลบเลขเร็ว</h3>
+                    <p class="text-gray-600 text-sm mb-4">ฝึกความแม่นยำและความรวดเร็วในการคำนวณ</p>
+                    <div class="bg-blue-500 text-white px-4 py-2 rounded-full text-sm font-semibold">
+                        เริ่มเล่น
+                    </div>
+                </div>
+            </div>
+
+            <!-- Game 2: Document Matching -->
+            <div class="game-card rounded-lg p-6 cursor-pointer" onclick="startGame('documentMatch')">
+                <div class="text-center">
+                    <div class="text-4xl mb-4">📄</div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">จับคู่เอกสารบัญชี</h3>
+                    <p class="text-gray-600 text-sm mb-4">ฝึกความเข้าใจเอกสารทางบัญชีและการใช้งาน</p>
+                    <div class="bg-red-500 text-white px-4 py-2 rounded-full text-sm font-semibold">
+                        เริ่มเล่น
+                    </div>
+                </div>
+            </div>
+
+            <!-- Game 3: Account Sorting -->
+            <div class="game-card rounded-lg p-6 cursor-pointer" onclick="startGame('accountSort')">
+                <div class="text-center">
+                    <div class="text-4xl mb-4">📊</div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">จัดประเภทบัญชี</h3>
+                    <p class="text-gray-600 text-sm mb-4">ฝึกการจำแนกบัญชีตามมาตรฐาน</p>
+                    <div class="bg-yellow-500 text-white px-4 py-2 rounded-full text-sm font-semibold">
+                        เริ่มเล่น
+                    </div>
+                </div>
+            </div>
+
+            <!-- Game 4: Missing Numbers -->
+            <div class="game-card rounded-lg p-6 cursor-pointer" onclick="startGame('missingNumber')">
+                <div class="text-center">
+                    <div class="text-4xl mb-4">🔍</div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">งบการเงินหายไป</h3>
+                    <p class="text-gray-600 text-sm mb-4">ฝึกการวิเคราะห์งบและการคิดย้อน</p>
+                    <div class="bg-purple-500 text-white px-4 py-2 rounded-full text-sm font-semibold">
+                        เริ่มเล่น
+                    </div>
+                </div>
+            </div>
+
+            <!-- Game 5: Find Errors -->
+            <div class="game-card rounded-lg p-6 cursor-pointer" onclick="startGame('findError')">
+                <div class="text-center">
+                    <div class="text-4xl mb-4">🕵️</div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">ตรวจสอบความผิดพลาด</h3>
+                    <p class="text-gray-600 text-sm mb-4">ฝึกความรอบคอบและการตรวจสอบเอกสาร</p>
+                    <div class="bg-green-500 text-white px-4 py-2 rounded-full text-sm font-semibold">
+                        เริ่มเล่น
+                    </div>
+                </div>
+            </div>
+
+            <!-- Summary Card -->
+            <div class="game-card rounded-lg p-6 cursor-pointer" onclick="showSummary()">
+                <div class="text-center">
+                    <div class="text-4xl mb-4">⭐</div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">สรุปผลการเล่น</h3>
+                    <p class="text-gray-600 text-sm mb-4">ดูผลคะแนนและประเมินความสามารถ</p>
+                    <div class="bg-indigo-500 text-white px-4 py-2 rounded-full text-sm font-semibold">
+                        ดูผล
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Container -->
+    <div id="gameContainer" class="max-w-4xl mx-auto p-4 hidden">
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h2 id="gameTitle" class="text-2xl font-bold text-gray-800"></h2>
+                <button onclick="backToMenu()" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors">
+                    กลับเมนู
+                </button>
+            </div>
+            
+            <div id="gameContent"></div>
+        </div>
+    </div>
+
+    <!-- Summary Modal -->
+    <div id="summaryModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-8 max-w-md w-full mx-4">
+            <h3 class="text-2xl font-bold text-center mb-6">🏆 สรุปผลการเล่น</h3>
+            <div id="summaryContent" class="text-center">
+                <div class="text-4xl mb-4" id="summaryScore">0</div>
+                <div class="text-lg font-semibold mb-4" id="summaryTitle">นักคำนวณมือใหม่</div>
+                <div class="text-gray-600 mb-6" id="summaryDescription">เริ่มต้นได้ดีแล้ว! ลองเล่นเกมอื่นๆ เพิ่มเติม</div>
+            </div>
+            <button onclick="closeSummary()" class="w-full bg-blue-500 hover:bg-blue-600 text-white py-3 rounded-lg font-semibold transition-colors">
+                ปิด
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let totalScore = 0;
+        let gamesPlayed = 0;
+        let currentGame = null;
+        let gameTimer = null;
+        let timeLeft = 0;
+
+        // Game data
+        const gameScores = {
+            quickMath: 0,
+            documentMatch: 0,
+            accountSort: 0,
+            missingNumber: 0,
+            findError: 0
+        };
+
+        // Quick Math Game Data
+        const mathProblems = [
+            {question: "125 + 87 = ?", answer: 212},
+            {question: "456 - 189 = ?", answer: 267},
+            {question: "24 × 15 = ?", answer: 360},
+            {question: "144 ÷ 12 = ?", answer: 12},
+            {question: "89 + 156 = ?", answer: 245},
+            {question: "500 - 237 = ?", answer: 263},
+            {question: "18 × 25 = ?", answer: 450},
+            {question: "225 ÷ 15 = ?", answer: 15}
+        ];
+
+        // Document Matching Data
+        const documentPairs = [
+            {question: "รายการขายสินค้า", answer: "ใบแจ้งหนี้", options: ["ใบเสร็จ", "ใบแจ้งหนี้", "งบกำไรขาดทุน", "งบดุล"]},
+            {question: "บันทึกรายรับ-รายจ่าย", answer: "สมุดรายวันทั่วไป", options: ["ใบเสร็จ", "สมุดรายวันทั่วไป", "งบทดลอง", "ใบสำคัญจ่าย"]},
+            {question: "แสดงฐานะการเงิน", answer: "งบดุล", options: ["งบกำไรขาดทุน", "งบดุล", "งบกระแสเงินสด", "ใบแจ้งหนี้"]},
+            {question: "หลักฐานการจ่ายเงิน", answer: "ใบเสร็จ", options: ["ใบเสร็จ", "ใบแจ้งหนี้", "งบกำไรขาดทุน", "สมุดรายวันทั่วไป"]}
+        ];
+
+        // Account Sorting Data
+        const accountItems = [
+            {item: "ซื้อโต๊ะทำงาน 3,000 บาท", category: "สินทรัพย์"},
+            {item: "จ่ายค่าไฟ 1,500 บาท", category: "ค่าใช้จ่าย"},
+            {item: "ขายสินค้า 5,000 บาท", category: "รายได้"},
+            {item: "เงินกู้ธนาคาร 50,000 บาท", category: "หนี้สิน"},
+            {item: "ค่าเช่าสำนักงาน 8,000 บาท", category: "ค่าใช้จ่าย"},
+            {item: "เงินสด 15,000 บาท", category: "สินทรัพย์"}
+        ];
+
+        // Missing Number Data
+        const missingNumberProblems = [
+            {revenue: 20000, expense: "?", profit: 5000, answer: 15000},
+            {revenue: 35000, expense: 28000, profit: "?", answer: 7000},
+            {revenue: "?", expense: 45000, profit: 12000, answer: 57000},
+            {revenue: 80000, expense: "?", profit: 25000, answer: 55000}
+        ];
+
+        // Error Finding Data
+        const errorProblems = [
+            {
+                entries: [
+                    {desc: "จ่ายค่าไฟ 500 บาท", type: "รายได้", correct: false},
+                    {desc: "ขายสินค้า 2,000 บาท", type: "รายได้", correct: true},
+                    {desc: "ซื้อวัสดุสำนักงาน 800 บาท", type: "ค่าใช้จ่าย", correct: true}
+                ],
+                errorIndex: 0
+            },
+            {
+                entries: [
+                    {desc: "รับเงินจากลูกหนี้ 5,000 บาท", type: "สินทรัพย์", correct: true},
+                    {desc: "จ่ายเงินเดือน 15,000 บาท", type: "รายได้", correct: false},
+                    {desc: "ขายสินค้าเชื่อ 3,000 บาท", type: "รายได้", correct: true}
+                ],
+                errorIndex: 1
+            }
+        ];
+
+        function playSound() {
+            // Simple beep sound simulation
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = 800;
+            oscillator.type = 'square';
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.1);
+        }
+
+        function updateScore() {
+            document.getElementById('totalScore').textContent = totalScore;
+            document.getElementById('gamesPlayed').textContent = gamesPlayed;
+        }
+
+        function startGame(gameType) {
+            currentGame = gameType;
+            document.getElementById('gameSelection').classList.add('hidden');
+            document.getElementById('gameContainer').classList.remove('hidden');
+            
+            switch(gameType) {
+                case 'quickMath':
+                    startQuickMath();
+                    break;
+                case 'documentMatch':
+                    startDocumentMatch();
+                    break;
+                case 'accountSort':
+                    startAccountSort();
+                    break;
+                case 'missingNumber':
+                    startMissingNumber();
+                    break;
+                case 'findError':
+                    startFindError();
+                    break;
+            }
+        }
+
+        function backToMenu() {
+            if (gameTimer) {
+                clearInterval(gameTimer);
+                gameTimer = null;
+            }
+            document.getElementById('gameContainer').classList.add('hidden');
+            document.getElementById('gameSelection').classList.remove('hidden');
+            currentGame = null;
+        }
+
+        function startQuickMath() {
+            document.getElementById('gameTitle').textContent = '🧮 เกมบวกลบเลขเร็ว';
+            let currentProblem = 0;
+            let gameScore = 0;
+            timeLeft = 60;
+            
+            function showProblem() {
+                if (currentProblem >= 5 || timeLeft <= 0) {
+                    endQuickMath(gameScore);
+                    return;
+                }
+                
+                const problem = mathProblems[Math.floor(Math.random() * mathProblems.length)];
+                
+                document.getElementById('gameContent').innerHTML = `
+                    <div class="text-center">
+                        <div class="text-lg font-semibold mb-4">เวลาที่เหลือ: <span id="timer" class="text-red-500">${timeLeft}</span> วินาที</div>
+                        <div class="text-lg mb-2">ข้อที่ ${currentProblem + 1}/5</div>
+                        <div class="text-3xl font-bold mb-6 bg-gray-100 p-6 rounded-lg">${problem.question}</div>
+                        <input type="number" id="mathAnswer" class="text-2xl text-center border-2 border-gray-300 rounded-lg p-4 w-48 mb-4" placeholder="คำตอบ">
+                        <br>
+                        <button onclick="checkMathAnswer(${problem.answer})" class="calculator-btn bg-blue-500 hover:bg-blue-600 text-white px-8 py-3 rounded-lg text-lg font-semibold">
+                            ตอบ
+                        </button>
+                    </div>
+                `;
+                
+                document.getElementById('mathAnswer').focus();
+                document.getElementById('mathAnswer').addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        checkMathAnswer(problem.answer);
+                    }
+                });
+            }
+            
+            window.checkMathAnswer = function(correctAnswer) {
+                const userAnswer = parseInt(document.getElementById('mathAnswer').value);
+                if (userAnswer === correctAnswer) {
+                    playSound();
+                    gameScore += Math.max(10, Math.floor(timeLeft / 2));
+                    currentProblem++;
+                    setTimeout(showProblem, 500);
+                } else {
+                    document.getElementById('mathAnswer').classList.add('wrong-answer');
+                    setTimeout(() => {
+                        document.getElementById('mathAnswer').classList.remove('wrong-answer');
+                        document.getElementById('mathAnswer').value = '';
+                    }, 1000);
+                }
+            };
+            
+            function endQuickMath(score) {
+                clearInterval(gameTimer);
+                gameScores.quickMath = score;
+                totalScore += score;
+                gamesPlayed++;
+                updateScore();
+                
+                document.getElementById('gameContent').innerHTML = `
+                    <div class="text-center">
+                        <div class="text-4xl mb-4">🎉</div>
+                        <h3 class="text-2xl font-bold mb-4">เกมจบแล้ว!</h3>
+                        <div class="text-xl mb-4">คะแนนที่ได้: <span class="font-bold text-blue-600">${score}</span></div>
+                        <button onclick="backToMenu()" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold">
+                            กลับเมนู
+                        </button>
+                    </div>
+                `;
+            }
+            
+            gameTimer = setInterval(() => {
+                timeLeft--;
+                const timerElement = document.getElementById('timer');
+                if (timerElement) {
+                    timerElement.textContent = timeLeft;
+                }
+                if (timeLeft <= 0) {
+                    endQuickMath(gameScore);
+                }
+            }, 1000);
+            
+            showProblem();
+        }
+
+        function startDocumentMatch() {
+            document.getElementById('gameTitle').textContent = '📄 จับคู่เอกสารบัญชี';
+            let currentProblem = 0;
+            let gameScore = 0;
+            
+            function showProblem() {
+                if (currentProblem >= documentPairs.length) {
+                    endDocumentMatch(gameScore);
+                    return;
+                }
+                
+                const problem = documentPairs[currentProblem];
+                
+                document.getElementById('gameContent').innerHTML = `
+                    <div class="text-center">
+                        <div class="text-lg mb-2">ข้อที่ ${currentProblem + 1}/${documentPairs.length}</div>
+                        <div class="text-2xl font-bold mb-6 bg-yellow-100 p-6 rounded-lg">${problem.question}</div>
+                        <div class="text-lg mb-4">เลือกเอกสารที่เหมาะสม:</div>
+                        <div class="grid grid-cols-2 gap-4">
+                            ${problem.options.map(option => `
+                                <button onclick="checkDocumentAnswer('${option}', '${problem.answer}')" 
+                                        class="calculator-btn bg-white border-2 border-gray-300 hover:border-red-400 p-4 rounded-lg text-lg">
+                                    ${option}
+                                </button>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            window.checkDocumentAnswer = function(selected, correct) {
+                if (selected === correct) {
+                    playSound();
+                    gameScore += 20;
+                    currentProblem++;
+                    setTimeout(showProblem, 1000);
+                } else {
+                    // Show wrong answer feedback
+                    event.target.classList.add('wrong-answer');
+                    setTimeout(() => {
+                        event.target.classList.remove('wrong-answer');
+                    }, 1000);
+                }
+            };
+            
+            function endDocumentMatch(score) {
+                gameScores.documentMatch = score;
+                totalScore += score;
+                gamesPlayed++;
+                updateScore();
+                
+                document.getElementById('gameContent').innerHTML = `
+                    <div class="text-center">
+                        <div class="text-4xl mb-4">📋</div>
+                        <h3 class="text-2xl font-bold mb-4">เกมจบแล้ว!</h3>
+                        <div class="text-xl mb-4">คะแนนที่ได้: <span class="font-bold text-red-600">${score}</span></div>
+                        <button onclick="backToMenu()" class="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg font-semibold">
+                            กลับเมนู
+                        </button>
+                    </div>
+                `;
+            }
+            
+            showProblem();
+        }
+
+        function startAccountSort() {
+            document.getElementById('gameTitle').textContent = '📊 จัดประเภทบัญชี';
+            let currentProblem = 0;
+            let gameScore = 0;
+            
+            function showProblem() {
+                if (currentProblem >= accountItems.length) {
+                    endAccountSort(gameScore);
+                    return;
+                }
+                
+                const problem = accountItems[currentProblem];
+                const categories = ['สินทรัพย์', 'หนี้สิน', 'รายได้', 'ค่าใช้จ่าย'];
+                
+                document.getElementById('gameContent').innerHTML = `
+                    <div class="text-center">
+                        <div class="text-lg mb-2">ข้อที่ ${currentProblem + 1}/${accountItems.length}</div>
+                        <div class="text-xl font-bold mb-6 bg-yellow-100 p-6 rounded-lg">${problem.item}</div>
+                        <div class="text-lg mb-4">จัดประเภทรายการนี้:</div>
+                        <div class="grid grid-cols-2 gap-4">
+                            ${categories.map(category => `
+                                <button onclick="checkAccountAnswer('${category}', '${problem.category}')" 
+                                        class="calculator-btn bg-white border-2 border-gray-300 hover:border-yellow-400 p-4 rounded-lg text-lg">
+                                    ${category}
+                                </button>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            window.checkAccountAnswer = function(selected, correct) {
+                if (selected === correct) {
+                    playSound();
+                    gameScore += 15;
+                    currentProblem++;
+                    setTimeout(showProblem, 1000);
+                } else {
+                    event.target.classList.add('wrong-answer');
+                    setTimeout(() => {
+                        event.target.classList.remove('wrong-answer');
+                    }, 1000);
+                }
+            };
+            
+            function endAccountSort(score) {
+                gameScores.accountSort = score;
+                totalScore += score;
+                gamesPlayed++;
+                updateScore();
+                
+                document.getElementById('gameContent').innerHTML = `
+                    <div class="text-center">
+                        <div class="text-4xl mb-4">📈</div>
+                        <h3 class="text-2xl font-bold mb-4">เกมจบแล้ว!</h3>
+                        <div class="text-xl mb-4">คะแนนที่ได้: <span class="font-bold text-yellow-600">${score}</span></div>
+                        <button onclick="backToMenu()" class="bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-3 rounded-lg font-semibold">
+                            กลับเมนู
+                        </button>
+                    </div>
+                `;
+            }
+            
+            showProblem();
+        }
+
+        function startMissingNumber() {
+            document.getElementById('gameTitle').textContent = '🔍 งบการเงินหายไป';
+            let currentProblem = 0;
+            let gameScore = 0;
+            
+            function showProblem() {
+                if (currentProblem >= missingNumberProblems.length) {
+                    endMissingNumber(gameScore);
+                    return;
+                }
+                
+                const problem = missingNumberProblems[currentProblem];
+                
+                document.getElementById('gameContent').innerHTML = `
+                    <div class="text-center">
+                        <div class="text-lg mb-2">ข้อที่ ${currentProblem + 1}/${missingNumberProblems.length}</div>
+                        <div class="bg-purple-100 p-6 rounded-lg mb-6">
+                            <h3 class="text-xl font-bold mb-4">งบกำไรขาดทุน</h3>
+                            <div class="text-left max-w-sm mx-auto">
+                                <div class="flex justify-between mb-2">
+                                    <span>รายได้:</span>
+                                    <span class="font-bold">${problem.revenue === '?' ? '?' : problem.revenue.toLocaleString()}</span>
+                                </div>
+                                <div class="flex justify-between mb-2">
+                                    <span>ค่าใช้จ่าย:</span>
+                                    <span class="font-bold">${problem.expense === '?' ? '?' : problem.expense.toLocaleString()}</span>
+                                </div>
+                                <hr class="my-2">
+                                <div class="flex justify-between">
+                                    <span>กำไรสุทธิ:</span>
+                                    <span class="font-bold">${problem.profit === '?' ? '?' : problem.profit.toLocaleString()}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-lg mb-4">หาค่าที่หายไป:</div>
+                        <input type="number" id="missingAnswer" class="text-2xl text-center border-2 border-gray-300 rounded-lg p-4 w-48 mb-4" placeholder="คำตอบ">
+                        <br>
+                        <button onclick="checkMissingAnswer(${problem.answer})" class="calculator-btn bg-purple-500 hover:bg-purple-600 text-white px-8 py-3 rounded-lg text-lg font-semibold">
+                            ตอบ
+                        </button>
+                    </div>
+                `;
+                
+                document.getElementById('missingAnswer').focus();
+                document.getElementById('missingAnswer').addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        checkMissingAnswer(problem.answer);
+                    }
+                });
+            }
+            
+            window.checkMissingAnswer = function(correctAnswer) {
+                const userAnswer = parseInt(document.getElementById('missingAnswer').value);
+                if (userAnswer === correctAnswer) {
+                    playSound();
+                    gameScore += 25;
+                    currentProblem++;
+                    setTimeout(showProblem, 1000);
+                } else {
+                    document.getElementById('missingAnswer').classList.add('wrong-answer');
+                    setTimeout(() => {
+                        document.getElementById('missingAnswer').classList.remove('wrong-answer');
+                        document.getElementById('missingAnswer').value = '';
+                    }, 1000);
+                }
+            };
+            
+            function endMissingNumber(score) {
+                gameScores.missingNumber = score;
+                totalScore += score;
+                gamesPlayed++;
+                updateScore();
+                
+                document.getElementById('gameContent').innerHTML = `
+                    <div class="text-center">
+                        <div class="text-4xl mb-4">🔎</div>
+                        <h3 class="text-2xl font-bold mb-4">เกมจบแล้ว!</h3>
+                        <div class="text-xl mb-4">คะแนนที่ได้: <span class="font-bold text-purple-600">${score}</span></div>
+                        <button onclick="backToMenu()" class="bg-purple-500 hover:bg-purple-600 text-white px-6 py-3 rounded-lg font-semibold">
+                            กลับเมนู
+                        </button>
+                    </div>
+                `;
+            }
+            
+            showProblem();
+        }
+
+        function startFindError() {
+            document.getElementById('gameTitle').textContent = '🕵️ ตรวจสอบความผิดพลาด';
+            let currentProblem = 0;
+            let gameScore = 0;
+            
+            function showProblem() {
+                if (currentProblem >= errorProblems.length) {
+                    endFindError(gameScore);
+                    return;
+                }
+                
+                const problem = errorProblems[currentProblem];
+                
+                document.getElementById('gameContent').innerHTML = `
+                    <div class="text-center">
+                        <div class="text-lg mb-2">ข้อที่ ${currentProblem + 1}/${errorProblems.length}</div>
+                        <div class="bg-green-100 p-6 rounded-lg mb-6">
+                            <h3 class="text-xl font-bold mb-4">สมุดบัญชี</h3>
+                            <div class="space-y-3">
+                                ${problem.entries.map((entry, index) => `
+                                    <div class="flex justify-between items-center bg-white p-3 rounded cursor-pointer hover:bg-gray-50" 
+                                         onclick="checkErrorAnswer(${index}, ${problem.errorIndex})">
+                                        <span>${entry.desc}</span>
+                                        <span class="font-bold text-sm bg-gray-200 px-2 py-1 rounded">${entry.type}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                        <div class="text-lg mb-4">คลิกที่รายการที่ผิดพลาด:</div>
+                    </div>
+                `;
+            }
+            
+            window.checkErrorAnswer = function(selected, correct) {
+                if (selected === correct) {
+                    playSound();
+                    gameScore += 30;
+                    currentProblem++;
+                    setTimeout(showProblem, 1000);
+                } else {
+                    event.currentTarget.classList.add('wrong-answer');
+                    setTimeout(() => {
+                        event.currentTarget.classList.remove('wrong-answer');
+                    }, 1000);
+                }
+            };
+            
+            function endFindError(score) {
+                gameScores.findError = score;
+                totalScore += score;
+                gamesPlayed++;
+                updateScore();
+                
+                document.getElementById('gameContent').innerHTML = `
+                    <div class="text-center">
+                        <div class="text-4xl mb-4">🎯</div>
+                        <h3 class="text-2xl font-bold mb-4">เกมจบแล้ว!</h3>
+                        <div class="text-xl mb-4">คะแนนที่ได้: <span class="font-bold text-green-600">${score}</span></div>
+                        <button onclick="backToMenu()" class="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-semibold">
+                            กลับเมนู
+                        </button>
+                    </div>
+                `;
+            }
+            
+            showProblem();
+        }
+
+        function showSummary() {
+            let title = "นักคำนวณมือใหม่";
+            let description = "เริ่มต้นได้ดีแล้ว! ลองเล่นเกมอื่นๆ เพิ่มเติม";
+            
+            if (totalScore >= 300) {
+                title = "นักตรวจสอบที่แม่นยำ";
+                description = "ยอดเยี่ยม! คุณมีความแม่นยำสูงและเข้าใจหลักการบัญชีเป็นอย่างดี";
+            } else if (totalScore >= 200) {
+                title = "นักจัดการงบการเงิน";
+                description = "ดีมาก! คุณมีความเข้าใจในการจัดการงบการเงินและเอกสารบัญชี";
+            } else if (totalScore >= 100) {
+                title = "นักคำนวณมือไว";
+                description = "ดี! คุณมีทักษะการคำนวณที่รวดเร็วและแม่นยำ";
+            }
+            
+            document.getElementById('summaryScore').textContent = totalScore + " คะแนน";
+            document.getElementById('summaryTitle').textContent = title;
+            document.getElementById('summaryDescription').textContent = description;
+            document.getElementById('summaryModal').classList.remove('hidden');
+            document.getElementById('summaryModal').classList.add('flex');
+        }
+
+        function closeSummary() {
+            document.getElementById('summaryModal').classList.add('hidden');
+            document.getElementById('summaryModal').classList.remove('flex');
+        }
+
+        // Initialize
+        updateScore();
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'977adb17d2c145bd',t:'MTc1NjYyNTc3NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
