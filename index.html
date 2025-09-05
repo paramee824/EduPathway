@@ -211,95 +211,90 @@
         <!-- The banner image serves as the header's background -->
     </header>
 
-<center><div class="w-max">
-    <a href="Usermanual.html" class="inline-block">
-        <img src="User manual.png" 
-             alt="คู่มือการใช้งานเว็บไซต์" 
-             onerror="this.src='https://placehold.co/100x40/ffffff/000000?text=คู่มือ'" 
-             class="w-20 h-auto hover:scale-105 transition-transform">
-    </a>
-</div></center>
-
-    <div class="top-bar">
+ <div class="top-bar">
+        <!-- User Manual Button -->
+        <a href="usermanual.html" class="relative">
+            <img src="User manual.png" alt="คู่มือการใช้งาน" onerror="this.src='https://placehold.co/250x50/3498db/ffffff?text=คู่มือการใช้งาน'">
+        </a>
+        
         <!-- Main Menu Dropdown -->
         <div class="relative">
-            <a href="#" class="menu-btn w-full h-auto rounded-xl transition-transform hover:scale-105" onclick="toggleDropdown('myDropdown')">
-                <img src="menu.png" alt="เมนู" onerror="this.src='https://placehold.co/250x50/3498db/ffffff?text=เมนู'" class="w-full h-auto rounded-xl transition-transform hover:scale-105">
+            <a href="#" class="menu-btn" onclick="toggleDropdown('myDropdown')">
+                <img src="Menu.png" alt="เมนู" onerror="this.src='https://placehold.co/250x50/3498db/ffffff?text=เมนู'">
             </a>
             <div class="dropdown-content" id="myDropdown">
-                <a href="ช่างยนต์.html"><img src="ปุ่มช่างยนต์.png" alt="ช่างยนต์" onerror="this.src='https://placehold.co/250x50/3498db/ffffff?text=ช่างยนต์'"></a>
-                <a href="ช่างกลโรงงาน.html"><img src="ปุ่มช่างกลโรงงาน.png" alt="ช่างกลโรงงาน" onerror="this.src='https://placehold.co/250x50/3498db/ffffff?text=ช่างกลโรงงาน'"></a>
-                <a href="ช่างเชื่อม.html"><img src="ปุ่มช่างเชื่อมโลหะ.png" alt="ช่างเชื่อมโลหะ" onerror="this.src='https://placehold.co/250x50/3498db/ffffff?text=ช่างเชื่อมโลหะ'"></a>
-                <a href="ช่างไฟ.html"><img src="ปุ่มช่างไฟฟ้ากำลัง.png" alt="ช่างไฟฟ้ากำลัง" onerror="this.src='https://placehold.co/250x50/3498db/ffffff?text=ช่างไฟฟ้ากำลัง'"></a>
-                <a href="อิเล็ก.html"><img src="ปุ่มอิเล็กทรอนิกส์.png" alt="อิเล็กทรอนิกส์" onerror="this.src='https://placehold.co/250x50/3498db/ffffff?text=อิเล็กทรอนิกส์'"></a>
-                <a href="ก่อสร้าง.html"><img src="ปุ่มช่างก่อสร้าง.png" alt="ช่างก่อสร้าง" onerror="this.src='https://placehold.co/250x50/3498db/ffffff?text=ช่างก่อสร้าง'"></a>
-                <a href="เขียนแบบ.html"><img src="ปุ่มช่างเขียนแบบ.png" alt="ช่างเขียนแบบ" onerror="this.src='https://placehold.co/250x50/3498db/ffffff?text=ช่างเขียนแบบ'"></a>
-                <a href="เมคคา.html"><img src="ปุ่มเมคคาทรอนิกส์.png" alt="เมคคาทรอนิกส์" onerror="this.src='https://placehold.co/250x50/3498db/ffffff?text=เมคคาทรอนิกส์'"></a>
-                <a href="ช่างวัด.html"><img src="ปุ่มช่างวัด.png" alt="ช่างวัด" onerror="this.src='https://placehold.co/250x50/3498db/ffffff?text=ช่างวัด'"></a>
-                <a href="อากาศยาน.html"><img src="ปุ่มช่างอากาศยาน.png" alt="ช่างอากาศยาน" onerror="this.src='https://placehold.co/250x50/3498db/ffffff?text=ช่างอากาศยาน'"></a>
-                <a href="ระบบราง.html"><img src="ปุ่มระบบราง.png" alt="ระบบราง" onerror="this.src='https://placehold.co/250x50/3498db/ffffff?text=ระบบราง'"></a>
-                <a href="บัญชี.html"><img src="ปุ่มการบัญชี.png" alt="การบัญชี" onerror="this.src='https://placehold.co/250x50/3498db/ffffff?text=การบัญชี'"></a>
-                <a href="คอมธุรกิจ.html"><img src="combuss.png" alt="คอมพิวเตอร์ธุรกิจ" onerror="this.src='https://placehold.co/250x50/3498db/ffffff?text=คอมพิวเตอร์ธุรกิจ'"></a>
-                <a href="ธุรกิจการบิน.html"><img src="ปุ่มธุรกิจการบิน.png" alt="ธุรกิจการบิน" onerror="this.src='https://placehold.co/250x50/3498db/ffffff?text=ธุรกิจการบิน'"></a>
-                <a href="โลจิส.html"><img src="ปุ่มโลจิสติกส์.png" alt="โลจิสติกส์" onerror="this.src='https://placehold.co/250x50/3498db/ffffff?text=โลจิสติกส์'"></a>
-                <a href="โรงแรม.html"><img src="ปุ่มการโรงแรม.png" alt="การโรงแรม" onerror="this.src='https://placehold.co/250x50/3498db/ffffff?text=การโรงแรม'"></a>
-                <a href="ท่องเที่ยว.html"><img src="ปุ่มการท่องเที่ยว.png" alt="การท่องเที่ยว" onerror="this.src='https://placehold.co/250x50/3498db/ffffff?text=การท่องเที่ยว'"></a>
-                <a href="ไอที.html"><img src="ปุ่มช่าง IT.png" alt="ไอที" onerror="this.src='https://placehold.co/250x50/3498db/ffffff?text=ไอที'"></a>
+                <a href="ช่างยนต์.html"><img src="ปุ่มช่างยนต์.png" alt="ช่างยนต์" onerror="this.src='https://placehold.co/120x30/3498db/ffffff?text=ช่างยนต์'"></a>
+                <a href="ช่างกลโรงงาน.html"><img src="ปุ่มช่างกลโรงงาน.png" alt="ช่างกลโรงงาน" onerror="this.src='https://placehold.co/120x30/3498db/ffffff?text=ช่างกลโรงงาน'"></a>
+                <a href="ช่างเชื่อม.html"><img src="ปุ่มช่างเชื่อมโลหะ.png" alt="ช่างเชื่อมโลหะ" onerror="this.src='https://placehold.co/120x30/3498db/ffffff?text=ช่างเชื่อมโลหะ'"></a>
+                <a href="ช่างไฟ.html"><img src="ปุ่มช่างไฟฟ้ากำลัง.png" alt="ช่างไฟฟ้ากำลัง" onerror="this.src='https://placehold.co/120x30/3498db/ffffff?text=ช่างไฟฟ้ากำลัง'"></a>
+                <a href="อิเล็ก.html"><img src="ปุ่มอิเล็กทรอนิกส์.png" alt="อิเล็กทรอนิกส์" onerror="this.src='https://placehold.co/120x30/3498db/ffffff?text=อิเล็กทรอนิกส์'"></a>
+                <a href="ก่อสร้าง.html"><img src="ปุ่มช่างก่อสร้าง.png" alt="ช่างก่อสร้าง" onerror="this.src='https://placehold.co/120x30/3498db/ffffff?text=ช่างก่อสร้าง'"></a>
+                <a href="เขียนแบบ.html"><img src="ปุ่มช่างเขียนแบบ.png" alt="ช่างเขียนแบบ" onerror="this.src='https://placehold.co/120x30/3498db/ffffff?text=ช่างเขียนแบบ'"></a>
+                <a href="เมคคา.html"><img src="ปุ่มเมคคาทรอนิกส์.png" alt="เมคคาทรอนิกส์" onerror="this.src='https://placehold.co/120x30/3498db/ffffff?text=เมคคาทรอนิกส์'"></a>
+                <a href="ช่างวัด.html"><img src="ปุ่มช่างวัด.png" alt="ช่างวัด" onerror="this.src='https://placehold.co/120x30/3498db/ffffff?text=ช่างวัด'"></a>
+                <a href="อากาศยาน.html"><img src="ปุ่มช่างอากาศยาน.png" alt="ช่างอากาศยาน" onerror="this.src='https://placehold.co/120x30/3498db/ffffff?text=ช่างอากาศยาน'"></a>
+                <a href="ระบบราง.html"><img src="ปุ่มระบบราง.png" alt="ระบบราง" onerror="this.src='https://placehold.co/120x30/3498db/ffffff?text=ระบบราง'"></a>
+                <a href="บัญชี.html"><img src="ปุ่มการบัญชี.png" alt="การบัญชี" onerror="this.src='https://placehold.co/120x30/3498db/ffffff?text=การบัญชี'"></a>
+                <a href="คอมธุรกิจ.html"><img src="combuss.png" alt="คอมพิวเตอร์ธุรกิจ" onerror="this.src='https://placehold.co/120x30/3498db/ffffff?text=คอมพิวเตอร์ธุรกิจ'"></a>
+                <a href="ธุรกิจการบิน.html"><img src="ปุ่มธุรกิจการบิน.png" alt="ธุรกิจการบิน" onerror="this.src='https://placehold.co/120x30/3498db/ffffff?text=ธุรกิจการบิน'"></a>
+                <a href="โลจิส.html"><img src="ปุ่มโลจิสติกส์.png" alt="โลจิสติกส์" onerror="this.src='https://placehold.co/120x30/3498db/ffffff?text=โลจิสติกส์'"></a>
+                <a href="โรงแรม.html"><img src="ปุ่มการโรงแรม.png" alt="การโรงแรม" onerror="this.src='https://placehold.co/120x30/3498db/ffffff?text=การโรงแรม'"></a>
+                <a href="ท่องเที่ยว.html"><img src="ปุ่มการท่องเที่ยว.png" alt="การท่องเที่ยว" onerror="this.src='https://placehold.co/120x30/3498db/ffffff?text=การท่องเที่ยว'"></a>
+                <a href="ไอที.html"><img src="ปุ่มช่าง IT.png" alt="ไอที" onerror="this.src='https://placehold.co/120x30/3498db/ffffff?text=ไอที'"></a>
             </div>
         </div>
-
+        
         <!-- Quiz Dropdown -->
         <div class="relative">
-            <a href="#" class="menu-btn w-full h-auto rounded-xl transition-transform hover:scale-105" onclick="toggleDropdown('quizDropdown')">
-                <img src="Test.png" alt="แบบทดสอบ" onerror="this.src='https://placehold.co/250x50/999999/ffffff?text=แบบทดสอบ'" class="w-full h-auto rounded-xl transition-transform hover:scale-105">
+            <a href="#" class="menu-btn" onclick="toggleDropdown('quizDropdown')">
+                <img src="Test.png" alt="แบบทดสอบ" onerror="this.src='https://placehold.co/250x50/999999/ffffff?text=แบบทดสอบ'">
             </a>
             <div class="dropdown-content" id="quizDropdown">
-                <a href="T1.html"><img src="T1.png" alt="T1" onerror="this.src='https://placehold.co/250x50/999999/ffffff?text=T1'"></a>
-                <a href="T2.html"><img src="T2.png" alt="T2" onerror="this.src='https://placehold.co/250x50/999999/ffffff?text=T2'"></a>
-                <a href="T3.html"><img src="T3.png" alt="T3" onerror="this.src='https://placehold.co/250x50/999999/ffffff?text=T3'"></a>
-                <a href="T4.html"><img src="T4.png" alt="T4" onerror="this.src='https://placehold.co/250x50/999999/ffffff?text=T4'"></a>
-                <a href="T5.html"><img src="T5.png" alt="T5" onerror="this.src='https://placehold.co/250x50/999999/ffffff?text=T5'"></a>
-                <a href="T6.html"><img src="T6.png" alt="T6" onerror="this.src='https://placehold.co/250x50/999999/ffffff?text=T6'"></a>
-                <a href="T7.html"><img src="T7.png" alt="T7" onerror="this.src='https://placehold.co/250x50/999999/ffffff?text=T7'"></a>
-                <a href="T8.html"><img src="T8.png" alt="T8" onerror="this.src='https://placehold.co/250x50/999999/ffffff?text=T8'"></a>
-                <a href="T9.html"><img src="T9.png" alt="T9" onerror="this.src='https://placehold.co/250x50/999999/ffffff?text=T9'"></a>
+                <a href="T1.html"><img src="T1.png" alt="T1" onerror="this.src='https://placehold.co/120x30/999999/ffffff?text=T1'"></a>
+                <a href="T2.html"><img src="T2.png" alt="T2" onerror="this.src='https://placehold.co/120x30/999999/ffffff?text=T2'"></a>
+                <a href="T3.html"><img src="T3.png" alt="T3" onerror="this.src='https://placehold.co/120x30/999999/ffffff?text=T3'"></a>
+                <a href="T4.html"><img src="T4.png" alt="T4" onerror="this.src='https://placehold.co/120x30/999999/ffffff?text=T4'"></a>
+                <a href="T5.html"><img src="T5.png" alt="T5" onerror="this.src='https://placehold.co/120x30/999999/ffffff?text=T5'"></a>
+                <a href="T6.html"><img src="T6.png" alt="T6" onerror="this.src='https://placehold.co/120x30/999999/ffffff?text=T6'"></a>
+                <a href="T7.html"><img src="T7.png" alt="T7" onerror="this.src='https://placehold.co/120x30/999999/ffffff?text=T7'"></a>
+                <a href="T8.html"><img src="T8.png" alt="T8" onerror="this.src='https://placehold.co/120x30/999999/ffffff?text=T8'"></a>
+                <a href="T9.html"><img src="T9.png" alt="T9" onerror="this.src='https://placehold.co/120x30/999999/ffffff?text=T9'"></a>
             </div>
         </div>
 
-<div class="relative">
-            <a href="#" class="menu-btn w-full h-auto rounded-xl transition-transform hover:scale-105" onclick="toggleDropdown('gamesDropdown')">
-                <img src="games.png" alt="เกม" onerror="this.src='https://placehold.co/250x50/999999/ffffff?text=เกม'" class="w-full h-auto rounded-xl transition-transform hover:scale-105">
+        <!-- Games Dropdown -->
+        <div class="relative">
+            <a href="#" class="menu-btn" onclick="toggleDropdown('gamesDropdown')">
+                <img src="Games.png" alt="เกม" onerror="this.src='https://placehold.co/250x50/3498db/ffffff?text=เกม'">
             </a>
             <div class="dropdown-content" id="gamesDropdown">
-                <a href="G1.html"><img src="G1.png" alt="T1" onerror="this.src='https://placehold.co/250x50/999999/ffffff?text=G1'"></a>
-                <a href="G2.html"><img src="G2.png" alt="T2" onerror="this.src='https://placehold.co/250x50/999999/ffffff?text=G2'"></a>
-                <a href="G3.html"><img src="G3.png" alt="T3" onerror="this.src='https://placehold.co/250x50/999999/ffffff?text=G3'"></a>
-                <a href="G4.html"><img src="G4.png" alt="T4" onerror="this.src='https://placehold.co/250x50/999999/ffffff?text=G4'"></a>
-                <a href="G5.html"><img src="G5.png" alt="T5" onerror="this.src='https://placehold.co/250x50/999999/ffffff?text=G5'"></a>
-                <a href="G6.html"><img src="G6.png" alt="T6" onerror="this.src='https://placehold.co/250x50/999999/ffffff?text=G6'"></a>
-                <a href="G7.html"><img src="G7.png" alt="T7" onerror="this.src='https://placehold.co/250x50/999999/ffffff?text=G7'"></a>
-                <a href="G8.html"><img src="G8.png" alt="T8" onerror="this.src='https://placehold.co/250x50/999999/ffffff?text=G8'"></a>
-                <a href="G9.html"><img src="G9.png" alt="T9" onerror="this.src='https://placehold.co/250x50/999999/ffffff?text=G9'"></a>
-                <a href="G10.html"><img src="G10.png" alt="T10" onerror="this.src='https://placehold.co/250x50/999999/ffffff?text=G10'"></a>
-                <a href="G11.html"><img src="G11.png" alt="T11" onerror="this.src='https://placehold.co/250x50/999999/ffffff?text=G11'"></a>
-                <a href="G12.html"><img src="G12.png" alt="T12" onerror="this.src='https://placehold.co/250x50/999999/ffffff?text=G12'"></a>
-                <a href="G13.html"><img src="G13.png" alt="T13" onerror="this.src='https://placehold.co/250x50/999999/ffffff?text=G13'"></a>
-                <a href="G14.html"><img src="G14.png" alt="T14" onerror="this.src='https://placehold.co/250x50/999999/ffffff?text=G14'"></a>
-                <a href="G15.html"><img src="G15.png" alt="T15" onerror="this.src='https://placehold.co/250x50/999999/ffffff?text=G15'"></a>
-                <a href="G16.html"><img src="G16.png" alt="T16" onerror="this.src='https://placehold.co/250x50/999999/ffffff?text=G16'"></a>
-                <a href="G17.html"><img src="G17.png" alt="T17" onerror="this.src='https://placehold.co/250x50/999999/ffffff?text=G17'"></a>
-                <a href="G18.html"><img src="G18.png" alt="T18" onerror="this.src='https://placehold.co/250x50/999999/ffffff?text=G18'"></a>
+                <a href="G1.html"><img src="G1.png" alt="G1" onerror="this.src='https://placehold.co/120x30/999999/ffffff?text=G1'"></a>
+                <a href="G2.html"><img src="G2.png" alt="G2" onerror="this.src='https://placehold.co/120x30/999999/ffffff?text=G2'"></a>
+                <a href="G3.html"><img src="G3.png" alt="G3" onerror="this.src='https://placehold.co/120x30/999999/ffffff?text=G3'"></a>
+                <a href="G4.html"><img src="G4.png" alt="G4" onerror="this.src='https://placehold.co/120x30/999999/ffffff?text=G4'"></a>
+                <a href="G5.html"><img src="G5.png" alt="G5" onerror="this.src='https://placehold.co/120x30/999999/ffffff?text=G5'"></a>
+                <a href="G6.html"><img src="G6.png" alt="G6" onerror="this.src='https://placehold.co/120x30/999999/ffffff?text=G6'"></a>
+                <a href="G7.html"><img src="G7.png" alt="G7" onerror="this.src='https://placehold.co/120x30/999999/ffffff?text=G7'"></a>
+                <a href="G8.html"><img src="G8.png" alt="G8" onerror="this.src='https://placehold.co/120x30/999999/ffffff?text=G8'"></a>
+                <a href="G9.html"><img src="G9.png" alt="G9" onerror="this.src='https://placehold.co/120x30/999999/ffffff?text=G9'"></a>
+                <a href="G10.html"><img src="G10.png" alt="G10" onerror="this.src='https://placehold.co/120x30/999999/ffffff?text=G10'"></a>
+                <a href="G11.html"><img src="G11.png" alt="G11" onerror="this.src='https://placehold.co/120x30/999999/ffffff?text=G11'"></a>
+                <a href="G12.html"><img src="G12.png" alt="G12" onerror="this.src='https://placehold.co/120x30/999999/ffffff?text=G12'"></a>
+                <a href="G13.html"><img src="G13.png" alt="G13" onerror="this.src='https://placehold.co/120x30/999999/ffffff?text=G13'"></a>
+                <a href="G14.html"><img src="G14.png" alt="G14" onerror="this.src='https://placehold.co/120x30/999999/ffffff?text=G14'"></a>
+                <a href="G15.html"><img src="G15.png" alt="G15" onerror="this.src='https://placehold.co/120x30/999999/ffffff?text=G15'"></a>
+                <a href="G16.html"><img src="G16.png" alt="G16" onerror="this.src='https://placehold.co/120x30/999999/ffffff?text=G16'"></a>
+                <a href="G17.html"><img src="G17.png" alt="G17" onerror="this.src='https://placehold.co/120x30/999999/ffffff?text=G17'"></a>
+                <a href="G18.html"><img src="G18.png" alt="G18" onerror="this.src='https://placehold.co/120x30/999999/ffffff?text=G18'"></a>
             </div>
         </div>
 
         <!-- Creator Button -->
-        <div class="relative">
-            <a href="ผู้จัดทำ.html" class="w-full h-auto rounded-xl transition-transform hover:scale-105">
-                <img src="Creator.png" alt="ผู้จัดทำ" onerror="this.src='https://placehold.co/250x50/3498db/ffffff?text=ผู้จัดทำ'" class="w-full h-auto rounded-xl transition-transform hover:scale-105">
-            </a>
-        </div>
+        <a href="ผู้จัดทำ.html" class="relative">
+            <img src="Creator.png" alt="ผู้จัดทำ" onerror="this.src='https://placehold.co/250x50/cccccc/333333?text=ผู้จัดทำ'">
+        </a>
     </div>
-    
+
     <main class="flex justify-center items-center flex-col">
         <div class="w-full max-w-6xl">
             <div class="section-card-small text-center welcome-text">
@@ -516,6 +511,3 @@
 
 </body>
 </html>
-
-
-
