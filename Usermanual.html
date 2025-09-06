@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduPathway - คู่มือการใช้งาน</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body, h1, h2, p, ul, li {
+            margin: 0;
+            padding: 0;
+            font-weight: normal;
+        }
+        body {
+            font-family: 'PK Maehongson Round Demo', sans-serif, Arial, sans-serif;
+            background-color: #ffffff;
+            color: #333;
+            line-height: 1.8;
+            background-image: url('Bg1.png'); /* ใส่ URL ของรูปภาพพื้นหลังที่ต้องการ */
+            background-size: cover; /* ทำให้รูปภาพพอดีกับหน้าจอ */
+            background-position: center; /* จัดตำแหน่งรูปภาพให้อยู่ตรงกลาง */
+            background-repeat: no-repeat; /* ไม่ให้รูปภาพซ้ำ */
+            background-attachment: fixed; /* ทำให้รูปภาพนิ่งอยู่กับที่เมื่อเลื่อนหน้าจอ */
+            padding: 20px;
+            max-width: 1024px;
+            margin: 0 auto;
+            font-size: 1.1em;
+        }
+        h1, h2 {
+            color: #000080;
+            font-weight: bold;
+            letter-spacing: 0.03em;
+        }
+        h1 {
+            font-size: 2.8em;
+            text-align: center;
+            margin-top: 25px;
+            margin-bottom: 50px;
+        }
+        h2 {
+            font-size: 2.2em;
+            border-left: 8px solid #000080;
+            padding-left: 15px;
+            margin-top: 50px;
+            margin-bottom: 25px;
+        }
+        p {
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            color: #444;
+            text-align: justify;
+        }
+        ul {
+            list-style-type: disc;
+            margin-left: 40px;
+            margin-bottom: 20px;
+            color: #444;
+        }
+        ul li {
+            margin-bottom: 8px;
+            font-size: 1.15em;
+        }
+        .section-block {
+            max-width: 980px;
+            margin: 30px auto;
+            padding: 40px 50px;
+            background: #f8f8f8;
+            border: 1px solid #ddd;
+            box-shadow: 0 0 15px rgba(0,0,0,0.08);
+            border-radius: 8px;
+            position: relative;
+            transition: box-shadow 0.3s ease;
+        }
+        .section-block:hover {
+            box-shadow: 0 0 20px rgba(0,0,0,0.12);
+        }
+        .close {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            font-size: 50px;
+            font-weight: bold;
+            color: #c0392b;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.3s ease;
+            z-index: 10000;
+        }
+        .close:hover {
+            color: #2c3e50;
+            transform: rotate(180deg) scale(1.25);
+        }
+        hr {
+            border: none;
+            border-top: 3px solid #ecb445;
+            margin: 40px 0;
+        }
+        @media (max-width: 768px) {
+            body {
+                padding: 15px 10px;
+            }
+            h1 {
+                font-size: 2.2em;
+                margin-bottom: 30px;
+            }
+            h2 {
+                font-size: 1.7em;
+                margin-top: 40px;
+            }
+            p, ul li {
+                font-size: 1.05em;
+            }
+            .section-block {
+                padding: 30px 25px;
+            }
+            .close {
+                font-size: 35px;
+                top: 15px;
+                right: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="section-block">
+        <span class="close close-btn" onclick="goToHomePage()">&times;</span>
+        <h2>คู่มือการใช้งานเว็บไซต์ EduPathway</h2>
+        <p>ขอต้อนรับเข้าสู่เว็บไซต์ EduPathway แหล่งรวมข้อมูลสำหรับนักเรียนที่กำลังมองหาเส้นทางการศึกษาต่อและสายอาชีพที่ใช่ คู่มือนี้จะช่วยให้คุณใช้งานเว็บไซต์ได้อย่างเต็มประสิทธิภาพ</p>
+        
+        <h3>1. การนำทางและเลือกสาขาวิชา</h3>
+        <p>ที่ด้านบนของหน้าหลัก คุณจะพบกับเมนูดรอปดาวน์ <b>"เลื่อนเพื่อเลือกสาขาวิชา"</b> เพียงแค่คลิกที่เมนูนี้ คุณจะเห็นรายการสาขาวิชาต่างๆ ที่น่าสนใจให้เลือกมากมาย เมื่อคลิกที่ชื่อสาขาวิชาที่สนใจ ระบบจะนำคุณไปยังหน้าข้อมูลรายละเอียดของสาขานั้นทันที</p>
+
+        <h3>2. การทำแบบทดสอบค้นหาตัวเอง</h3>
+        <p>ที่คอลัมน์ด้านขวาของหน้าหลัก คุณจะพบกับปุ่มสำหรับทำแบบทดสอบต่างๆ แบบทดสอบเหล่านี้ถูกออกแบบมาเพื่อช่วยให้คุณสำรวจความสนใจและค้นหาความถนัดของตัวเองในด้านอาชีพ เมื่อทำเสร็จสิ้น คุณจะได้รับผลลัพธ์ที่ช่วยให้การตัดสินใจเลือกเส้นทางในอนาคตง่ายขึ้น</p>
+
+        <h3>3. ข้อมูลผู้จัดทำ</h3>
+        <p>หากคุณต้องการทราบข้อมูลเพิ่มเติมเกี่ยวกับทีมผู้พัฒนาเว็บไซต์ หรือมีข้อเสนอแนะใดๆ คุณสามารถคลิกที่ปุ่ม <b>"ผู้จัดทำ"</b> ได้ตลอดเวลา เพื่อเข้าถึงหน้าเพจที่รวบรวมข้อมูลติดต่อและรายละเอียดต่างๆ ของทีมงาน</p>
+    </div>
+</div>
+
+<script>
+    // ฟังก์ชันสำหรับกลับไปหน้าแรก
+    function goToHomePage() {
+        window.location.href = 'index.html';
+    }
+</script>
+
+</body>
+</html>

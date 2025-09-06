@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ประวัติผู้จัดทำ</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #000080;
+            --secondary-blue: #00004d;
+            --accent-red: #b30303;
+            --light-gray: #f9f9f9;
+            --medium-gray: #555;
+            --dark-gray: #333;
+            --card-shadow: 0 6px 30px rgba(0, 0, 0, 0.08);
+            --card-hover-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+            --pastel-yellow: #FFFACD;
+            --pastel-purple: #E6E6FA;
+        }
+
+        @font-face {
+            font-family: 'PK Maehongson Round Demo';
+            src: url('path/to/PK Maehongson Round Demo.woff2') format('woff2'),
+                 url('path/to/PK Maehongson Round Demo.woff') format('woff');
+        }
+
+        body, h1, h2, p, ul, li {
+            margin: 0;
+            padding: 0;
+            font-weight: normal;
+        }
+        
+        body {
+            font-family: 'PK Maehongson Round Demo', sans-serif, Arial, sans-serif;
+            background-color: var(--light-gray);
+            color: var(--dark-gray);
+            line-height: 1.8;
+            background-image: url('Bg1.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            padding: 20px;
+            font-size: 1.2em;
+            overflow-x: hidden;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 80px 40px 40px 40px; 
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: var(--card-shadow);
+            position: relative;
+        }
+        
+        .close-button {
+            position: absolute; 
+            top: 20px; 
+            right: 20px; 
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 2.5em; 
+            color: var(--dark-gray);
+            transition: color 0.3s ease, transform 0.3s ease;
+            z-index: 100;
+        }
+
+        .close-button:hover {
+            color: var(--accent-red);
+            transform: scale(1.1) rotate(90deg);
+        }
+        
+        .member-grid {
+            display: flex;
+            flex-direction: column; 
+            gap: 40px;
+        }
+
+        .member-card {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            padding: 40px; 
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+            display: flex;
+            flex-direction: row; 
+            align-items: flex-start; 
+            gap: 40px; 
+            position: relative;
+        }
+        
+        .member-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--card-hover-shadow);
+        }
+
+        .member-card img {
+            width: 220px; 
+            height: 280px; 
+            border-radius: 8px;
+            object-fit: cover;
+            border: 10px solid transparent; 
+            border-image: linear-gradient(to bottom, var(--pastel-yellow) 0%, var(--pastel-purple) 100%) 1; 
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            flex-shrink: 0; 
+            transition: transform 0.3s ease, box-shadow 0.3s ease, filter 0.3s ease;
+        }
+
+        .member-card img:hover {
+            transform: scale(1.05) rotate(1deg);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            filter: brightness(1.1);
+        }
+
+        .member-info {
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+            flex-grow: 1; 
+        }
+        
+        .member-info h2 {
+            font-size: 2em;
+            color: var(--primary-blue);
+            margin-bottom: 15px;
+            font-weight: bold;
+            letter-spacing: 0.02em;
+        }
+
+        .member-info p, .contact-info p, .info-item i {
+            font-size: 1.2em; 
+            color: var(--medium-gray);
+            margin-bottom: 8px;
+        }
+        
+        .member-info .detail {
+            font-weight: bold;
+            color: var(--secondary-blue);
+        }
+        
+        .info-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px 30px; 
+            margin-top: 10px;
+        }
+        
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-item p {
+            margin-bottom: 0;
+        }
+
+        .info-item .detail {
+            margin-bottom: 0;
+        }
+        
+        .contact-info-container {
+            margin-top: 20px;
+        }
+
+        /* Responsive adjustments for mobile screens */
+        @media (max-width: 768px) {
+            body {
+                padding: 15px 10px;
+            }
+            .container {
+                padding: 50px 20px 20px 20px;
+            }
+            h1 {
+                font-size: 2.8em;
+                margin-bottom: 30px;
+            }
+            .close-button {
+                top: 15px;
+                right: 15px;
+                font-size: 2em;
+            }
+            .member-grid {
+                gap: 25px;
+            }
+            .member-card {
+                flex-direction: column; 
+                align-items: center; 
+                padding: 25px;
+                gap: 20px;
+            }
+            .member-card img {
+                width: 150px;
+                height: 200px;
+            }
+            .member-info {
+                text-align: left;
+                align-items: flex-start;
+            }
+            .member-info h2 {
+                font-size: 2em;
+                text-align: center;
+                width: 100%;
+            }
+            .member-info p, .contact-info, .info-item {
+                font-size: 1em;
+            }
+            .info-row {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <button id="closePageBtn" class="close-button" aria-label="กลับหน้าหลัก">
+            <i class="fas fa-times"></i>
+        </button>
+        <div class="member-grid">
+            <!-- Card for Student 1 -->
+            <div class="member-card">
+                <img src="C3.png" alt="รูปภาพนักศึกษา 1" />
+                <div class="member-info">
+                    <h2>นายจักรภัทร จงแจ้งกลาง</h2>
+                    <div class="info-row">
+                        <p><span class="detail">สถานะ : </span> นักศึกษา ปวช. ปีที่ 3</p>
+                        <p><span class="detail">สาขา : </span> เทคโนโลยีสารสนเทศ</p>
+                        <p><span class="detail">ศึกษาที่ : </span> วิทยาลัยเทคนิคสัตหีบ</p>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <p><span class="detail">ที่อยู่ : </span> 3/69 หมู่ 11 ต.หนองปรือ อ.บางละมุง จ.ชลบุรี 20150</p>
+                    </div>
+                    <div class="info-row contact-info-container">
+                        <div class="info-item">
+                            <i class="fas fa-envelope"></i>
+                            <p><span class="detail">อีเมล : </span> <a href="mailto:66209010010@gmail.com">66209010010@gmail.com</a></p>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-phone-alt"></i>
+                            <p><span class="detail">เบอร์โทร : </span> 095-779-3571</p>
+                        </div>
+                        <div class="info-item">
+                            <i class="fab fa-line"></i>
+                            <p><span class="detail">ไลน์ : </span> 095-779-3571</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card for Student 2 -->
+            <div class="member-card">
+                <img src="C2.png" alt="รูปภาพนักศึกษา 2" />
+                <div class="member-info">
+                    <h2>นางสาวฐิติพร ธาระถ้อย</h2>
+                    <div class="info-row">
+                        <p><span class="detail">สถานะ : </span> นักศึกษา ปวช. ปีที่ 3</p>
+                        <p><span class="detail">สาขา : </span> เทคโนโลยีสารสนเทศ</p>
+                        <p><span class="detail">ศึกษาที่ : </span> วิทยาลัยเทคนิคสัตหีบ</p>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <p><span class="detail">ที่อยู่ : </span> 15/3 หมู่ 7 ต.สำนักท้อน อ.บ้านฉาง จ.ระยอง 21130</p>
+                    </div>
+                    <div class="info-row contact-info-container">
+                        <div class="info-item">
+                            <i class="fas fa-envelope"></i>
+                            <p><span class="detail">อีเมล : </span> <a href="mailto:66209010014@gmail.com">66209010014@gmail.com</a></p>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-phone-alt"></i>
+                            <p><span class="detail">เบอร์โทร : </span> 095-918-2453</p>
+                        </div>
+                        <div class="info-item">
+                            <i class="fab fa-line"></i>
+                            <p><span class="detail">ไลน์ : </span> 095-918-2453</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card for Student 3 -->
+            <div class="member-card">
+                <img src="C1.png" alt="รูปภาพนักศึกษา 3" />
+                <div class="member-info">
+                    <h2>นายปรมี สุวรรณรัตน์</h2>
+                    <div class="info-row">
+                        <p><span class="detail">สถานะ : </span> นักศึกษา ปวช. ปีที่ 3</p>
+                        <p><span class="detail">สาขา : </span> เทคโนโลยีสารสนเทศ</p>
+                        <p><span class="detail">ศึกษาที่ : </span> วิทยาลัยเทคนิคสัตหีบ</p>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <p><span class="detail">ที่อยู่ : </span> 1/13 หมู่ 2 ต.สำนักท้อน อ.บ้านฉาง จ.ระยอง 21130</p>
+                    </div>
+                    <div class="info-row contact-info-container">
+                        <div class="info-item">
+                            <i class="fas fa-envelope"></i>
+                            <p><span class="detail">อีเมล : </span> <a href="mailto:66209010014@gmail.com">66209010014@gmail.com</a></p>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-phone-alt"></i>
+                            <p><span class="detail">เบอร์โทร : </span> 065-027-5796</p>
+                        </div>
+                        <div class="info-item">
+                            <i class="fab fa-line"></i>
+                            <p><span class="detail">ไลน์ : </span> 065-027-5796</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const closePageBtn = document.getElementById('closePageBtn');
+            closePageBtn.addEventListener('click', () => {
+                window.location.href = 'index.html'; 
+            });
+        });
+    </script>
+</body>
+</html>
