@@ -4,117 +4,160 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EduPathway - คู่มือการใช้งาน</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        body, h1, h2, p, ul, li {
+        :root {
+            --primary-blue: #000080;
+            --secondary-blue: #00004d;
+            --accent-red: #b30303;
+            --light-gray: #f9f9f9;
+            --medium-gray: #555;
+            --dark-gray: #333;
+            --card-shadow: 0 6px 30px rgba(0, 0, 0, 0.08);
+            --card-hover-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        @font-face {
+            font-family: 'PK Maehongson Round Demo';
+            src: url('path/to/PK Maehongson Round Demo.woff2') format('woff2'),
+                 url('path/to/PK Maehongson Round Demo.woff') format('woff');
+        }
+
+        body, h1, h2, h3, p, ul, li {
             margin: 0;
             padding: 0;
             font-weight: normal;
         }
+
         body {
             font-family: 'PK Maehongson Round Demo', sans-serif, Arial, sans-serif;
-            background-color: #ffffff;
-            color: #333;
+            background-color: var(--light-gray);
+            color: var(--dark-gray);
             line-height: 1.8;
-            background-image: url('Bg1.png'); /* ใส่ URL ของรูปภาพพื้นหลังที่ต้องการ */
-            background-size: cover; /* ทำให้รูปภาพพอดีกับหน้าจอ */
-            background-position: center; /* จัดตำแหน่งรูปภาพให้อยู่ตรงกลาง */
-            background-repeat: no-repeat; /* ไม่ให้รูปภาพซ้ำ */
-            background-attachment: fixed; /* ทำให้รูปภาพนิ่งอยู่กับที่เมื่อเลื่อนหน้าจอ */
+            background-image: url('Bg1.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
             padding: 20px;
-            max-width: 1024px;
+            font-size: 1.2em;
+            overflow-x: hidden;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .container {
+            max-width: 900px;
             margin: 0 auto;
-            font-size: 1.1em;
+            padding: 80px 40px 40px 40px; 
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: var(--card-shadow);
+            position: relative;
         }
-        h1, h2 {
-            color: #000080;
-            font-weight: bold;
-            letter-spacing: 0.03em;
+        
+        .close-button {
+            position: absolute; 
+            top: 20px; 
+            right: 20px; 
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 2.5em; 
+            color: var(--dark-gray);
+            transition: color 0.3s ease, transform 0.3s ease;
+            z-index: 100;
         }
+
+        .close-button:hover {
+            color: var(--accent-red);
+            transform: scale(1.1) rotate(90deg);
+        }
+
         h1 {
             font-size: 2.8em;
             text-align: center;
             margin-top: 25px;
             margin-bottom: 50px;
+            color: var(--primary-blue);
+            font-weight: bold;
+            letter-spacing: 0.03em;
         }
+        
         h2 {
             font-size: 2.2em;
-            border-left: 8px solid #000080;
+            border-left: 8px solid var(--primary-blue);
             padding-left: 15px;
             margin-top: 50px;
             margin-bottom: 25px;
+            color: var(--primary-blue);
+            font-weight: bold;
+            letter-spacing: 0.03em;
         }
+        
+        h3 {
+            font-size: 1.8em;
+            color: var(--secondary-blue);
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+
         p {
             font-size: 1.2em;
             margin-bottom: 15px;
-            color: #444;
+            color: var(--medium-gray);
             text-align: justify;
         }
-        ul {
-            list-style-type: disc;
-            margin-left: 40px;
+        
+        .button-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            background-color: var(--light-gray);
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 40px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            transition: box-shadow 0.3s ease, transform 0.3s ease;
+        }
+
+        .button-section:hover {
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            transform: translateY(-5px);
+        }
+        
+        .button-img {
+            max-width: 250px; 
+            height: auto;
             margin-bottom: 20px;
-            color: #444;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
-        ul li {
-            margin-bottom: 8px;
-            font-size: 1.15em;
-        }
-        .section-block {
-            max-width: 980px;
-            margin: 30px auto;
-            padding: 40px 50px;
-            background: #f8f8f8;
-            border: 1px solid #ddd;
-            box-shadow: 0 0 15px rgba(0,0,0,0.08);
-            border-radius: 8px;
-            position: relative;
-            transition: box-shadow 0.3s ease;
-        }
-        .section-block:hover {
-            box-shadow: 0 0 20px rgba(0,0,0,0.12);
-        }
-        .close {
-            position: absolute;
-            top: 20px;
-            right: 25px;
-            font-size: 50px;
-            font-weight: bold;
-            color: #c0392b;
-            cursor: pointer;
-            user-select: none;
-            transition: all 0.3s ease;
-            z-index: 10000;
-        }
-        .close:hover {
-            color: #2c3e50;
-            transform: rotate(180deg) scale(1.25);
-        }
-        hr {
-            border: none;
-            border-top: 3px solid #ecb445;
-            margin: 40px 0;
-        }
+
+        /* Responsive adjustments */
         @media (max-width: 768px) {
             body {
                 padding: 15px 10px;
             }
+            .container {
+                padding: 50px 20px 20px 20px;
+            }
             h1 {
-                font-size: 2.2em;
+                font-size: 2.5em;
                 margin-bottom: 30px;
             }
             h2 {
-                font-size: 1.7em;
+                font-size: 2em;
                 margin-top: 40px;
             }
-            p, ul li {
+            h3 {
+                font-size: 1.5em;
+            }
+            p {
                 font-size: 1.05em;
             }
-            .section-block {
-                padding: 30px 25px;
-            }
-            .close {
-                font-size: 35px;
+            .close-button {
+                font-size: 2em;
                 top: 15px;
                 right: 15px;
             }
@@ -123,29 +166,56 @@
 </head>
 <body>
 
-<div class="container">
-    <div class="section-block">
-        <span class="close close-btn" onclick="goToHomePage()">&times;</span>
-        <h2>คู่มือการใช้งานเว็บไซต์ EduPathway</h2>
-        <p>ขอต้อนรับเข้าสู่เว็บไซต์ EduPathway แหล่งรวมข้อมูลสำหรับนักเรียนที่กำลังมองหาเส้นทางการศึกษาต่อและสายอาชีพที่ใช่ คู่มือนี้จะช่วยให้คุณใช้งานเว็บไซต์ได้อย่างเต็มประสิทธิภาพ</p>
+    <div class="container">
+        <button id="closePageBtn" class="close-button" aria-label="กลับหน้าหลัก">
+            <i class="fas fa-times"></i>
+        </button>
+
+        <h1>คู่มือการใช้งานเว็บไซต์ EduPathway</h1>
+        <p>ยินดีต้อนรับสู่เว็บไซต์ EduPathway แพลตฟอร์มที่จะช่วยให้นักเรียนสามารถค้นหาเส้นทางการศึกษาและอาชีพในฝันได้อย่างง่ายดาย คู่มือนี้จะแนะนำปุ่มหลักทั้งหมดบนหน้าเว็บ พร้อมอธิบายหน้าที่ของแต่ละปุ่มอย่างละเอียด เพื่อให้คุณใช้งานได้อย่างเต็มประสิทธิภาพ</p>
+
+        <h2>ปุ่มนำทางหลักและหน้าที่</h2>
+        <p>โครงสร้างหลักของเว็บไซต์ประกอบด้วยปุ่มสำคัญ 5 ปุ่ม ที่จะนำทางคุณไปสู่ส่วนต่างๆ ได้อย่างง่ายดายและรวดเร็ว</p>
+
+        <div class="button-section">
+            <img src="User manual.png" alt="ปุ่ม คู่มือการใช้งาน" class="button-img">
+            <h3>ปุ่ม "คู่มือการใช้งาน"</h3>
+            <p>หน้าปุ่มนี้คือสิ่งที่คุณกำลังอ่านอยู่! มันทำหน้าที่เป็นคู่มือฉบับสมบูรณ์สำหรับผู้ใช้ใหม่และผู้ใช้เดิมที่ต้องการทบทวนวิธีการใช้งานเว็บไซต์ EduPathway ในส่วนนี้ คุณจะได้เรียนรู้เกี่ยวกับฟังก์ชันหลักของเว็บไซต์ วัตถุประสงค์ของแต่ละปุ่ม และวิธีการใช้เครื่องมือต่างๆ ให้เกิดประโยชน์สูงสุด เพื่อให้คุณเริ่มต้นการเดินทางสู่เส้นทางการศึกษาที่ใช่ได้อย่างราบรื่นและมั่นใจ</p>
+        </div>
+
+        <div class="button-section">
+            <img src="Menu.png" alt="ปุ่ม MENU" class="button-img">
+            <h3>ปุ่ม "MENU"</h3>
+            <p>ปุ่มนี้จะพาคุณเข้าสู่ศูนย์รวมข้อมูลเกี่ยวกับสาขาวิชาและแผนกต่างๆ ที่มีให้เลือกอย่างครบครันถึง <b>18 แผนก</b> ที่นี่คุณจะพบกับรายละเอียดของแต่ละหลักสูตร เช่น วิชาที่เปิดสอน ทักษะที่จำเป็น และแนวโน้มอาชีพในอนาคต การสำรวจหน้าเมนูจะช่วยให้คุณเห็นภาพรวมของโอกาสทางวิชาการและอาชีพที่หลากหลาย ซึ่งเป็นข้อมูลสำคัญที่จะช่วยให้คุณตัดสินใจเลือกเส้นทางที่เหมาะสมกับความสนใจและเป้าหมายของคุณได้อย่างชาญฉลาด</p>
+        </div>
+
+        <div class="button-section">
+            <img src="Test.png" alt="ปุ่ม TEST" class="button-img">
+            <h3>ปุ่ม "TEST"</h3>
+            <p>หน้าแบบทดสอบความถนัดนี้เป็นเครื่องมืออันทรงพลังที่จะช่วยให้คุณค้นพบศักยภาพที่ซ่อนอยู่ภายในตัวคุณ ด้วยแบบทดสอบที่ออกแบบมาอย่างพิถีพิถันถึง <b>9 แบบ</b> ระบบจะวิเคราะห์คำตอบของคุณเพื่อระบุจุดแข็ง ความสนใจ และบุคลิกภาพที่โดดเด่น จากนั้นจะให้คำแนะนำเชิงลึกเกี่ยวกับสาขาวิชาและแผนกที่สอดคล้องกับผลลัพธ์ของคุณมากที่สุด เพื่อเป็นเข็มทิศนำทางสู่เส้นทางการศึกษาที่ตรงกับตัวตนของคุณ</p>
+        </div>
         
-        <h3>1. การนำทางและเลือกสาขาวิชา</h3>
-        <p>ที่ด้านบนของหน้าหลัก คุณจะพบกับเมนูดรอปดาวน์ <b>"เลื่อนเพื่อเลือกสาขาวิชา"</b> เพียงแค่คลิกที่เมนูนี้ คุณจะเห็นรายการสาขาวิชาต่างๆ ที่น่าสนใจให้เลือกมากมาย เมื่อคลิกที่ชื่อสาขาวิชาที่สนใจ ระบบจะนำคุณไปยังหน้าข้อมูลรายละเอียดของสาขานั้นทันที</p>
+        <div class="button-section">
+            <img src="games.png" alt="ปุ่ม GAMES" class="button-img">
+            <h3>ปุ่ม "GAMES"</h3>
+            <p>ปุ่มนี้คือประตูสู่การเรียนรู้ที่มาพร้อมกับความสนุก! หน้ามินิเกมประกอบด้วยเกมที่สร้างสรรค์ถึง <b>18 เกม</b> ซึ่งแต่ละเกมถูกออกแบบมาเพื่อจำลองและนำเสนอแนวคิดหลักของแต่ละสาขาวิชาในรูปแบบที่เข้าใจง่ายและน่าตื่นเต้น การเล่นเกมจะช่วยให้คุณได้สัมผัสประสบการณ์จริงของแต่ละแผนกในแบบที่ไม่น่าเบื่อ และเป็นวิธีที่ยอดเยี่ยมในการเรียนรู้และทำความเข้าใจความซับซ้อนของแต่ละสาขาวิชาผ่านการลงมือปฏิบัติจริง</p>
+        </div>
+        
+        <div class="button-section">
+            <img src="Creator.png" alt="ปุ่ม ผู้จัดทำ" class="button-img">
+            <h3>ปุ่ม "ผู้จัดทำ"</h3>
+            <p>หน้านี้เป็นส่วนที่ให้ข้อมูลเกี่ยวกับทีมผู้สร้างที่อยู่เบื้องหลังเว็บไซต์ EduPathway ที่นี่คุณจะได้พบกับข้อมูลเบื้องต้นเกี่ยวกับทีมผู้พัฒนา รวมถึงวิสัยทัศน์และแรงบันดาลใจในการสร้างแพลตฟอร์มนี้ขึ้นมา หากคุณมีข้อสงสัย ข้อเสนอแนะ หรือต้องการแสดงความคิดเห็นเพิ่มเติม หน้านี้ยังมีช่องทางการติดต่อให้คุณสามารถสื่อสารกับทีมงานได้โดยตรง เพื่อช่วยให้เราพัฒนาเว็บไซต์ให้ดียิ่งขึ้นไป</p>
+        </div>
 
-        <h3>2. การทำแบบทดสอบค้นหาตัวเอง</h3>
-        <p>ที่คอลัมน์ด้านขวาของหน้าหลัก คุณจะพบกับปุ่มสำหรับทำแบบทดสอบต่างๆ แบบทดสอบเหล่านี้ถูกออกแบบมาเพื่อช่วยให้คุณสำรวจความสนใจและค้นหาความถนัดของตัวเองในด้านอาชีพ เมื่อทำเสร็จสิ้น คุณจะได้รับผลลัพธ์ที่ช่วยให้การตัดสินใจเลือกเส้นทางในอนาคตง่ายขึ้น</p>
-
-        <h3>3. ข้อมูลผู้จัดทำ</h3>
-        <p>หากคุณต้องการทราบข้อมูลเพิ่มเติมเกี่ยวกับทีมผู้พัฒนาเว็บไซต์ หรือมีข้อเสนอแนะใดๆ คุณสามารถคลิกที่ปุ่ม <b>"ผู้จัดทำ"</b> ได้ตลอดเวลา เพื่อเข้าถึงหน้าเพจที่รวบรวมข้อมูลติดต่อและรายละเอียดต่างๆ ของทีมงาน</p>
     </div>
-</div>
 
-<script>
-    // ฟังก์ชันสำหรับกลับไปหน้าแรก
-    function goToHomePage() {
-        window.location.href = 'index.html';
-    }
-</script>
-
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const closePageBtn = document.getElementById('closePageBtn');
+            closePageBtn.addEventListener('click', () => {
+                window.location.href = 'index.html'; 
+            });
+        });
+    </script>
 </body>
 </html>
